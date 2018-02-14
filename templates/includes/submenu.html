@@ -1,0 +1,38 @@
+
+<nav class="navbar navbar-default">
+  <ul class="nav navbar-nav nav-left">
+    <li>
+      <a href="{% url 'admin:index' %}">Admin</a>
+    </li>
+    <li {% if current_menu == "select" %}class="active"{% endif %}>
+      <a href="{% url 'stemp:select' %}" {% if current_menu == "select" %}class="disabled" {% endif %}>
+        Select
+      </a>
+    </li>
+    <li {% if current_menu == "demand" %}class="active"{% endif %}>
+      <a href="{% url 'stemp:demand' %}" {% if current_menu == "demand" %}class="disabled" {% endif %}>
+        Demand
+      </a>
+    </li>
+    <li {% if current_menu == "technology" %}class="active"{% endif %}>
+      <a href="{% url 'stemp:technology' %}" {% if current_menu == "technology" %}class="disabled" {% endif %}>
+        Technology
+      </a>
+    </li>
+    <li {% if current_menu == "parameter" %}class="active"{% endif %}>
+      <a href="{% url 'stemp:parameter' %}" {% if current_menu == "parameter" %}class="disabled" {% endif %}>
+        Parameter
+      </a>
+    </li>
+    <li {% if current_menu == "result" %}class="active"{% endif %}>
+      <a href="{% url 'stemp:result' %}" {% if current_menu == "result" %}class="disabled" {% endif %}>
+        Result
+      </a>
+    </li>
+    <li {% if current_menu == "comparison" %}class="active"{% endif %}>
+      <a href="{% url 'stemp:comparison' %}" {% if current_menu == "comparison" %}class="disabled" {% endif %}>
+        Comparison
+      </a>
+    </li>
+  </ul>
+</nav>

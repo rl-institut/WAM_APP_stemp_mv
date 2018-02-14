@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block submenu %}
+{% include "includes/submenu.html" with current_menu=""%}
+{% endblock %}
+
+{% block content %}
+<h2>
+Deine Sitzung ist abgelaufen - bitte starte eine neue Sitzung.<br>
+(Starte einfach wieder bei "Select")
+</h2>
+{% endblock %}

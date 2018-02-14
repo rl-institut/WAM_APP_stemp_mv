@@ -1,0 +1,43 @@
+
+{% load staticfiles %}
+
+<table>
+<tr>
+    <td>
+        {% include widget_template %}
+    </td>
+    <td>
+        <div id={{dynamic_id}}></div>
+    </td>
+</tr>
+</table>
+
+<script src="{% static 'jquery.js' %}"></script>
+<script language="JavaScript">
+    // Initialize graph:
+    {{dynamic_function_name}}({{initial}});
+
+    $("{{choice_name}}").change(function() {
+        {{dynamic_function_name}}($(this).val());
+    });
+
+    function {{dynamic_function_name}}(value) {
+        $.ajax({
+            url : "{{dynamic_url}}",
+            type : "GET",
+            data : { choice : value },
+
+            // handle a successful response
+            success : function(page) {
+                $({{dynamic_id}}).html(page);
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                    " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    };
+</script>

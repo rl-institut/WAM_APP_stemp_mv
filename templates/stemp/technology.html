@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block header %}
+<script src="{% static 'highcharts.js' %}"></script>
+{% endblock %}
+
+{% block submenu %}
+{% include "includes/submenu.html" with current_menu="technology"%}
+{% endblock %}
+
+{% block content %}
+
+<form action="{% url 'stemp:technology' %}" method="post">
+    {% csrf_token %}
+    {{technology}}
+</form>
+
+{% endblock %}

@@ -1,0 +1,7 @@
+
+{% if is_graph %}
+    {{load.div | safe}}
+    {{load.script | safe}}
+{% else %}
+    {{load}}
+{% endif %}

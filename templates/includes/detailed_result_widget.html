@@ -1,0 +1,35 @@
+
+<!--
+This include can be used to show results as graph (i.e. LCOE) in total,
+whit a button to see detailed graph (i.e. LCOE per component)
+-->
+
+{% load staticfiles %}
+
+<h2>{{visualization.label}}</h2>
+<table>
+    <tr>
+        <td align="center">
+            {{visualization.total.div | safe}}
+            {{visualization.total.script | safe}}
+            Total {{visualization.label}}: {{visualization.value}}
+            <br>
+            {% if visualization.detail %}
+                <div class="btn btn-default" id="{{visualization.label}}_detail_btn">Details</div>
+            {% endif %}
+        </td>
+        <td>
+            <div id="{{visualization.label}}_detail_div" style="display: None">
+            {{visualization.detail.div | safe}}
+            {{visualization.detail.script | safe}}
+</div>
+        </td>
+    </tr>
+</table>
+
+<script src="{% static 'jquery.js' %}"></script>
+<script language="JavaScript">
+    $("#{{visualization.label}}_detail_btn").click(function() {
+        $("#{{visualization.label}}_detail_div").toggle();
+    });
+</script>

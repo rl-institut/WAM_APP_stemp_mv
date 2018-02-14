@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block header %}
+{% include "bokeh.html" %}
+<script src="{% static 'highcharts.js' %}"></script>
+{% endblock %}
+
+{% block submenu %}
+{% include "includes/submenu.html" with current_menu="result"%}
+{% endblock %}
+
+{% block content %}
+
+<form action="{% url 'stemp:result' %}" method="post">
+    {% csrf_token %}
+    {{save}}
+    <input class="btn btn-default" type="submit" value="Simulationsergebnisse speichern" name="save">
+</form>
+
+{% for visualization in visualizations %}
+    {% include "includes/detailed_result_widget.html" with visualization=visualization %}
+{% endfor %}
+<!--<h2>Investment:</h2>-->
+<!--{{investment.div | safe}}-->
+<!--{{investment.script | safe}}-->
+
+<!--<h2>Energieflüsse:</h2>-->
+<!--{{energy.div | safe}}-->
+<!--{{energy.script | safe}}-->
+
+{% endblock %}

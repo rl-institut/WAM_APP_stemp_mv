@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block header %}
+<script src="{% static 'highcharts.js' %}"></script>
+{% endblock %}
+
+{% block submenu %}
+{% include "includes/submenu.html" with current_menu="demand"%}
+{% endblock %}
+
+{% block content %}
+
+<form action="{% url 'stemp:demand' %}" method="post">
+    {% csrf_token %}
+    {{switch}}
+    <input class="btn btn-default" type="submit" value="Weiter" name="continue">
+</form>
+
+{% endblock %}

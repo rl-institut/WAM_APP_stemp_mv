@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block submenu %}
+{% include "includes/submenu.html" with current_menu="select"%}
+{% endblock %}
+
+{% block content %}
+
+<form action="{% url 'stemp:select' %}" method="post">
+  {% csrf_token %}
+  <div>
+    <input class="btn btn-default" type="submit" value="Neues Szenario" name="new">
+    <input class="btn btn-default" type="submit" value="Szenario laden" name="load">
+  </div>
+</form>
+
+{% endblock %}

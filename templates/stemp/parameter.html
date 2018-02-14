@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block header %}
+<!--{% include "bokeh.html" %}-->
+<script src="{% static 'highcharts.js' %}"></script>
+{% endblock %}
+
+{% block submenu %}
+{% include "includes/submenu.html" with current_menu="parameter"%}
+{% endblock %}
+
+{% block content %}
+
+<h2>Szenario: {{name}}</h2>
+<h2>Pfad: {{scenario}}</h2>
+<form action="{% url 'stemp:parameter' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="scenario" value="{{scenario}}">
+    <div>
+        <h3>Parameters:</h3>
+        {{parameters}}
+        {{switch}}
+    </div>
+    <input class="btn btn-default" type="submit" value="Parameter laden" name="load">
+    <input class="btn btn-default" type="submit" value="Parameter laden & Setup überspringen" name="skip_setup">
+</form>
+
+<h2>Input data</h2>
+{% include "includes/component_list.html" with components=scenario_input %}
+{% endblock %}
