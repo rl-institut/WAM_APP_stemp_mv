@@ -27,7 +27,7 @@ def check_session(func):
             session = SESSION_DATA.get_session(request)
         except KeyError:
             return render(request, 'stemp/session_not_found.html')
-        return func(self, request, session, *args)
+        return func(self, request, session=session, *args)
     return func_wrapper
 
 
@@ -73,10 +73,8 @@ class DemandView(TemplateView):
         return context
 
     @check_session
-    def get(self, request, session):
-
+    def get(self, request, *args, **kwargs):
         context = self.get_context_data()
-
         return self.render_to_response(context)
 
     @check_session
@@ -90,7 +88,7 @@ class DemandView(TemplateView):
             customer_dict['customer_index'] = request.POST['profile']
             customer_dict['customer_case'] = 'single'
 
-        session.parameter = {'demand': customer_dict}
+        session.parameter = customer_dict
         return redirect('stemp:technology')
 
 
@@ -115,7 +113,7 @@ class TechnologyView(TemplateView):
         return context
 
     @check_session
-    def get(self, request, session):
+    def get(self, request, *args, **kwargs):
         context = self.get_context_data()
         return self.render_to_response(context)
 
@@ -134,38 +132,12 @@ class ParameterView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ParameterView, self).get_context_data(**kwargs)
-
-        # Default values:
-        context['name'] = '<Kein Name angegeben>'
-
-        # Load config values, if given:
-        scenario_setup = get_scenario_config(context['scenario'])
-
-        if 'setup' in scenario_setup:
-            if 'name' in scenario_setup['setup']:
-                context['name'] = scenario_setup['setup']['name']
-
-        choices = ((0, 'Einzelner Haushalt'), (1, 'Quartier'))
-        context['switch'] = DynamicChoiceForm(
-            'switch',
-            'Lastoptionen',
-            choices,
-            'switch_load/',
-            dynamic_function_name='switch_loads',
-            dynamic_id='switch_id',
-        )
-
-        parameters = scenario_setup.get('parameters', None)
-        if parameters is not None:
-            context['parameters'] = ParameterForm(parameters)
-
         context['scenario_input'] = get_scenario_input_values('heat_scenario')
-
         return context
 
     @check_session
-    def get(self, request, session, *args, **kwargs):
-        scenario = session.scenario
+    def get(self, request, *args, **kwargs):
+        scenario = kwargs['session'].scenario
         if scenario is None:
             raise KeyError('No scenario found')
         context = self.get_context_data(scenario=scenario)
@@ -177,40 +149,15 @@ class ParameterView(TemplateView):
         scenario = session.scenario
         if scenario is None:
             raise KeyError('no scenario found')
-        scenario_setup = get_scenario_config(scenario)
-
-        parameters = scenario_setup.get('parameters', None)
-        parameter_form = ParameterForm(parameters, request.POST)
-
-        if parameter_form.is_valid():
-            parameters = parameter_form.cleaned_data
-        else:
-            parameters = {}
-
-        customer_dict = {}
-        if int(request.POST['switch']) == 1:
-            customer_dict['customer_index'] = 1  # FIXME: Hardcoded
-            customer_dict['customer_case'] = 'district'
-        else:
-            customer_dict['customer_index'] = request.POST['profile']
-            customer_dict['customer_case'] = 'single'
-
         scenario_module = import_scenario(scenario)
         session.scenario_module = scenario_module
-        session.parameter = {
-            'parameters': parameters,
-            'customers': customer_dict
-        }
-
         energysystem = create_energysystem(
-            scenario_module, **customer_dict, **parameters)
+            scenario_module,
+            **session.parameter
+        )
         session.energysystem = energysystem
-
-        if 'skip_setup' in request.POST:
-            simulate_energysystem(request)
-            return redirect('stemp:result')
-        else:
-            return redirect('stemp:setup')
+        simulate_energysystem(request)
+        return redirect('stemp:result')
 
 
 class SetupView(TemplateView):
@@ -237,12 +184,12 @@ class SetupView(TemplateView):
         return context
 
     @check_session
-    def get(self, request, session, *args, **kwargs):
-        scenario = session.scenario
+    def get(self, request, *args, **kwargs):
+        scenario = kwargs['session'].scenario
         if scenario is None:
             raise KeyError('No scenario found')
         context = self.get_context_data(
-            session.energysystem, scenario=scenario)
+            kwargs['session'].energysystem, scenario=scenario)
 
         return self.render_to_response(context)
 
@@ -278,16 +225,16 @@ class ResultView(TemplateView):
         return context
 
     @check_session
-    def get(self, request, session, *args, **kwargs):
-        scenario = session.scenario
+    def get(self, request, *args, **kwargs):
+        scenario = kwargs['session'].scenario
         result_config = get_scenario_config(scenario).get('results')
-        result = session.result
+        result = kwargs['session'].result
 
         context = self.get_context_data(result, result_config)
         return self.render_to_response(context)
 
     @check_session
-    def post(self, request, session):
+    def post(self, request, *args, **kwargs):
         if 'save' in request.POST:
             simulation_name = request.POST['simulation_name']
             try:
