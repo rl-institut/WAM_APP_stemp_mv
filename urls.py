@@ -1,7 +1,7 @@
 
 from django.conf.urls import url
 from stemp.views import (
-    SelectView, SetupView, ResultView, HouseholdView, ParameterView,
+    SelectView, ResultView, HouseholdView, ParameterView,
     ComparisonView, SwitchLoadView, DemandView, TechnologyView
 )
 
@@ -12,7 +12,6 @@ urlpatterns = [
     url(r'^demand/households/$', HouseholdView.as_view()),
     url(r'^technology/$', TechnologyView.as_view(), name='technology'),
     url(r'^parameter/$', ParameterView.as_view(), name='parameter'),
-    url(r'^setup/$', SetupView.as_view(), name='setup'),
     url(r'^result/$', ResultView.as_view(), name='result'),
     url(r'^comparison/$', ComparisonView.as_view(), name='comparison'),
 ]

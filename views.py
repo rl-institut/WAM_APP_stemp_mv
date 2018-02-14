@@ -5,18 +5,15 @@ from django.views.generic import TemplateView
 
 from kopy.settings import SESSION_DATA
 from kopy.bookkeeping import simulate_energysystem
+from scenarios import create_energysystem
 
 from .forms import (
-    ParameterForm, HouseholdForm, DynamicChoiceForm,
-    SaveSimulationForm, ComparisonForm, ChoiceSubmitForm
+    HouseholdForm, DynamicChoiceForm,
+    SaveSimulationForm, ComparisonForm, ChoiceForm
 )
-from .es_forms import EnergysystemFormGroup
 from stemp.models import District, Household
 from stemp.results import Comparison
-from scenarios import (
-    get_scenario_config, import_scenario, create_energysystem,
-    get_scenario_input_values
-)
+from scenarios import get_scenario_config, get_scenario_input_values
 
 BASIC_SCENARIO = path.join('scenarios', 'heat_scenario')
 
@@ -105,10 +102,11 @@ class TechnologyView(TemplateView):
             ('pv_wp', 'PV + Wärmepumpe'),
             ('oil', 'Ölheizung')
         )
-        context['technology'] = ChoiceSubmitForm(
+        context['technology'] = ChoiceForm(
             'technology',
             'Technology',
-            choices=choices
+            choices=choices,
+            submit_on_change=False
         )
         return context
 
@@ -121,7 +119,17 @@ class TechnologyView(TemplateView):
     def post(self, request, session):
         technology = request.POST['technology']
         session.parameter['technology'] = technology
-        return redirect('stemp:parameter')
+        if 'continue' in request.POST:
+            session.import_scenario_module()
+            energysystem = create_energysystem(
+                session.scenario_module,
+                **session.parameter
+            )
+            session.energysystem = energysystem
+            simulate_energysystem(request)
+            return redirect('stemp:result')
+        else:
+            return redirect('stemp:parameter')
 
 
 class ParameterView(TemplateView):
@@ -146,67 +154,14 @@ class ParameterView(TemplateView):
 
     @check_session
     def post(self, request, session):
-        scenario = session.scenario
-        if scenario is None:
-            raise KeyError('no scenario found')
-        scenario_module = import_scenario(scenario)
-        session.scenario_module = scenario_module
+        session.import_scenario_module()
         energysystem = create_energysystem(
-            scenario_module,
+            session.scenario_module,
             **session.parameter
         )
         session.energysystem = energysystem
         simulate_energysystem(request)
         return redirect('stemp:result')
-
-
-class SetupView(TemplateView):
-    template_name = 'stemp/setup.html'
-
-    def __init__(self, **kwargs):
-        super(SetupView, self).__init__(**kwargs)
-
-    def get_context_data(self, es, **kwargs):
-        context = super(SetupView, self).get_context_data(**kwargs)
-
-        # Default values:
-        context['name'] = '<Kein Name angegeben>'
-
-        # Load config values, if given:
-        scenario_setup = get_scenario_config(context['scenario'])
-
-        if 'setup' in scenario_setup:
-            if 'name' in scenario_setup['setup']:
-                context['name'] = scenario_setup['setup']['name']
-
-        context['energysystem'] = EnergysystemFormGroup(es)
-
-        return context
-
-    @check_session
-    def get(self, request, *args, **kwargs):
-        scenario = kwargs['session'].scenario
-        if scenario is None:
-            raise KeyError('No scenario found')
-        context = self.get_context_data(
-            kwargs['session'].energysystem, scenario=scenario)
-
-        return self.render_to_response(context)
-
-    @check_session
-    def post(self, request, session):
-        es = session.energysystem
-        es_form = EnergysystemFormGroup(
-            es,
-            request.POST
-        )
-        if es_form.is_valid():
-            es_form.adapt_changes()
-            simulate_energysystem(request)
-            return redirect('stemp:result')
-        else:
-            context = self.get_context_data(es)
-            return self.render_to_response(context)
 
 
 class ResultView(TemplateView):

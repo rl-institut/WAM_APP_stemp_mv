@@ -66,21 +66,22 @@ def create_field_from_config(parameter, data):
         return field.field_class(**kwargs)
 
 
-class ChoiceSubmitForm(Form):
-    def __init__(self, name, label=None, choices=None, initial=None, *args, **kwargs):
-        super(ChoiceSubmitForm, self).__init__(*args, **kwargs)
+class ChoiceForm(Form):
+    def __init__(
+            self, name, label=None, choices=None, submit_on_change=True,
+            initial=None, *args, **kwargs
+    ):
+        super(ChoiceForm, self).__init__(*args, **kwargs)
         choices = [] if choices is None else choices
         label = label if label is not None else name
+        attrs = {'class': 'btn btn-default'}
+        if submit_on_change:
+            attrs['onchange'] = 'this.form.submit();'
         self.fields[name] = ChoiceField(
             label=label,
             choices=choices,
             initial=initial,
-            widget=Select(
-                attrs={
-                    'class': 'btn btn-default',
-                    'onchange': 'this.form.submit();'
-                }
-            )
+            widget=Select(attrs=attrs)
         )
 
 

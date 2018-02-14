@@ -13,8 +13,10 @@
 {% block content %}
 
 <form action="{% url 'stemp:technology' %}" method="post">
-    {% csrf_token %}
-    {{technology}}
+  {% csrf_token %}
+  {{technology}}
+  <input class="btn btn-default" type="submit" value="Weiter" name="continue">
+  <input class="btn btn-default" type="submit" value="Weiter + Parameter" name="parameter">
 </form>
 
 {% endblock %}
