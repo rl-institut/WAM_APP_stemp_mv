@@ -13,9 +13,31 @@
 {% block content %}
 
 <form action="{% url 'stemp:demand' %}" method="post">
-    {% csrf_token %}
-    {{switch}}
-    <input class="btn btn-default" type="submit" value="Weiter" name="continue">
+  {% csrf_token %}
+  {{single_district_switch}}
+  <div id="single">
+    Single
+  </div>
+  <div id="district" hidden="true">
+    District
+  </div>
+  <input class="btn btn-default" type="submit" value="Weiter" name="continue">
 </form>
+
+<script src="{% static 'jquery.js' %}"></script>
+<script src="{% static 'helpers.js' %}"></script>
+<script language="JavaScript">
+  $(function() {
+    // Initial call when document is ready
+    toggle_divs(
+      [$("#single"), $("#district")],
+      $("#id_single_district_switch").val()
+    );
+  });
+
+  $("#id_single_district_switch").change(function() {
+    toggle_divs([$("#single"), $("#district")], $(this).val());
+  });
+</script>
 
 {% endblock %}

@@ -2,10 +2,10 @@
 from collections import namedtuple
 from django.forms import (
     Form, ChoiceField, IntegerField, FloatField, Select, CharField,
-    MultipleChoiceField, CheckboxSelectMultiple)
+    MultipleChoiceField, CheckboxSelectMultiple, ModelForm)
 
 from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget
-from stemp.models import LoadProfile, Household, Simulation
+from stemp.models import LoadProfile, Household, Simulation, District
 
 PossibleField = namedtuple(
     'PossibleField',
@@ -103,7 +103,6 @@ class EnergysystemForm(Form):
         super(EnergysystemForm, self).__init__(*args, **kwargs)
 
 
-
 class LoadProfileForm(Form):
     """Tjaden, T.; Bergner, J.; Weniger, J.; Quaschning, V.:
     „Repräsentative elektrische Lastprofile für Einfamilienhäuser in
@@ -117,7 +116,7 @@ class LoadProfileForm(Form):
     )
 
 
-class HouseholdForm(Form):
+class SingleHouseholdForm(Form):
     households = Household.objects.all()
     choices = [(hh.id, hh.name) for hh in households]
     profile = ChoiceField(
@@ -156,3 +155,15 @@ class ComparisonForm(Form):
             initial=initial,
             widget=CheckboxSelectMultiple
         )
+
+
+class HouseholdForm(ModelForm):
+    class Meta:
+        model = Household
+        exclude = ['district']
+
+
+class DistrictForm(ModelForm):
+    class Meta:
+        model = District
+        fields = ['name']

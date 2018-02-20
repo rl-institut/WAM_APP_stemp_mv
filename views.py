@@ -8,8 +8,8 @@ from kopy.bookkeeping import simulate_energysystem
 from scenarios import create_energysystem
 
 from .forms import (
-    HouseholdForm, DynamicChoiceForm,
-    SaveSimulationForm, ComparisonForm, ChoiceForm
+    HouseholdForm, SingleHouseholdForm, DynamicChoiceForm,
+    SaveSimulationForm, ComparisonForm, ChoiceForm, DistrictForm
 )
 from stemp.models import District, Household
 from stemp.results import Comparison
@@ -57,14 +57,11 @@ class DemandView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DemandView, self).get_context_data(**kwargs)
 
-        choices = ((0, 'Einzelner Haushalt'), (1, 'Quartier'))
-        context['switch'] = DynamicChoiceForm(
-            'switch',
-            'Lastoptionen',
-            choices,
-            'switch_load/',
-            dynamic_function_name='switch_loads',
-            dynamic_id='switch_id',
+        context['single_district_switch'] = ChoiceForm(
+            'single_district_switch',
+            'Haushalt/Quartier',
+            [(0, 'Einzelner Haushalt'), (1, 'Quartier')],
+            submit_on_change=False
         )
 
         return context
@@ -76,6 +73,10 @@ class DemandView(TemplateView):
 
     @check_session
     def post(self, request, session):
+
+        form = HouseholdForm(request.POST)
+        household = form.save(commit=False)
+        household.save()
 
         customer_dict = {}
         if int(request.POST['switch']) == 1:
@@ -232,7 +233,7 @@ class SwitchLoadView(TemplateView):
         context = super(SwitchLoadView, self).get_context_data(**kwargs)
         if switch == 0:
             context['is_graph'] = False
-            context['load'] = HouseholdForm()
+            context['load'] = SingleHouseholdForm()
         else:
             context['is_graph'] = True
             dist = District.objects.get(id=1)
