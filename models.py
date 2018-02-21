@@ -145,7 +145,10 @@ class Household(models.Model):
     }
 
     def __str__(self):
-        return self.name + ' (' + str(self.district) + ')'
+        text = self.name + ' (Quartier: ' + str(self.district) + ')'
+        if self.predefined:
+            text += ', VORDEFINIERT'
+        return text
 
     def annual_load_demand(self):
         return self.load_demand * self.load_profile.as_series()

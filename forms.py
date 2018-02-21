@@ -122,6 +122,7 @@ class HouseholdSelectForm(Form):
     profile = ModelChoiceField(
         queryset=Household.objects.all(),
         label='Haushalte',
+        initial=0,
         widget=DynamicSelectWidget(
             dynamic_url='household_profile/',
             initial=1
