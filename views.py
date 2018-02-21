@@ -79,11 +79,6 @@ class DemandView(TemplateView):
 
     @check_session
     def post(self, request, session):
-
-        form = HouseholdForm(request.POST)
-        household = form.save(commit=False)
-        household.save()
-
         customer_dict = {}
         if int(request.POST['switch']) == 1:
             customer_dict['customer_index'] = 1  # FIXME: Hardcoded

@@ -2,7 +2,7 @@
 from collections import namedtuple
 from django.forms import (
     Form, ChoiceField, IntegerField, FloatField, Select, CharField,
-    MultipleChoiceField, CheckboxSelectMultiple, ModelForm)
+    MultipleChoiceField, CheckboxSelectMultiple, ModelForm, ModelChoiceField)
 
 from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget
 from stemp.models import LoadProfile, Household, Simulation, District
@@ -119,9 +119,9 @@ class LoadProfileForm(Form):
 class HouseholdSelectForm(Form):
     households = Household.objects.all()
     choices = [(hh.id, hh.name) for hh in households]
-    profile = ChoiceField(
+    profile = ModelChoiceField(
+        queryset=Household.objects.all(),
         label='Haushalte',
-        choices=choices,
         widget=DynamicSelectWidget(
             dynamic_url='household_profile/',
             initial=1

@@ -32,9 +32,8 @@ class SwitchLoadView(TemplateView):
 class SingleHouseholdView(TemplateView):
     template_name = 'stemp/single_household.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, initial=0, **kwargs):
         context = super(SingleHouseholdView, self).get_context_data(**kwargs)
-        context['hh_select'] = HouseholdSelectForm()
         context['household_switch'] = ChoiceForm(
             'household_switch',
             'Wie möchtest du einen Haushalt auswählen?',
@@ -44,16 +43,24 @@ class SingleHouseholdView(TemplateView):
                 (2, 'Mittels Fragen'),
                 (3, 'Von Hand erstellen')
             ],
-            initial=0,
+            initial=initial,
             submit_on_change=False,
             widget=SelectWithDisabled
         )
+        context['hh_select'] = HouseholdSelectForm()
         context['hh_tree'] = ''
         context['hh_form'] = HouseholdForm()
         return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def post(self, request):
+        hh_form = HouseholdForm(request.POST)
+        household = hh_form.save(commit=False)
+        household.save()
+        context = self.get_context_data(initial=1)
         return self.render_to_response(context)
 
 
