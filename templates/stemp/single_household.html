@@ -1,0 +1,33 @@
+
+<form action="{% url 'stemp:demand' %}" method="post">
+  {% csrf_token %}
+  <div id="new_household">
+    {{household_switch}}
+    <div id="hh_list">
+      Liste
+      {{hh_select}}
+    </div>
+    <div id="hh_tree">
+      Baum
+      {{hh_tree}}
+    </div>
+    <div id="hh_form">
+      {{hh_form}}
+    </div>
+  </div>
+  <input class="btn btn-default" type="submit" value="Weiter" name="btn_single_household">
+</form>
+
+<script language="JavaScript">
+  $(function() {
+    // Initial call when document is ready
+    toggle_divs(
+      [null, $("#hh_list"), $("#hh_tree"), $("#hh_form")],
+      $("#id_household_switch").val()
+    );
+  });
+
+  $("#id_household_switch").change(function() {
+    toggle_divs([null, $("#hh_list"), $("#hh_tree"), $("#hh_form")], $(this).val());
+  });
+</script>

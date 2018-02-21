@@ -69,7 +69,7 @@ def create_field_from_config(parameter, data):
 class ChoiceForm(Form):
     def __init__(
             self, name, label=None, choices=None, submit_on_change=True,
-            initial=None, *args, **kwargs
+            initial=None, widget=Select, *args, **kwargs
     ):
         super(ChoiceForm, self).__init__(*args, **kwargs)
         choices = [] if choices is None else choices
@@ -81,7 +81,7 @@ class ChoiceForm(Form):
             label=label,
             choices=choices,
             initial=initial,
-            widget=Select(attrs=attrs)
+            widget=widget(attrs=attrs)
         )
 
 
@@ -116,13 +116,16 @@ class LoadProfileForm(Form):
     )
 
 
-class SingleHouseholdForm(Form):
+class HouseholdSelectForm(Form):
     households = Household.objects.all()
     choices = [(hh.id, hh.name) for hh in households]
     profile = ChoiceField(
         label='Haushalte',
         choices=choices,
-        widget=DynamicSelectWidget(dynamic_url='households/', initial=1)
+        widget=DynamicSelectWidget(
+            dynamic_url='household_profile/',
+            initial=1
+        )
     )
 
 
