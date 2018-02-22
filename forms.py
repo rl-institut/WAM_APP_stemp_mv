@@ -2,10 +2,10 @@
 from collections import namedtuple
 from django.forms import (
     Form, ChoiceField, IntegerField, FloatField, Select, CharField,
-    MultipleChoiceField, CheckboxSelectMultiple)
+    MultipleChoiceField, CheckboxSelectMultiple, ModelForm, ModelChoiceField)
 
 from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget
-from stemp.models import LoadProfile, Household, Simulation
+from stemp.models import LoadProfile, Household, Simulation, District
 
 PossibleField = namedtuple(
     'PossibleField',
@@ -69,7 +69,7 @@ def create_field_from_config(parameter, data):
 class ChoiceForm(Form):
     def __init__(
             self, name, label=None, choices=None, submit_on_change=True,
-            initial=None, *args, **kwargs
+            initial=None, widget=Select, *args, **kwargs
     ):
         super(ChoiceForm, self).__init__(*args, **kwargs)
         choices = [] if choices is None else choices
@@ -81,7 +81,7 @@ class ChoiceForm(Form):
             label=label,
             choices=choices,
             initial=initial,
-            widget=Select(attrs=attrs)
+            widget=widget(attrs=attrs)
         )
 
 
@@ -103,7 +103,6 @@ class EnergysystemForm(Form):
         super(EnergysystemForm, self).__init__(*args, **kwargs)
 
 
-
 class LoadProfileForm(Form):
     """Tjaden, T.; Bergner, J.; Weniger, J.; Quaschning, V.:
     „Repräsentative elektrische Lastprofile für Einfamilienhäuser in
@@ -117,13 +116,17 @@ class LoadProfileForm(Form):
     )
 
 
-class HouseholdForm(Form):
+class HouseholdSelectForm(Form):
     households = Household.objects.all()
     choices = [(hh.id, hh.name) for hh in households]
-    profile = ChoiceField(
+    profile = ModelChoiceField(
+        queryset=Household.objects.all(),
         label='Haushalte',
-        choices=choices,
-        widget=DynamicSelectWidget(dynamic_url='households/', initial=1)
+        initial=0,
+        widget=DynamicSelectWidget(
+            dynamic_url='household_profile/',
+            initial=1
+        )
     )
 
 
@@ -156,3 +159,15 @@ class ComparisonForm(Form):
             initial=initial,
             widget=CheckboxSelectMultiple
         )
+
+
+class HouseholdForm(ModelForm):
+    class Meta:
+        model = Household
+        exclude = ['district']
+
+
+class DistrictForm(ModelForm):
+    class Meta:
+        model = District
+        fields = ['name']

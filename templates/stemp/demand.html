@@ -13,9 +13,47 @@
 {% block content %}
 
 <form action="{% url 'stemp:demand' %}" method="post">
-    {% csrf_token %}
-    {{switch}}
-    <input class="btn btn-default" type="submit" value="Weiter" name="continue">
+  {% csrf_token %}
+  {{single_district_switch}}
+  <div id="single">
+    Single
+  </div>
+  <div id="district">
+    District
+  </div>
+  <input class="btn btn-default" type="submit" value="Weiter" name="continue">
 </form>
+
+<script src="{% static 'jquery.js' %}"></script>
+<script src="{% static 'helpers.js' %}"></script>
+<script language="JavaScript">
+  $(function() {
+    // Initial call when document is ready
+    toggle_divs(
+      [null, $("#single"), $("#district")],
+      $("#id_single_district_switch").val()
+    );
+    if ( $("#id_single_district_switch").val() == 1 ) {
+      load_single_household()
+    }
+  });
+
+  $("#id_single_district_switch").change(function() {
+    toggle_divs([null, $("#single"), $("#district")], $(this).val());
+    if ( $(this).val() == 1 ) {
+      load_single_household()
+    }
+  });
+
+  function load_single_household() {
+    $.ajax(
+      {
+        url : "single_household",
+        type : "GET",
+        success : function(page) {$("#single").html(page);}
+      }
+    )
+  };
+</script>
 
 {% endblock %}

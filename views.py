@@ -1,5 +1,6 @@
 
 from os import path
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
@@ -8,10 +9,10 @@ from kopy.bookkeeping import simulate_energysystem
 from scenarios import create_energysystem
 
 from .forms import (
-    HouseholdForm, DynamicChoiceForm,
-    SaveSimulationForm, ComparisonForm, ChoiceForm
+    HouseholdForm, SaveSimulationForm, ComparisonForm, ChoiceForm
 )
-from stemp.models import District, Household
+from stemp.widgets import SelectWithDisabled
+from stemp.views_dynamic import SingleHouseholdView
 from stemp.results import Comparison
 from scenarios import get_scenario_config, get_scenario_input_values
 
@@ -54,29 +55,30 @@ class DemandView(TemplateView):
     def __init__(self, **kwargs):
         super(DemandView, self).__init__(**kwargs)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, request, **kwargs):
         context = super(DemandView, self).get_context_data(**kwargs)
 
-        choices = ((0, 'Einzelner Haushalt'), (1, 'Quartier'))
-        context['switch'] = DynamicChoiceForm(
-            'switch',
-            'Lastoptionen',
-            choices,
-            'switch_load/',
-            dynamic_function_name='switch_loads',
-            dynamic_id='switch_id',
+        context['single_district_switch'] = ChoiceForm(
+            'single_district_switch',
+            'Haushalt/Quartier',
+            [
+                (0, {'label': 'Auswahl', 'disabled': True}),
+                (1, 'Einzelner Haushalt'),
+                (2, 'Quartier')
+            ],
+            initial=0,
+            submit_on_change=False,
+            widget=SelectWithDisabled
         )
-
         return context
 
     @check_session
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
+        context = self.get_context_data(request)
         return self.render_to_response(context)
 
     @check_session
     def post(self, request, session):
-
         customer_dict = {}
         if int(request.POST['switch']) == 1:
             customer_dict['customer_index'] = 1  # FIXME: Hardcoded
@@ -222,45 +224,4 @@ class ComparisonView(TemplateView):
     def post(self, request):
         sim_ids = request.POST.getlist('comparison')
         context = self.get_context_data(sim_ids)
-        return self.render_to_response(context)
-
-
-class SwitchLoadView(TemplateView):
-    template_name = 'stemp/load_switch.html'
-
-    def get_context_data(self, switch, **kwargs):
-        context = super(SwitchLoadView, self).get_context_data(**kwargs)
-        if switch == 0:
-            context['is_graph'] = False
-            context['load'] = HouseholdForm()
-        else:
-            context['is_graph'] = True
-            dist = District.objects.get(id=1)
-            hc = dist.as_highchart()
-            context['load'] = hc.render('load_graph')
-        return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(int(
-            request.GET.get('choice', 0)))
-        return self.render_to_response(context)
-
-
-class HouseholdView(TemplateView):
-    template_name = 'stemp/load_profile.html'
-
-    def get_context_data(self, household=None):
-        if household is None:
-            return {}
-        else:
-            hh = Household.objects.get(id=household)
-            hc = hh.as_highchart()
-            context = {
-                'load_graph': hc.render('load_graph')
-            }
-            return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(int(
-            request.GET.get('choice', 1)))
         return self.render_to_response(context)

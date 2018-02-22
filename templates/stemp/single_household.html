@@ -1,0 +1,36 @@
+
+{% load staticfiles %}
+<script src="{% static 'intercooler.js' %}"></script>
+
+<div id="new_household">
+  {{household_switch}}
+  <div id="hh_list">
+    Liste
+    {{hh_select}}
+  </div>
+  <div id="hh_tree">
+    Baum
+    {{hh_tree}}
+  </div>
+  <div id="hh_form">
+    <form ic-post-to="single_household/" ic-target="#single">
+      {% csrf_token %}
+      {{hh_form}}
+      <input class="btn btn-default" type="submit" value="Erstellen" name="btn_new_household">
+    </form>
+  </div>
+</div>
+
+<script language="JavaScript">
+  $(function() {
+    // Initial call when document is ready
+    toggle_divs(
+      [null, $("#hh_list"), $("#hh_tree"), $("#hh_form")],
+      $("#id_household_switch").val()
+    );
+  });
+
+  $("#id_household_switch").change(function() {
+    toggle_divs([null, $("#hh_list"), $("#hh_tree"), $("#hh_form")], $(this).val());
+  });
+</script>

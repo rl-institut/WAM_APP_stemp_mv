@@ -130,11 +130,13 @@ class HeatProfile(models.Model, ProfileMixin):
 
 class Household(models.Model):
     name = models.CharField(max_length=255)
-    district = models.ForeignKey(District, models.CASCADE)
+    district = models.ForeignKey(District, models.CASCADE, null=True)
     load_demand = models.FloatField(verbose_name='Jährlicher Strombedarf')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
     load_profile = models.ForeignKey(LoadProfile)
     heat_profile = models.ForeignKey(HeatProfile)
+    predefined = models.BooleanField(
+        verbose_name='Vordefiniert', default=False)
 
     layout = {
         'x_title': 'Zeit [h]',
@@ -143,7 +145,10 @@ class Household(models.Model):
     }
 
     def __str__(self):
-        return self.name + ' (' + str(self.district) + ')'
+        text = self.name + ' (Quartier: ' + str(self.district) + ')'
+        if self.predefined:
+            text += ', VORDEFINIERT'
+        return text
 
     def annual_load_demand(self):
         return self.load_demand * self.load_profile.as_series()
