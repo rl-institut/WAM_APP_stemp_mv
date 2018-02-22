@@ -1,11 +1,13 @@
 
 from django.conf.urls import url
+from django.views.generic.base import TemplateView
 from stemp.views import (
     SelectView, ResultView, HouseholdView, ParameterView,
     ComparisonView, SwitchLoadView, DemandView, TechnologyView
 )
 
 urlpatterns = [
+    url(r'^home/$', TemplateView.as_view(template_name='stemp/homepage.html'), name='home'),
     url(r'^select/$', SelectView.as_view(), name='select'),
     url(r'^demand/$', DemandView.as_view(), name='demand'),
     url(r'^demand/switch_load/$', SwitchLoadView.as_view()),
