@@ -55,40 +55,41 @@ class DemandView(TemplateView):
     def __init__(self, **kwargs):
         super(DemandView, self).__init__(**kwargs)
 
-    def get_context_data(self, request, **kwargs):
+    def get_context_data(self, structure, **kwargs):
         context = super(DemandView, self).get_context_data(**kwargs)
 
-        context['single_district_switch'] = ChoiceForm(
-            'single_district_switch',
-            'Haushalt/Quartier',
-            [
-                (0, {'label': 'Auswahl', 'disabled': True}),
-                (1, 'Einzelner Haushalt'),
-                (2, 'Quartier')
-            ],
-            initial=0,
-            submit_on_change=False,
-            widget=SelectWithDisabled
-        )
+        context['current_structure'] = structure
         return context
 
     @check_session
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(request)
+        context = self.get_context_data(request.GET.get("structure", None))
         return self.render_to_response(context)
 
     @check_session
     def post(self, request, session):
-        customer_dict = {}
-        if int(request.POST['switch']) == 1:
-            customer_dict['customer_index'] = 1  # FIXME: Hardcoded
-            customer_dict['customer_case'] = 'district'
+        if "current_structure" in request.POST:
+            if request.POST["current_structure"] != "":
+                context = self.get_context_data(structure=None)
+                return self.render_to_response(context)
+            else:
+                if "btn_single" in request.POST:
+                    context = self.get_context_data(structure=0)
+                    return self.render_to_response(context)
+                elif "btn_district" in request.POST:
+                    context = self.get_context_data(structure=1)
+                    return self.render_to_response(context)
         else:
-            customer_dict['customer_index'] = request.POST['profile']
-            customer_dict['customer_case'] = 'single'
+            customer_dict = {}
+            if int(request.POST['single_district_switch']) == 2:
+                customer_dict['customer_index'] = 1  # FIXME: Hardcoded
+                customer_dict['customer_case'] = 'district'
+            else:
+                customer_dict['customer_index'] = request.POST['profile']
+                customer_dict['customer_case'] = 'single'
 
-        session.parameter = customer_dict
-        return redirect('stemp:technology')
+            session.parameter = customer_dict
+            return redirect('stemp:technology')
 
 
 class TechnologyView(TemplateView):

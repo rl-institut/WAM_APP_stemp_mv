@@ -1,0 +1,28 @@
+
+{% load static %}
+<script src="{% static 'intercooler.js' %}"></script>
+
+<form ic-post-to="single_household/"  ic-target="#content">
+  {% csrf_token %}
+  <input type="hidden" name="current_option" value="{{current_option}}">
+  <table>
+    {% if current_option == "" or current_option == "0" %}
+      <tr>
+        <td>Image</td>
+        <td><input class="btn btn-default" type="submit" value="Aus Liste wählen" name="hh_option_list"></td>
+      </tr>
+    {% endif %}
+    {% if current_option == "" or current_option == "1" %}
+      <tr>
+        <td>Image</td>
+        <td><input class="btn btn-default" type="submit" value="Mittels Fragen" name="hh_option_questions"></td>
+      </tr>
+    {% endif %}
+    {% if current_option == "" or current_option == "2" %}
+      <tr>
+        <td>Image</td>
+        <td><input class="btn btn-default" type="submit" value="Manuell erstellen" name="hh_option_manual"></td>
+      </tr>
+    {% endif %}
+  </table>
+</form>

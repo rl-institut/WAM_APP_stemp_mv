@@ -1,0 +1,19 @@
+
+<form action="{% url 'stemp:demand' %}" method="post">
+  {% csrf_token %}
+  <input type="hidden" name="current_structure" value="{{current_structure}}">
+  <table>
+    {% if current_structure == "" or current_structure == "0" %}
+      <tr>
+        <td>Image</td>
+        <td><input class="btn btn-default" type="submit" value="Einzelner Haushalt" name="btn_single"></td>
+      </tr>
+    {% endif %}
+    {% if current_structure == "" or current_structure == "1" %}
+      <tr>
+        <td>Image</td>
+        <td><input class="btn btn-default" type="submit" value="Quartier" name="btn_district"></td>
+      </tr>
+    {% endif %}
+  </table>
+</form>

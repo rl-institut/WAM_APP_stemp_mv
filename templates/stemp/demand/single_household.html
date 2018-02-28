@@ -1,0 +1,36 @@
+
+<div id="option"></div>
+<div id="selection"></div>
+
+<script language="JavaScript">
+  $(function() {
+    // Initial call when document is ready
+    load_option({{current_option | default_if_none:"null"}});
+    load_selection({{current_option | default_if_none:"null"}});
+  });
+
+  function load_option(option) {
+    $.ajax(
+      {
+        url : "single_household_option",
+        type : "GET",
+        data: {"current_option": option},
+        success : function(page) {$("#option").html(page);}
+      }
+    )
+  };
+
+  function load_selection(option) {
+    if ( option == null ) {
+      return;
+    }
+    $.ajax(
+      {
+        url : "single_household_selection",
+        type : "GET",
+        data: { current_option: option },
+        success : function(page) {$("#selection").html(page);}
+      }
+    )
+  };
+</script>
