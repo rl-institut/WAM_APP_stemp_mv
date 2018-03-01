@@ -117,8 +117,6 @@ class LoadProfileForm(Form):
 
 
 class HouseholdSelectForm(Form):
-    households = Household.objects.all()
-    choices = [(hh.id, hh.name) for hh in households]
     profile = ModelChoiceField(
         queryset=Household.objects.all(),
         label='Haushalte',
@@ -127,6 +125,15 @@ class HouseholdSelectForm(Form):
             dynamic_url='household_profile/',
             initial=1
         )
+    )
+
+
+class DistrictSelectForm(Form):
+    district = ModelChoiceField(
+        queryset=District.objects.all(),
+        label='Quartier',
+        initial=0,
+        widget=Select()
     )
 
 
