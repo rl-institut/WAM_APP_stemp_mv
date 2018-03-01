@@ -1,6 +1,5 @@
 
 from os import path
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
@@ -9,10 +8,8 @@ from kopy.bookkeeping import simulate_energysystem
 from scenarios import create_energysystem
 
 from .forms import (
-    HouseholdForm, SaveSimulationForm, ComparisonForm, ChoiceForm
+    SaveSimulationForm, ComparisonForm, ChoiceForm
 )
-from stemp.widgets import SelectWithDisabled
-from stemp.views_dynamic import SingleHouseholdView
 from stemp.results import Comparison
 from scenarios import get_scenario_config, get_scenario_input_values
 
@@ -57,7 +54,6 @@ class DemandView(TemplateView):
 
     def get_context_data(self, structure, **kwargs):
         context = super(DemandView, self).get_context_data(**kwargs)
-
         context['current_structure'] = structure
         return context
 

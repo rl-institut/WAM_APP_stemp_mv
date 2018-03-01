@@ -3,7 +3,8 @@ from collections import namedtuple
 from django.views.generic import TemplateView
 
 from stemp.forms import (
-    HouseholdSelectForm, HouseholdForm, DistrictSelectForm, DistrictForm
+    HouseholdSelectForm, HouseholdForm, DistrictSelectForm, DistrictForm,
+    DistrictHouseholdsForm
 )
 from stemp.models import District, Household
 
@@ -136,7 +137,17 @@ class DistrictSelectionView(SelectionView):
 
 
 class DistrictEditingView(TemplateView):
-    pass
+    def get_context_data(self, **kwargs):
+        context = super(DistrictEditingView, self).get_context_data()
+        context['test'] = DistrictHouseholdsForm(
+            {
+                'district': 1,
+                'households': [
+                    (1, 2),
+                    (2, 4)
+                ]
+            }
+        )
 
 
 class HouseholdProfileView(TemplateView):

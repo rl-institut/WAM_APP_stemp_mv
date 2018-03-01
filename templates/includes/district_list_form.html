@@ -1,0 +1,9 @@
+
+<table class="table">
+  {% for field in form %}
+    <tr>
+      <td>{{ field }}</td>
+      <td>{{ field.label }}</td>
+    </tr>
+  {% endfor %}
+</table>
