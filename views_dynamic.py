@@ -1,4 +1,5 @@
 
+from collections import namedtuple
 from django.views.generic import TemplateView
 
 from stemp.forms import (
@@ -21,11 +22,41 @@ class DemandStructureView(TemplateView):
         return self.render_to_response(context)
 
 
+class DistrictView(TemplateView):
+    template_name = 'includes/option_selection.html'
+
+    def get_context_data(self, option, **kwargs):
+        context = super(DistrictView, self).get_context_data(**kwargs)
+        context['option_url'] = 'district_option'
+        context['selection_url'] = 'district_selection'
+        context['current_option'] = option
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(
+            request.GET.get('current_option', ""))
+        return self.render_to_response(context)
+
+    def post(self, request):
+        if "current_option" in request.POST:
+            if request.POST["current_option"] != "":
+                context = self.get_context_data(option=None)
+                return self.render_to_response(context)
+            if "district_load" in request.POST:
+                context = self.get_context_data(option=0)
+                return self.render_to_response(context)
+            if "district_new" in request.POST:
+                context = self.get_context_data(option=1)
+                return self.render_to_response(context)
+
+
 class SingleHouseholdView(TemplateView):
-    template_name = 'stemp/demand/single_household.html'
+    template_name = 'includes/option_selection/option_selection.html'
 
     def get_context_data(self, option, **kwargs):
         context = super(SingleHouseholdView, self).get_context_data(**kwargs)
+        context['option_url'] = 'single_household_option'
+        context['selection_url'] = 'single_household_selection'
         context['current_option'] = option
         return context
 
@@ -52,12 +83,19 @@ class SingleHouseholdView(TemplateView):
 
 
 class SingleHouseholdOptionView(TemplateView):
-    template_name = 'stemp/demand/single_household_option.html'
+    template_name = 'includes/option_selection/option.html'
 
     def get_context_data(self, current_option, **kwargs):
         context = super(SingleHouseholdOptionView, self).get_context_data(
             **kwargs)
+        context['post_to_url'] = 'single_household/'
         context['current_option'] = current_option
+        Option = namedtuple('Option', ['value', 'name', 'image'])
+        context['options'] = [
+            Option('Aus Liste wählen', 'hh_option_list', '<img>'),
+            Option('Mittels Fragen', 'hh_option_questions', '<img>'),
+            Option('Manuell erstellen', 'hh_option_manual', '<img>')
+        ]
         return context
 
     def get(self, request, *args, **kwargs):
@@ -67,23 +105,22 @@ class SingleHouseholdOptionView(TemplateView):
 
 
 class SingleHouseholdSelectionView(TemplateView):
-    template_name = 'stemp/demand/single_household_selection.html'
+    template_name = 'includes/option_selection/selection.html'
 
     def get_context_data(self, option, **kwargs):
         context = super(SingleHouseholdSelectionView, self).get_context_data(
             **kwargs)
         hh_forms = (HouseholdSelectForm, None, HouseholdForm)
-        context['hh_form'] = hh_forms[option]()
+        context['post_to_url'] = 'single_household/'
+        context['form'] = hh_forms[option]()
+        context['value'] = 'Weiter'
+        context['name'] = 'household_selected'
         return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(
             option=int(request.GET.get('current_option', 0)))
         return self.render_to_response(context)
-
-
-class DistrictView(TemplateView):
-    template_name = 'stemp/district.html'
 
 
 class HouseholdProfileView(TemplateView):

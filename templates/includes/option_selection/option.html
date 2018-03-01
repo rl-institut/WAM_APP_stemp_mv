@@ -1,0 +1,18 @@
+
+{% load static %}
+<script src="{% static 'intercooler.js' %}"></script>
+
+<form ic-post-to="{{post_to_url}}"  ic-target="#content">
+  {% csrf_token %}
+  <input type="hidden" name="current_option" value="{{current_option}}">
+  <table>
+    {% for option in options %}
+      {% if current_option == "" or current_option == forloop.counter0|slugify %}
+        <tr>
+          <td>{{option.image}}</td>
+          <td><input class="btn btn-default" type="submit" value="{{option.value}}" name="{{option.name}}"></td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </table>
+</form>

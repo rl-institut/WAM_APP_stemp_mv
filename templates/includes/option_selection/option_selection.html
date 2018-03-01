@@ -12,7 +12,7 @@
   function load_option(option) {
     $.ajax(
       {
-        url : "single_household_option",
+        url : "{{option_url}}",
         type : "GET",
         data: {"current_option": option},
         success : function(page) {$("#option").html(page);}
@@ -26,7 +26,7 @@
     }
     $.ajax(
       {
-        url : "single_household_selection",
+        url : "{{selection_url}}",
         type : "GET",
         data: { current_option: option },
         success : function(page) {$("#selection").html(page);}
