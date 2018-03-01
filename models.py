@@ -130,7 +130,7 @@ class HeatProfile(models.Model, ProfileMixin):
 
 class Household(models.Model):
     name = models.CharField(max_length=255)
-    districts = models.ManyToManyField(District)
+    districts = models.ManyToManyField(District, through='DistrictHouseholds')
     load_demand = models.FloatField(verbose_name='Jährlicher Strombedarf')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
     load_profile = models.ForeignKey(LoadProfile)
@@ -165,6 +165,12 @@ class Household(models.Model):
             }
         )
         return Highchart(df, style, **layout)
+
+
+class DistrictHouseholds(models.Model):
+    district = models.ForeignKey(District)
+    household = models.ForeignKey(Household)
+    amount = models.IntegerField()
 
 
 class OEPScenario(OEPTable):
