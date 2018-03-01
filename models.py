@@ -130,7 +130,7 @@ class HeatProfile(models.Model, ProfileMixin):
 
 class Household(models.Model):
     name = models.CharField(max_length=255)
-    district = models.ForeignKey(District, models.CASCADE, null=True)
+    districts = models.ManyToManyField(District)
     load_demand = models.FloatField(verbose_name='Jährlicher Strombedarf')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
     load_profile = models.ForeignKey(LoadProfile)
@@ -145,7 +145,7 @@ class Household(models.Model):
     }
 
     def __str__(self):
-        text = self.name + ' (Quartier: ' + str(self.district) + ')'
+        text = self.name
         if self.predefined:
             text += ', VORDEFINIERT'
         return text
