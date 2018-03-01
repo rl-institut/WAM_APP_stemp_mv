@@ -7,7 +7,7 @@ from stemp.views import (
 from stemp.views_dynamic import (
     DemandStructureView, SingleHouseholdView, SingleHouseholdOptionView,
     SingleHouseholdSelectionView, HouseholdProfileView, DistrictView,
-    DistrictOptionView, DistrictSelectionView
+    DistrictOptionView, DistrictSelectionView, DistrictEditingView
 )
 
 urlpatterns = [
@@ -32,6 +32,10 @@ urlpatterns = [
     url(
         r'^demand/district_selection/$',
         DistrictSelectionView.as_view(),
+    ),
+    url(
+        r'^demand/district_editing/$',
+        DistrictEditingView.as_view(),
     ),
     url(
         r'^demand/single_household/$',

@@ -10,20 +10,6 @@ from stemp.models import District, Household
 Option = namedtuple('Option', ['value', 'name', 'image'])
 
 
-class DemandStructureView(TemplateView):
-    template_name = 'stemp/demand/demand_structure.html'
-
-    def get_context_data(self, current_structure, **kwargs):
-        context = super(DemandStructureView, self).get_context_data(**kwargs)
-        context['current_structure'] = current_structure
-        return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(
-            request.GET.get('current_structure', ''))
-        return self.render_to_response(context)
-
-
 class OptionSelectionView(TemplateView):
     template_name = 'includes/option_selection/option_selection.html'
     options = None
@@ -68,12 +54,16 @@ class DistrictView(OptionSelectionView):
 
 class OptionView(TemplateView):
     template_name = 'includes/option_selection/option.html'
+    ajax_post = True
+    option_name = 'current_option'
     option_url = None
     options = None
 
     def get_context_data(self, current_option, **kwargs):
         context = super(OptionView, self).get_context_data(
             **kwargs)
+        context['option_name'] = self.option_name
+        context['ajax_post'] = self.ajax_post
         context['current_option'] = current_option
         context['post_to_url'] = self.option_url
         context['options'] = self.options
@@ -81,8 +71,18 @@ class OptionView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(
-            request.GET.get('current_option', ''))
+            request.GET.get(self.option_name, ''))
         return self.render_to_response(context)
+
+
+class DemandStructureView(OptionView):
+    option_url = ''
+    option_name = 'current_structure'
+    ajax_post = False
+    options = [
+        Option('Einzelner Haushalt', 'btn_single', '<img>'),
+        Option('Quartier', 'btn_district', '<img>'),
+    ]
 
 
 class SingleHouseholdOptionView(OptionView):
@@ -133,6 +133,10 @@ class DistrictSelectionView(SelectionView):
     selection_url = 'district/'
     selection_forms = (DistrictSelectForm, DistrictForm)
     selection_name = 'district_selected'
+
+
+class DistrictEditingView(TemplateView):
+    pass
 
 
 class HouseholdProfileView(TemplateView):

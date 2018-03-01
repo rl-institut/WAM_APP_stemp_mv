@@ -2,9 +2,13 @@
 {% load static %}
 <script src="{% static 'intercooler.js' %}"></script>
 
-<form ic-post-to="{{post_to_url}}"  ic-target="#content">
+{% if ajax_post %}
+  <form ic-post-to="{{post_to_url}}"  ic-target="#content">
+{% else %}
+  <form action="{{post_to_url}}"  method="post">
+{% endif %}
   {% csrf_token %}
-  <input type="hidden" name="current_option" value="{{current_option}}">
+  <input type="hidden" name="{{option_name}}" value="{{current_option}}">
   <table>
     {% for option in options %}
       {% if current_option == "" or current_option == forloop.counter0|slugify %}
