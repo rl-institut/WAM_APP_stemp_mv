@@ -155,7 +155,7 @@ class DistrictHouseholdsForm(Form):
         if district_dict is None:
             return
         district_id = district_dict['district']
-        self.district = District.objects.get(pk=district_id).name
+        self.name = District.objects.get(pk=district_id).name
         households = district_dict['households']
         for i, (household_id, amount) in enumerate(households):
             self.fields['hh_' + str(i)] = IntegerField(

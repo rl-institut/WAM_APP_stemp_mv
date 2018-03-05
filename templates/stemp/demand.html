@@ -24,6 +24,7 @@
   });
 
   function load_structure(structure) {
+    alert("load_structure");
     $.ajax(
       {
         url : "structure",
@@ -35,6 +36,7 @@
   };
 
   function load_structure_content(structure) {
+    alert("load_structure_content");
     if ( structure == null ) {
       return;
     }

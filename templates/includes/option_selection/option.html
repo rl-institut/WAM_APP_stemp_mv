@@ -3,7 +3,7 @@
 <script src="{% static 'intercooler.js' %}"></script>
 
 {% if ajax_post %}
-  <form ic-post-to="{{post_to_url}}"  ic-target="#content">
+  <form ic-post-to="{{post_to_url}}" ic-target="#content">
 {% else %}
   <form action="{{post_to_url}}"  method="post">
 {% endif %}

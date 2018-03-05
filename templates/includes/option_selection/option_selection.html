@@ -10,6 +10,7 @@
   });
 
   function load_option(option) {
+    alert("load_option");
     $.ajax(
       {
         url : "{{option_url}}",
@@ -21,6 +22,7 @@
   };
 
   function load_selection(option) {
+    alert("load_selection");
     if ( option == null ) {
       return;
     }

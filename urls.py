@@ -36,6 +36,7 @@ urlpatterns = [
     url(
         r'^demand/district_editing/$',
         DistrictEditingView.as_view(),
+        name='district_editing'
     ),
     url(
         r'^demand/single_household/$',
