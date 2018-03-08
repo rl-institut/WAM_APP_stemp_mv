@@ -6,6 +6,30 @@
 
 {% block content %}
 
+<!-- NAVIGATION -->
+<div class="title-bar" data-responsive-toggle="example-menu" data-hide-for="medium">
+  <button class="menu-icon" type="button" data-toggle="example-menu"></button>
+  <div class="title-bar-title"></div>
+</div>
+
+<div class="top-bar" id="example-menu">
+  <div class="top-bar-left">
+    <ul class="dropdown vertical medium-horizontal menu" data-dropdown-menu>
+      <li><a href="#">Homepage</a></li>
+      <li><a href="#">Was ist das StEmp-Tool?</a></li>
+      <li><a href="#">Neues Szenario berechnen</a></li>
+      <li><a href="#">Gespeicherte Szenarien</a></li>
+    </ul>
+  </div>
+  <div class="top-bar-right">
+    <ul class="vertical medium-horizontal menu">
+      <li><a href="#">Einloggen</a></li>
+      <li><a href="#">Kontakt</a></li>
+    </ul>
+  </div>
+</div>
+<!-- END NAVIGATION -->
+
 <form action="{% url 'stemp:select' %}" method="post">
   {% csrf_token %}
   <div>
