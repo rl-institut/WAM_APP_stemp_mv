@@ -12,47 +12,22 @@
 
 {% block content %}
 
-<div id="structure"></div>
-<div id="content"></div>
-
-<script src="{% static 'jquery.js' %}"></script>
-<script language="JavaScript">
-  $(function() {
-    // Initial call when document is ready
-    load_structure({{current_structure | default_if_none:"null"}});
-    load_structure_content({{current_structure | default_if_none:"null"}});
-  });
-
-  function load_structure(structure) {
-    alert("load_structure");
-    $.ajax(
-      {
-        url : "structure",
-        type : "GET",
-        data: {"current_structure": structure},
-        success : function(page) {$("#structure").html(page);}
-      }
-    )
-  };
-
-  function load_structure_content(structure) {
-    alert("load_structure_content");
-    if ( structure == null ) {
-      return;
-    }
-    if ( structure == 0 ) {
-      var url = "single_household";
-    } else {
-      var url = "district";
-    }
-    $.ajax(
-      {
-        url : url,
-        type : "GET",
-        success : function(page) {$("#content").html(page);}
-      }
-    )
-  };
-</script>
+<div id="options">
+  <form>
+    {% csrf_token %}
+    {% for opt_name, opts in options.items %}
+      {% include "includes/option.html" with option_type=opt_name options=opts %}
+    {% endfor %}
+  </form>
+</div>
+<div id="selection">
+  {% if selection_form %}
+    <form method="post">
+      {% csrf_token %}
+      {{selection_form}}
+      <input type="submit" value="Weiter" name="done">
+    </form>
+  {% endif %}
+</div>
 
 {% endblock %}

@@ -1,5 +1,6 @@
 
 from os import path
+from collections import namedtuple, OrderedDict
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
@@ -8,12 +9,34 @@ from kopy.bookkeeping import simulate_energysystem
 from scenarios import create_energysystem
 
 from .forms import (
-    SaveSimulationForm, ComparisonForm, ChoiceForm
+    SaveSimulationForm, ComparisonForm, ChoiceForm, HouseholdForm,
+    HouseholdSelectForm
 )
 from stemp.results import Comparison
 from scenarios import get_scenario_config, get_scenario_input_values
 
 BASIC_SCENARIO = path.join('scenarios', 'heat_scenario')
+
+Option = namedtuple('Option', ['label', 'value', 'image'])
+demand_options = OrderedDict(
+    [
+        (
+            'structure',
+            [
+                Option('Einzelhaushalt', 'single', '<img>'),
+                Option('Quartier', 'district', '<img>')
+            ]
+        ),
+        (
+            'selection',
+            [
+                Option('Aus einer Liste wählen', 'list', '<img>'),
+                Option('Per Fragen', 'questions', '<img>'),
+                Option('Manuell erstellen', 'new', '<img>')
+            ]
+        )
+    ]
+)
 
 
 def check_session(func):
@@ -52,40 +75,66 @@ class DemandView(TemplateView):
     def __init__(self, **kwargs):
         super(DemandView, self).__init__(**kwargs)
 
-    def get_context_data(self, structure, **kwargs):
+    @staticmethod
+    def __get_single_context(context, data):
+        context['options']['structure'] = [demand_options['structure'][0]]
+        selection = data.get('selection')
+        if selection is None or selection == 'back':
+            context['options']['selection'] = demand_options['selection']
+        elif selection == 'list':
+            context['options']['selection'] = [demand_options['selection'][0]]
+            context['selection_form'] = HouseholdSelectForm()
+        elif selection == 'questions':
+            context['options']['selection'] = [demand_options['selection'][1]]
+        elif selection == 'new':
+            context['options']['selection'] = [demand_options['selection'][2]]
+            context['selection_form'] = HouseholdForm()
+        else:
+            raise ValueError(
+                'Unknown demand selection "' + str(selection) +
+                '" for structure "single"')
+
+    @staticmethod
+    def __get_district_context(context, data):
+        context['options']['structure'] = [demand_options['structure'][1]]
+
+    def get_context_data(self, data, **kwargs):
         context = super(DemandView, self).get_context_data(**kwargs)
-        context['current_structure'] = structure
+        context['options'] = OrderedDict()
+
+        structure = data.get('structure')
+        if structure is None or structure == 'back':
+            # First choose between single and district:
+            context['options']['structure'] = demand_options['structure']
+        elif structure == 'single':
+            self.__get_single_context(context, data)
+        elif structure == 'district':
+            self.__get_district_context(context, data)
+        else:
+            raise ValueError(
+                'Unknown demand structure "' + str(structure) + '"')
         return context
 
     @check_session
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(request.GET.get("structure", None))
+        data = request.GET
+        context = self.get_context_data(data)
         return self.render_to_response(context)
 
     @check_session
     def post(self, request, session):
-        if "current_structure" in request.POST:
-            if request.POST["current_structure"] != "":
-                context = self.get_context_data(structure=None)
-                return self.render_to_response(context)
-            else:
-                if "btn_single" in request.POST:
-                    context = self.get_context_data(structure=0)
-                    return self.render_to_response(context)
-                elif "btn_district" in request.POST:
-                    context = self.get_context_data(structure=1)
-                    return self.render_to_response(context)
-        else:
-            customer_dict = {}
-            if int(request.POST['single_district_switch']) == 2:
-                customer_dict['customer_index'] = 1  # FIXME: Hardcoded
-                customer_dict['customer_case'] = 'district'
-            else:
-                customer_dict['customer_index'] = request.POST['profile']
-                customer_dict['customer_case'] = 'single'
+        customer_dict = {}
+        customer_dict['customer_index'] = 1  # FIXME: Hardcoded
+        customer_dict['customer_case'] = 'district'
+        # if int(request.POST['single_district_switch']) == 2:
+        #     customer_dict['customer_index'] = 1  # FIXME: Hardcoded
+        #     customer_dict['customer_case'] = 'district'
+        # else:
+        #     customer_dict['customer_index'] = request.POST['profile']
+        #     customer_dict['customer_case'] = 'single'
 
-            session.parameter = customer_dict
-            return redirect('stemp:technology')
+        session.parameter = customer_dict
+        return redirect('stemp:technology')
 
 
 class TechnologyView(TemplateView):

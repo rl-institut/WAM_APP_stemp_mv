@@ -5,9 +5,7 @@ from stemp.views import (
     TechnologyView
 )
 from stemp.views_dynamic import (
-    DemandStructureView, SingleHouseholdView, SingleHouseholdOptionView,
-    SingleHouseholdSelectionView, HouseholdProfileView, DistrictView,
-    DistrictOptionView, DistrictSelectionView, DistrictEditingView
+    HouseholdProfileView, DistrictEditingView
 )
 
 urlpatterns = [
@@ -18,37 +16,9 @@ urlpatterns = [
     url(r'^result/$', ResultView.as_view(), name='result'),
     url(r'^comparison/$', ComparisonView.as_view(), name='comparison'),
     url(
-        r'^demand/structure/$',
-        DemandStructureView.as_view(),
-    ),
-    url(
-        r'^demand/district/$',
-        DistrictView.as_view(),
-    ),
-    url(
-        r'^demand/district_option/$',
-        DistrictOptionView.as_view(),
-    ),
-    url(
-        r'^demand/district_selection/$',
-        DistrictSelectionView.as_view(),
-    ),
-    url(
         r'^demand/district_editing/$',
         DistrictEditingView.as_view(),
         name='district_editing'
-    ),
-    url(
-        r'^demand/single_household/$',
-        SingleHouseholdView.as_view(),
-    ),
-    url(
-        r'^demand/single_household_option/$',
-        SingleHouseholdOptionView.as_view(),
-    ),
-    url(
-        r'^demand/single_household_selection/$',
-        SingleHouseholdSelectionView.as_view(),
     ),
     url(
         r'^demand/household_profile/$',
