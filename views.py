@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 
 from kopy.settings import SESSION_DATA
 from kopy.bookkeeping import simulate_energysystem
+from stemp.models import OEPScenario
 from scenarios import create_energysystem
 
 from .forms import (
@@ -174,6 +175,13 @@ class TechnologyView(TemplateView):
                 **session.parameter
             )
             session.energysystem = energysystem
+
+            # Load default parameters:
+            oep_scenario = OEPScenario.select_scenario('heat_scenario')
+            if oep_scenario is not None:
+                session.parameter['input_parameters'] = oep_scenario['data']
+
+            # TODO: Check if results already exist
             simulate_energysystem(request)
             return redirect('stemp:result')
         else:
@@ -188,7 +196,13 @@ class ParameterView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ParameterView, self).get_context_data(**kwargs)
-        context['scenario_input'] = get_scenario_input_values('heat_scenario')
+
+        # Get data from OEP:
+        oep_scenario = OEPScenario.select_scenario('heat_scenario')
+        if oep_scenario is not None:
+            context['scenario_input'] = get_scenario_input_values(
+                oep_scenario['data'])
+
         return context
 
     @check_session
