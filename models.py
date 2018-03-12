@@ -11,6 +11,7 @@ from highcharts import Highchart
 
 class Result(models.Model):
     data = JSONField()
+    date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.__class__.__name__ + '#' + str(self.id)
@@ -39,13 +40,12 @@ class Scenario(models.Model):
 
 
 class Simulation(models.Model):
-    name = models.CharField(max_length=255)
-    date = models.DateTimeField(default=timezone.now)
+    name = models.CharField(max_length=255, null=True)
 
     scenario = models.ForeignKey(Scenario)
     parameter = models.ForeignKey(Parameter)
     setup = models.ForeignKey(Setup)
-    result = models.ForeignKey(Result, blank=True, null=True)
+    result = models.ForeignKey(Result)
 
     def __str__(self):
         ids = map(
