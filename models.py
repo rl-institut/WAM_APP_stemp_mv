@@ -1,5 +1,6 @@
 
 import pandas
+from django.utils import timezone
 
 from db_apps.oep import OEPTable
 from django.db import models
@@ -31,6 +32,7 @@ class Parameter(models.Model):
 
 class Scenario(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    last_change = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
@@ -38,6 +40,7 @@ class Scenario(models.Model):
 
 class Simulation(models.Model):
     name = models.CharField(max_length=255)
+    date = models.DateTimeField(default=timezone.now)
 
     scenario = models.ForeignKey(Scenario)
     parameter = models.ForeignKey(Parameter)
