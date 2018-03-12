@@ -205,3 +205,12 @@ class OEPScenario(OEPTable):
             ]
         }
     }
+
+    @classmethod
+    def select_scenario(cls, scenario_name):
+        where = '?where=name=' + scenario_name
+        scenario = super(OEPScenario, cls).select(where)
+        if scenario:
+            return scenario[0]
+        else:
+            return None
