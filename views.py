@@ -7,13 +7,14 @@ from django.views.generic import TemplateView
 from kopy.settings import SESSION_DATA
 from kopy.bookkeeping import simulate_energysystem
 from stemp.models import OEPScenario
+from stemp.results import Results
 from scenarios import create_energysystem
 
 from .forms import (
     SaveSimulationForm, ComparisonForm, ChoiceForm, HouseholdForm,
     HouseholdSelectForm
 )
-from stemp.results import Comparison, Results
+from stemp.results import Comparison
 from scenarios import get_scenario_config, get_scenario_input_values
 
 BASIC_SCENARIO = path.join('scenarios', 'heat_scenario')
@@ -169,20 +170,25 @@ class TechnologyView(TemplateView):
         technology = request.POST['technology']
         session.parameter['technology'] = technology
         if 'continue' in request.POST:
-            session.import_scenario_module()
-            energysystem = create_energysystem(
-                session.scenario_module,
-                **session.parameter
-            )
-            session.energysystem = energysystem
-
             # Load default parameters:
             oep_scenario = OEPScenario.select_scenario('heat_scenario')
             if oep_scenario is not None:
                 session.parameter['input_parameters'] = oep_scenario['data']
 
-            # TODO: Check if results already exist
-            simulate_energysystem(request)
+            # Check if results already exist:
+            result = session.check_for_result()
+            if result is not None:
+                session.load_result(result)
+            else:
+                session.import_scenario_module()
+                energysystem = create_energysystem(
+                    session.scenario_module,
+                    **session.parameter
+                )
+                session.energysystem = energysystem
+                result, param_result = simulate_energysystem(request)
+                session.result = Results(result, param_result)
+                session.store_simulation()
             return redirect('stemp:result')
         else:
             return redirect('stemp:parameter')
