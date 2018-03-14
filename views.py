@@ -4,8 +4,10 @@ from collections import namedtuple, OrderedDict
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
-from kopy.settings import SESSION_DATA
+from kopy.settings import SESSION_DATA, SqlAlchemySession
 from kopy.bookkeeping import simulate_energysystem
+from db_apps.oemof_results import (
+    store_results, restore_results, OemofInputResult)
 from stemp.models import OEPScenario
 from stemp.results import Results
 from scenarios import create_energysystem
@@ -187,6 +189,13 @@ class TechnologyView(TemplateView):
                 )
                 session.energysystem = energysystem
                 result, param_result = simulate_energysystem(request)
+
+                sa_session = SqlAlchemySession()
+                store_results(sa_session, param_result, result)
+                input_result = sa_session.query(OemofInputResult).first()
+                input_data, result_data = restore_results(input_result)
+                sa_session.close()
+
                 session.result = Results(result, param_result)
                 session.store_simulation()
             return redirect('stemp:result')
