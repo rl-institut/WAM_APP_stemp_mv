@@ -13,7 +13,7 @@ from .forms import (
     SaveSimulationForm, ComparisonForm, ChoiceForm, HouseholdForm,
     HouseholdSelectForm
 )
-from stemp.results import Comparison
+from stemp.results import Comparison, Results
 from scenarios import get_scenario_config, get_scenario_input_values
 
 BASIC_SCENARIO = path.join('scenarios', 'heat_scenario')
@@ -222,7 +222,9 @@ class ParameterView(TemplateView):
             **session.parameter
         )
         session.energysystem = energysystem
-        simulate_energysystem(request)
+        result, param_result = simulate_energysystem(request)
+        session.result = Results(result, param_result)
+        session.store_simulation()
         return redirect('stemp:result')
 
 
@@ -232,22 +234,18 @@ class ResultView(TemplateView):
     def __init__(self, **kwargs):
         super(ResultView, self).__init__(**kwargs)
 
-    def get_context_data(self, result, result_config, **kwargs):
+    def get_context_data(self, result, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
-
         context['save'] = SaveSimulationForm()
-
-        result.create_visualization_data(result_config)
         context['visualizations'] = result.get_visualizations()
         return context
 
     @check_session
     def get(self, request, *args, **kwargs):
-        scenario = kwargs['session'].scenario
-        result_config = get_scenario_config(scenario).get('results')
-        result = kwargs['session'].result
-
-        context = self.get_context_data(result, result_config)
+        session = kwargs['session']
+        result_config = get_scenario_config(session.scenario).get('results')
+        session.result.create_visualization_data(result_config)
+        context = self.get_context_data(session.result)
         return self.render_to_response(context)
 
     @check_session

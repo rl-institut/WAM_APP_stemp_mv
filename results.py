@@ -84,6 +84,27 @@ DEFAULT_VISUALIZATIONS = {
 }
 
 
+def oemof_result_to_json(data):
+    json_results = {}
+    for key, value in data.items():
+        if isinstance(key, tuple):
+            new_key = ','.join(key)
+        else:
+            new_key = key
+
+        if isinstance(value, dict):
+            value = oemof_result_to_json(value)
+        if (
+                isinstance(value, pandas.Series) or
+                isinstance(value, pandas.DataFrame)
+        ):
+            new_value = value.to_json()
+        else:
+            new_value = value
+        json_results[new_key] = new_value
+    return json_results
+
+
 class Results(object):
     def __init__(self, results=None, param_results=None):
         self.results = processing.convert_keys_to_strings(results)

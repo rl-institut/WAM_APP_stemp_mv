@@ -10,7 +10,8 @@ from highcharts import Highchart
 
 
 class Result(models.Model):
-    data = JSONField()
+    result = JSONField()
+    param_result = JSONField()
     date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -40,8 +41,6 @@ class Scenario(models.Model):
 
 
 class Simulation(models.Model):
-    name = models.CharField(max_length=255, null=True)
-
     scenario = models.ForeignKey(Scenario)
     parameter = models.ForeignKey(Parameter)
     setup = models.ForeignKey(Setup)
@@ -52,7 +51,7 @@ class Simulation(models.Model):
             str,
             [self.scenario, self.parameter, self.setup, self.result]
         )
-        return self.name + ' (' + ','.join(ids) + ')'
+        return '(' + ','.join(ids) + ')'
 
 
 class District(models.Model):
