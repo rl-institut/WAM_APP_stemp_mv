@@ -2,13 +2,10 @@
 
 {% load staticfiles %}
 
-{% block submenu %}
-{% include "includes/submenu.html" with current_menu="select"%}
-{% endblock %}
-
 {% block content %}
-
 <div class="l-bg-color u-vh-100">
+
+  {% include "includes/submenu.html" with current_menu="select"%}
 
   <div class="grid-container hp-wrapper">
     <div class="grid-x">
@@ -30,15 +27,6 @@
           </div>
         </div>
       </div>
-
-      <div class="cell u-text-center">
-        <a href="about.html" class="button cta">Neues Szenario erstellen</a>
-      </div>
-      <div class="cell u-text-center">
-        <a href="about.html" class="button">Einloggen</a>
-      </div>
-
-
 
       <!-- BUTTONS START -->
       <div class="cell u-text-center">

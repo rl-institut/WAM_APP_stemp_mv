@@ -7,11 +7,9 @@
 <script src="{% static 'highcharts.js' %}"></script>
 {% endblock %}
 
-{% block submenu %}
-{% include "includes/submenu.html" with current_menu="comparison"%}
-{% endblock %}
-
 {% block content %}
+
+{% include "includes/submenu.html" with current_menu="comparison"%}
 
 <form action="{% url 'stemp:comparison' %}" method="post">
     {% csrf_token %}

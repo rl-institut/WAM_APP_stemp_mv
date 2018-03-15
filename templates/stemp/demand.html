@@ -6,11 +6,9 @@
 <script src="{% static 'highcharts.js' %}"></script>
 {% endblock %}
 
-{% block submenu %}
-{% include "includes/submenu.html" with current_menu="demand"%}
-{% endblock %}
-
 {% block content %}
+
+{% include "includes/submenu.html" with current_menu="demand"%}
 
 <div id="options">
   <form>
