@@ -59,19 +59,6 @@ class SelectView(TemplateView):
     def __init__(self, **kwargs):
         super(SelectView, self).__init__(**kwargs)
 
-    @staticmethod
-    def post(request):
-        if 'new' in request.POST:
-            # Start session (if no session yet):
-            SESSION_DATA.start_session(request)
-
-            # Set scenario in session
-            SESSION_DATA.get_session(request).scenario = BASIC_SCENARIO
-
-            return redirect('stemp:demand')
-        else:
-            return redirect('stemp:comparison')
-
 
 class DemandView(TemplateView):
     template_name = 'stemp/demand.html'
@@ -119,8 +106,13 @@ class DemandView(TemplateView):
                 'Unknown demand structure "' + str(structure) + '"')
         return context
 
-    @check_session
     def get(self, request, *args, **kwargs):
+        # Start session (if no session yet):
+        SESSION_DATA.start_session(request)
+
+        # Set scenario in session
+        SESSION_DATA.get_session(request).scenario = BASIC_SCENARIO
+
         data = request.GET
         context = self.get_context_data(data)
         return self.render_to_response(context)

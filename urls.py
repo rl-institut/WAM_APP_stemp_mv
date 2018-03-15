@@ -1,5 +1,6 @@
 
 from django.conf.urls import url
+from django.views.generic.base import TemplateView
 from stemp.views import (
     SelectView, ResultView, ParameterView, ComparisonView, DemandView,
     TechnologyView
@@ -9,6 +10,7 @@ from stemp.views_dynamic import (
 )
 
 urlpatterns = [
+    url(r'^home/$', TemplateView.as_view(template_name='stemp/homepage.html'), name='home'),
     url(r'^select/$', SelectView.as_view(), name='select'),
     url(r'^demand/$', DemandView.as_view(), name='demand'),
     url(r'^technology/$', TechnologyView.as_view(), name='technology'),
