@@ -6,8 +6,7 @@ from django.views.generic import TemplateView
 
 from kopy.settings import SESSION_DATA, SqlAlchemySession
 from kopy.bookkeeping import simulate_energysystem
-from db_apps.oemof_results import (
-    store_results, restore_results, OemofInputResult)
+from db_apps.oemof_results import store_results
 from stemp.models import OEPScenario
 from stemp.results import Results
 from scenarios import create_energysystem
