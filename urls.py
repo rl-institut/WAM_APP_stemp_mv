@@ -5,7 +5,9 @@ from stemp.views import (
     SelectView, ResultView, ParameterView, ComparisonView, DemandView,
     TechnologyView
 )
-from stemp.views_dynamic import SingleHouseholdView, HouseholdProfileView
+from stemp.views_dynamic import (
+    HouseholdProfileView, DistrictEditingView
+)
 
 urlpatterns = [
     url(r'^home/$', TemplateView.as_view(template_name='stemp/homepage.html'), name='home'),
@@ -16,8 +18,9 @@ urlpatterns = [
     url(r'^result/$', ResultView.as_view(), name='result'),
     url(r'^comparison/$', ComparisonView.as_view(), name='comparison'),
     url(
-        r'^demand/single_household/$',
-        SingleHouseholdView.as_view(),
+        r'^demand/district_editing/$',
+        DistrictEditingView.as_view(),
+        name='district_editing'
     ),
     url(
         r'^demand/household_profile/$',

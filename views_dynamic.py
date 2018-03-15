@@ -2,65 +2,35 @@
 from django.views.generic import TemplateView
 
 from stemp.forms import (
-    HouseholdSelectForm, DistrictForm, HouseholdForm, ChoiceForm
+    HouseholdSelectForm, DistrictHouseholdsForm
 )
-from stemp.widgets import SelectWithDisabled
 from stemp.models import District, Household
 
 
-class SwitchLoadView(TemplateView):
-    template_name = 'stemp/load_switch.html'
+class DistrictEditingView(TemplateView):
+    template_name = 'stemp/demand_editing.html'
 
-    def get_context_data(self, switch, **kwargs):
-        context = super(SwitchLoadView, self).get_context_data(**kwargs)
-        if switch == 0:
-            context['is_graph'] = False
-            context['load'] = HouseholdSelectForm()
-        else:
-            context['is_graph'] = True
-            dist = District.objects.get(id=1)
-            hc = dist.as_highchart()
-            context['load'] = hc.render('load_graph')
-        return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(int(
-            request.GET.get('choice', 0)))
-        return self.render_to_response(context)
-
-
-class SingleHouseholdView(TemplateView):
-    template_name = 'stemp/single_household.html'
-
-    def get_context_data(self, initial=0, **kwargs):
-        context = super(SingleHouseholdView, self).get_context_data(**kwargs)
-        context['household_switch'] = ChoiceForm(
-            'household_switch',
-            'Wie möchtest du einen Haushalt auswählen?',
-            [
-                (0, {'label': 'Auswahl', 'disabled': True}),
-                (1, 'Aus einer Liste wählen'),
-                (2, 'Mittels Fragen'),
-                (3, 'Von Hand erstellen')
-            ],
-            initial=initial,
-            submit_on_change=False,
-            widget=SelectWithDisabled
+    def get_context_data(self, district_id, **kwargs):
+        context = super(DistrictEditingView, self).get_context_data()
+        context['district'] = DistrictHouseholdsForm(
+            {
+                'district': district_id,
+                'households': [
+                    (1, 2),
+                    (2, 4)
+                ]
+            }
         )
-        context['hh_select'] = HouseholdSelectForm()
-        context['hh_tree'] = ''
-        context['hh_form'] = HouseholdForm()
         return context
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
+        district_id = request.GET.get('district', 1)
+        context = self.get_context_data(district_id, **kwargs)
         return self.render_to_response(context)
 
     def post(self, request):
-        hh_form = HouseholdForm(request.POST)
-        household = hh_form.save(commit=False)
-        household.save()
-        context = self.get_context_data(initial=1)
+        district_id = request.POST.get('district', 1)
+        context = self.get_context_data(district_id)
         return self.render_to_response(context)
 
 
@@ -81,4 +51,25 @@ class HouseholdProfileView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(int(
             request.GET.get('choice', 1)))
+        return self.render_to_response(context)
+
+
+class SwitchLoadView(TemplateView):
+    template_name = 'stemp/load_switch.html'
+
+    def get_context_data(self, switch, **kwargs):
+        context = super(SwitchLoadView, self).get_context_data(**kwargs)
+        if switch == 0:
+            context['is_graph'] = False
+            context['load'] = HouseholdSelectForm()
+        else:
+            context['is_graph'] = True
+            dist = District.objects.get(id=1)
+            hc = dist.as_highchart()
+            context['load'] = hc.render('load_graph')
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(int(
+            request.GET.get('choice', 0)))
         return self.render_to_response(context)

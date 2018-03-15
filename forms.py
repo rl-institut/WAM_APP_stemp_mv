@@ -117,8 +117,6 @@ class LoadProfileForm(Form):
 
 
 class HouseholdSelectForm(Form):
-    households = Household.objects.all()
-    choices = [(hh.id, hh.name) for hh in households]
     profile = ModelChoiceField(
         queryset=Household.objects.all(),
         label='Haushalte',
@@ -127,6 +125,15 @@ class HouseholdSelectForm(Form):
             dynamic_url='household_profile/',
             initial=1
         )
+    )
+
+
+class DistrictSelectForm(Form):
+    district = ModelChoiceField(
+        queryset=District.objects.all(),
+        label='Quartier',
+        initial=0,
+        widget=Select()
     )
 
 
@@ -140,6 +147,22 @@ class DynamicChoiceForm(Form):
             widget=DynamicRadioWidget(
                 dynamic_url=dynamic_url, initial=initial, **kwargs)
         )
+
+
+class DistrictHouseholdsForm(Form):
+    def __init__(self, district_dict=None):
+        super(DistrictHouseholdsForm, self).__init__()
+        if district_dict is None:
+            return
+        district_id = district_dict['district']
+        self.name = District.objects.get(pk=district_id).name
+        households = district_dict['households']
+        for i, (household_id, amount) in enumerate(households):
+            self.fields['hh_' + str(i)] = IntegerField(
+                initial=amount,
+                label=Household.objects.get(pk=household_id).name,
+                min_value=0
+            )
 
 
 class SaveSimulationForm(Form):

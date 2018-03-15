@@ -1,0 +1,10 @@
+
+<h2>{{district.name}}</h2>
+<table class="table">
+  {% for field in district %}
+    <tr>
+      <td>{{ field }}</td>
+      <td>{{ field.label }}</td>
+    </tr>
+  {% endfor %}
+</table>

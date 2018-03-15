@@ -12,93 +12,22 @@
 
 {% block content %}
 
-<!-- NAVIGATION -->
-<div class="title-bar" data-responsive-toggle="stemp-menu" data-hide-for="medium">
-  <button class="menu-icon" type="button" data-toggle="stemp-menu"></button>
-  <div class="title-bar-title">Menu</div>
+<div id="options">
+  <form>
+    {% csrf_token %}
+    {% for opt_name, opts in options.items %}
+      {% include "includes/option.html" with option_type=opt_name options=opts %}
+    {% endfor %}
+  </form>
 </div>
-
-<div class="top-bar" id="stemp-menu">
-  <div class="top-bar-left">
-    <ul class="dropdown vertical medium-horizontal menu" data-dropdown-menu>
-      <li><a href="#">Homepage</a></li>
-      <li><a href="#">Was ist das StEmp-Tool?</a></li>
-      <li><a href="#">Neues Szenario berechnen</a></li>
-      <li><a href="#">Gespeicherte Szenarien</a></li>
-    </ul>
-  </div>
-  <div class="top-bar-right">
-    <ul class="vertical medium-horizontal menu">
-      <li><a href="#">Einloggen</a></li>
-      <li><a href="#">Kontakt</a></li>
-    </ul>
-  </div>
+<div id="selection">
+  {% if selection_form %}
+    <form method="post">
+      {% csrf_token %}
+      {{selection_form}}
+      <input type="submit" value="Weiter" name="done">
+    </form>
+  {% endif %}
 </div>
-<!-- END NAVIGATION -->
-
-<div class="grid-container">
-  <div class="grid-x grid-margin-x align-center">
-    <div id="cell medium-8 large-6 align-center">
-      <form action="{% url 'stemp:demand' %}" method="post">
-        {% csrf_token %}
-        {{single_district_switch}}
-        <div id="single">
-          Single
-        </div>
-        <div id="district">
-          District
-        </div>
-        <input class="btn btn--submit" type="submit" value="Weiter" name="continue">
-      </form>
-    </div>
-  </div>
-</div>
-
-
-<!--
-<form action="{% url 'stemp:demand' %}" method="post">
-  {% csrf_token %}
-  {{single_district_switch}}
-  <div id="single">
-    Single
-  </div>
-  <div id="district">
-    District
-  </div>
-  <input class="btn btn--submit" type="submit" value="Weiter" name="continue">
-</form>
--->
-
-<script src="{% static 'jquery.js' %}"></script>
-<script src="{% static 'helpers.js' %}"></script>
-<script language="JavaScript">
-  $(function() {
-    // Initial call when document is ready
-    toggle_divs(
-      [null, $("#single"), $("#district")],
-      $("#id_single_district_switch").val()
-    );
-    if ( $("#id_single_district_switch").val() == 1 ) {
-      load_single_household()
-    }
-  });
-
-  $("#id_single_district_switch").change(function() {
-    toggle_divs([null, $("#single"), $("#district")], $(this).val());
-    if ( $(this).val() == 1 ) {
-      load_single_household()
-    }
-  });
-
-  function load_single_household() {
-    $.ajax(
-      {
-        url : "single_household",
-        type : "GET",
-        success : function(page) {$("#single").html(page);}
-      }
-    )
-  };
-</script>
 
 {% endblock %}
