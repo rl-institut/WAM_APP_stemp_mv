@@ -107,13 +107,20 @@ def oemof_result_to_json(data):
 
 class Results(object):
     def __init__(self, results=None, param_results=None):
-        self.results = processing.convert_keys_to_strings(results)
-        self.param_results = processing.convert_keys_to_strings(param_results)
+        self.results = self.__results_with_str_keys(results)
+        self.param_results = self.__results_with_str_keys(param_results)
         self.cost_results = economics.cost_results(self.results, param_results)
         self.visualizations = {}
         self.node_results = {}
         self.node_flows = {}
         self.json = {}
+
+    @staticmethod
+    def __results_with_str_keys(result):
+        if isinstance(next(iter(result.keys()))[0], str):
+            return result
+        else:
+            return processing.convert_keys_to_strings(result)
 
     def add_visualization(self, name, visualization):
         if isinstance(visualization, VisualizationMeta):

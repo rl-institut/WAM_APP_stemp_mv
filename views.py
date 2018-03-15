@@ -178,9 +178,9 @@ class TechnologyView(TemplateView):
                 session.parameter['input_parameters'] = oep_scenario['data']
 
             # Check if results already exist:
-            result = session.check_for_result()
-            if result is not None:
-                session.load_result(result)
+            result_id = session.check_for_result()
+            if result_id is not None:
+                session.load_result(result_id)
             else:
                 session.import_scenario_module()
                 energysystem = create_energysystem(
@@ -192,8 +192,6 @@ class TechnologyView(TemplateView):
 
                 sa_session = SqlAlchemySession()
                 store_results(sa_session, param_result, result)
-                input_result = sa_session.query(OemofInputResult).first()
-                input_data, result_data = restore_results(input_result)
                 sa_session.close()
 
                 session.result = Results(result, param_result)
