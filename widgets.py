@@ -1,6 +1,6 @@
 
 import warnings
-from django.forms import Select, RadioSelect
+from django.forms import Select, RadioSelect, Widget, Field
 
 
 class DynamicWidgetMixin(object):
@@ -133,3 +133,7 @@ class SelectWithDisabled(Select):
         if disabled:
             option_dict['attrs']['disabled'] = 'disabled'
         return option_dict
+
+
+class HouseholdWidget(Widget):
+    template_name = 'widgets/district_household.html'

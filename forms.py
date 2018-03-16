@@ -4,6 +4,7 @@ from django.forms import (
     Form, ChoiceField, IntegerField, FloatField, Select, CharField,
     MultipleChoiceField, CheckboxSelectMultiple, ModelForm, ModelChoiceField)
 
+from stemp.fields import HouseholdField
 from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget
 from stemp.models import LoadProfile, Household, Simulation, District
 
@@ -182,6 +183,37 @@ class ComparisonForm(Form):
             initial=initial,
             widget=CheckboxSelectMultiple
         )
+
+
+class DistrictListForm(Form):
+    def __init__(self, hh_dict):
+        super(DistrictListForm, self).__init__()
+        if hh_dict is not None:
+            for household, count in hh_dict.items():
+                self.fields[household] = HouseholdField(household, count)
+
+    def as_table(self):
+        return self._html_output(
+            normal_row=(
+                '<tr%(html_class_attr)s>'
+                '%(errors)s%(field)s%(help_text)s'
+                '</tr>'
+            ),
+            error_row='<tr><td colspan="2">%s</td></tr>',
+            row_ender='</td></tr>',
+            help_text_html='<br /><span class="helptext">%s</span>',
+            errors_on_separate_row=False
+        )
+
+    def _html_output(self, normal_row, error_row, row_ender, help_text_html,
+                     errors_on_separate_row):
+        if len(self.fields) == 0:
+            return 'Noch keine Haushalte im Quartier'
+        else:
+            return super(DistrictListForm, self)._html_output(
+                normal_row, error_row, row_ender, help_text_html,
+                errors_on_separate_row
+            )
 
 
 class HouseholdForm(ModelForm):

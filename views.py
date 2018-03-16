@@ -13,7 +13,7 @@ from scenarios import create_energysystem
 
 from .forms import (
     SaveSimulationForm, ComparisonForm, ChoiceForm, HouseholdForm,
-    HouseholdSelectForm
+    HouseholdSelectForm, DistrictListForm
 )
 from stemp.results import Comparison
 from scenarios import get_scenario_config, get_scenario_input_values
@@ -87,6 +87,7 @@ class DemandView(TemplateView):
     @staticmethod
     def __get_district_context(context, data):
         context['options']['structure'] = [demand_options['structure'][1]]
+        context['selection_form'] = DistrictListForm(data.get('hh_dict'))
 
     def get_context_data(self, data, **kwargs):
         context = super(DemandView, self).get_context_data(**kwargs)
@@ -118,18 +119,31 @@ class DemandView(TemplateView):
 
     @check_session
     def post(self, request, session):
-        customer_dict = {}
-        customer_dict['customer_index'] = 1  # FIXME: Hardcoded
-        customer_dict['customer_case'] = 'district'
-        # if int(request.POST['single_district_switch']) == 2:
-        #     customer_dict['customer_index'] = 1  # FIXME: Hardcoded
-        #     customer_dict['customer_case'] = 'district'
-        # else:
-        #     customer_dict['customer_index'] = request.POST['profile']
-        #     customer_dict['customer_case'] = 'single'
+        if 'trash' in request.POST:
+            trash = request.POST['trash']
+            hh_dict = {
+                hh: count
+                for hh, count in request.POST.items()
+                if hh not in ('csrfmiddlewaretoken', 'trash', trash)
+            }
+            data = {'structure': 'district', 'hh_dict': hh_dict}
+            context = self.get_context_data(data)
+            return self.render_to_response(context)
+        elif 'add_household' in request.POST:
+            pass
+        else:
+            customer_dict = {}
+            customer_dict['customer_index'] = 1  # FIXME: Hardcoded
+            customer_dict['customer_case'] = 'district'
+            # if int(request.POST['single_district_switch']) == 2:
+            #     customer_dict['customer_index'] = 1  # FIXME: Hardcoded
+            #     customer_dict['customer_case'] = 'district'
+            # else:
+            #     customer_dict['customer_index'] = request.POST['profile']
+            #     customer_dict['customer_case'] = 'single'
 
-        session.parameter = customer_dict
-        return redirect('stemp:technology')
+            session.parameter = customer_dict
+            return redirect('stemp:technology')
 
 
 class TechnologyView(TemplateView):

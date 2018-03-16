@@ -24,7 +24,9 @@
   {% if selection_form %}
     <form method="post">
       {% csrf_token %}
-      {{selection_form}}
+      <table>
+        {{selection_form}}
+      </table>
       <input type="submit" value="Weiter" name="done">
     </form>
   {% endif %}
