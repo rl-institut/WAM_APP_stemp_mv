@@ -1,6 +1,6 @@
 
 from django.forms import Field
-from stemp.widgets import HouseholdWidget
+from stemp.widgets import HouseholdWidget, SubmitWidget
 
 
 class HouseholdField(Field):
@@ -19,5 +19,13 @@ class HouseholdField(Field):
         """
         return {
             'hh_name': self.hh_name,
-            'count': self.count
+            'count': self.count,
         }
+
+
+class SubmitField(Field):
+    """From https://djangosnippets.org/snippets/2312/"""
+    widget = SubmitWidget
+
+    # def clean(self, value):
+    #     return value

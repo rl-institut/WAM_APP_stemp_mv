@@ -4,7 +4,7 @@ from django.forms import (
     Form, ChoiceField, IntegerField, FloatField, Select, CharField,
     MultipleChoiceField, CheckboxSelectMultiple, ModelForm, ModelChoiceField)
 
-from stemp.fields import HouseholdField
+from stemp.fields import HouseholdField, SubmitField
 from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget
 from stemp.models import LoadProfile, Household, Simulation, District
 
@@ -190,7 +190,12 @@ class DistrictListForm(Form):
         super(DistrictListForm, self).__init__()
         if hh_dict is not None:
             for household, count in hh_dict.items():
-                self.fields[household] = HouseholdField(household, count)
+                self.fields[household] = HouseholdField(
+                    household, count)
+        self.fields['add_household'] = SubmitField(
+            label="",
+            initial='Haushalt hinzufügen'
+        )
 
     def as_table(self):
         return self._html_output(
@@ -208,7 +213,7 @@ class DistrictListForm(Form):
     def _html_output(self, normal_row, error_row, row_ender, help_text_html,
                      errors_on_separate_row):
         if len(self.fields) == 0:
-            return 'Noch keine Haushalte im Quartier'
+            return '<tr><td>Noch keine Haushalte im Quartier</td></tr>'
         else:
             return super(DistrictListForm, self)._html_output(
                 normal_row, error_row, row_ender, help_text_html,

@@ -87,7 +87,14 @@ class DemandView(TemplateView):
     @staticmethod
     def __get_district_context(context, data):
         context['options']['structure'] = [demand_options['structure'][1]]
-        context['selection_form'] = DistrictListForm(data.get('hh_dict'))
+        selection = data.get('selection')
+        if selection is 'add_household':
+            context['options']['selection'] = demand_options['selection']
+        else:
+            # FIXME: Remove Testdata
+            test_data = {'a': 2, 'b': 4, 'c': 5}
+            context['selection_form'] = DistrictListForm(
+                data.get('hh_dict', test_data))
 
     def get_context_data(self, data, **kwargs):
         context = super(DemandView, self).get_context_data(**kwargs)
@@ -119,18 +126,25 @@ class DemandView(TemplateView):
 
     @check_session
     def post(self, request, session):
+        hh_dict = {
+            hh: count
+            for hh, count in request.POST.items()
+            if hh not in ('csrfmiddlewaretoken', 'trash')
+        }
         if 'trash' in request.POST:
             trash = request.POST['trash']
-            hh_dict = {
-                hh: count
-                for hh, count in request.POST.items()
-                if hh not in ('csrfmiddlewaretoken', 'trash', trash)
-            }
+            del hh_dict[trash]
             data = {'structure': 'district', 'hh_dict': hh_dict}
             context = self.get_context_data(data)
             return self.render_to_response(context)
         elif 'add_household' in request.POST:
-            pass
+            hh_dict.pop('add_household')
+            data = {
+                'structure': 'district',
+                'selection': 'add_household',
+            }
+            context = self.get_context_data(data)
+            return self.render_to_response(context)
         else:
             customer_dict = {}
             customer_dict['customer_index'] = 1  # FIXME: Hardcoded
