@@ -2,7 +2,9 @@
 from collections import namedtuple
 from django.forms import (
     Form, ChoiceField, IntegerField, FloatField, Select, CharField,
-    MultipleChoiceField, CheckboxSelectMultiple, ModelForm, ModelChoiceField)
+    BooleanField, MultipleChoiceField, CheckboxSelectMultiple, ModelForm,
+    ModelChoiceField
+)
 
 from stemp.fields import HouseholdField, SubmitField
 from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget
@@ -117,6 +119,22 @@ class LoadProfileForm(Form):
     )
 
 
+class HouseholdQuestionsForm(Form):
+    count = IntegerField(label='Anzahl Personen im Haushalt')
+    at_home = BooleanField(
+        label='Sind Personen tagsüber zu Hause?',
+        required=False
+    )
+    modernised = BooleanField(
+        label='Ist das Haus modernisiert?',
+        required=False
+    )
+
+    def hh_proposal(self):
+        if self.data is not None:
+            return HouseholdForm()
+
+
 class HouseholdSelectForm(Form):
     profile = ModelChoiceField(
         queryset=Household.objects.all(),
@@ -212,19 +230,22 @@ class DistrictListForm(Form):
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html,
                      errors_on_separate_row):
-        if len(self.fields) == 0:
-            return '<tr><td>Noch keine Haushalte im Quartier</td></tr>'
-        else:
-            return super(DistrictListForm, self)._html_output(
+        html_output = super(DistrictListForm, self)._html_output(
                 normal_row, error_row, row_ender, help_text_html,
                 errors_on_separate_row
             )
+        if len(self.fields) <= 1:
+            html_output = (
+                '<tr><td>Noch keine Haushalte im Quartier</td></tr>' +
+                html_output
+            )
+        return html_output
 
 
 class HouseholdForm(ModelForm):
     class Meta:
         model = Household
-        exclude = ['district']
+        exclude = ['districts']
 
 
 class DistrictForm(ModelForm):

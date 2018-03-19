@@ -1,37 +1,8 @@
 
 from django.views.generic import TemplateView
 
-from stemp.forms import (
-    HouseholdSelectForm, DistrictHouseholdsForm
-)
+from stemp.forms import HouseholdSelectForm
 from stemp.models import District, Household
-
-
-class DistrictEditingView(TemplateView):
-    template_name = 'stemp/demand_editing.html'
-
-    def get_context_data(self, district_id, **kwargs):
-        context = super(DistrictEditingView, self).get_context_data()
-        context['district'] = DistrictHouseholdsForm(
-            {
-                'district': district_id,
-                'households': [
-                    (1, 2),
-                    (2, 4)
-                ]
-            }
-        )
-        return context
-
-    def get(self, request, *args, **kwargs):
-        district_id = request.GET.get('district', 1)
-        context = self.get_context_data(district_id, **kwargs)
-        return self.render_to_response(context)
-
-    def post(self, request):
-        district_id = request.POST.get('district', 1)
-        context = self.get_context_data(district_id)
-        return self.render_to_response(context)
 
 
 class HouseholdProfileView(TemplateView):
