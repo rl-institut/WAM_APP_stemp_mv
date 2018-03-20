@@ -7,5 +7,5 @@ class StempConfig(AppConfig):
 
     def ready(self):
         # Do this right after settings are set:
-        from kopy.user_data import SessionData
+        from kopy.sessions import SessionData
         settings.SESSION_DATA = SessionData()
