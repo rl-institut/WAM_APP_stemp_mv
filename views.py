@@ -9,16 +9,16 @@ from kopy.bookkeeping import simulate_energysystem
 from db_apps.oemof_results import store_results
 from stemp.models import OEPScenario
 from stemp.results import Results
-from scenarios import create_energysystem
+from stemp.scenarios import create_energysystem
 
 from .forms import (
     SaveSimulationForm, ComparisonForm, ChoiceForm, HouseholdForm,
     HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm
 )
 from stemp.results import Comparison
-from scenarios import get_scenario_config, get_scenario_input_values
+from stemp.scenarios import get_scenario_config, get_scenario_input_values
 
-BASIC_SCENARIO = path.join('scenarios', 'heat_scenario')
+BASIC_SCENARIO = path.join('stemp', 'scenarios', 'heat_scenario')
 
 Option = namedtuple('Option', ['label', 'value', 'image'])
 demand_options = OrderedDict(
