@@ -84,15 +84,43 @@ DEFAULT_VISUALIZATIONS = {
 }
 
 
+def oemof_result_to_json(data):
+    json_results = {}
+    for key, value in data.items():
+        if isinstance(key, tuple):
+            new_key = ','.join(key)
+        else:
+            new_key = key
+
+        if isinstance(value, dict):
+            value = oemof_result_to_json(value)
+        if (
+                isinstance(value, pandas.Series) or
+                isinstance(value, pandas.DataFrame)
+        ):
+            new_value = value.to_json()
+        else:
+            new_value = value
+        json_results[new_key] = new_value
+    return json_results
+
+
 class Results(object):
     def __init__(self, results=None, param_results=None):
-        self.results = processing.convert_keys_to_strings(results)
-        self.param_results = processing.convert_keys_to_strings(param_results)
+        self.results = self.__results_with_str_keys(results)
+        self.param_results = self.__results_with_str_keys(param_results)
         self.cost_results = economics.cost_results(self.results, param_results)
         self.visualizations = {}
         self.node_results = {}
         self.node_flows = {}
         self.json = {}
+
+    @staticmethod
+    def __results_with_str_keys(result):
+        if isinstance(next(iter(result.keys()))[0], str):
+            return result
+        else:
+            return processing.convert_keys_to_strings(result)
 
     def add_visualization(self, name, visualization):
         if isinstance(visualization, VisualizationMeta):

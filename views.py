@@ -4,13 +4,16 @@ from collections import namedtuple, OrderedDict
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
-from kopy.settings import SESSION_DATA
+from kopy.settings import SESSION_DATA, SqlAlchemySession
 from kopy.bookkeeping import simulate_energysystem
+from db_apps.oemof_results import store_results
+from stemp.models import OEPScenario
+from stemp.results import Results
 from scenarios import create_energysystem
 
 from .forms import (
     SaveSimulationForm, ComparisonForm, ChoiceForm, HouseholdForm,
-    HouseholdSelectForm
+    HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm
 )
 from stemp.results import Comparison
 from scenarios import get_scenario_config, get_scenario_input_values
@@ -32,7 +35,6 @@ demand_options = OrderedDict(
             [
                 Option('Aus einer Liste wählen', 'list', '<img>'),
                 Option('Per Fragen', 'questions', '<img>'),
-                Option('Manuell erstellen', 'new', '<img>')
             ]
         )
     ]
@@ -63,30 +65,45 @@ class DemandView(TemplateView):
         super(DemandView, self).__init__(**kwargs)
 
     @staticmethod
-    def __get_single_context(context, data):
-        context['options']['structure'] = [demand_options['structure'][0]]
-        selection = data.get('selection')
-        if selection is None or selection == 'back':
+    def __build_hh_selection(context, structure, selection, hh_form=None):
+        if selection is None or selection in ('add_household', 'back'):
             context['options']['selection'] = demand_options['selection']
         elif selection == 'list':
             context['options']['selection'] = [demand_options['selection'][0]]
             context['selection_form'] = HouseholdSelectForm()
+            context['demand_submit_value'] = structure + '_list'
         elif selection == 'questions':
             context['options']['selection'] = [demand_options['selection'][1]]
+            context['selection_form'] = HouseholdQuestionsForm()
+            context['demand_submit_value'] = structure + '_questions'
         elif selection == 'new':
-            context['options']['selection'] = [demand_options['selection'][2]]
-            context['selection_form'] = HouseholdForm()
+            context['options']['selection'] = [demand_options['selection'][1]]
+            context['selection_form'] = hh_form
+            context['demand_submit_value'] = structure + '_new'
         else:
             raise ValueError(
                 'Unknown demand selection "' + str(selection) +
-                '" for structure "single"')
+                '" for structure "' + structure + "'")
 
-    @staticmethod
-    def __get_district_context(context, data):
+    def __get_single_context(self, context, data):
+        context['options']['structure'] = [demand_options['structure'][0]]
+        selection = data.get('selection')
+        self.__build_hh_selection(
+            context, 'single', selection, data.get('hh_proposal'))
+
+    def __get_district_context(self, session, context, data):
         context['options']['structure'] = [demand_options['structure'][1]]
+        selection = data.get('selection')
+        if selection is None:
+            context['selection_form'] = DistrictListForm(session.district)
+            context['demand_submit_value'] = 'district_done'
+            return
+        self.__build_hh_selection(
+            context, 'district', selection, data.get('hh_proposal'))
+        return
 
-    def get_context_data(self, data, **kwargs):
-        context = super(DemandView, self).get_context_data(**kwargs)
+    def get_context_data(self, session, data):
+        context = super(DemandView, self).get_context_data()
         context['options'] = OrderedDict()
 
         structure = data.get('structure')
@@ -96,7 +113,7 @@ class DemandView(TemplateView):
         elif structure == 'single':
             self.__get_single_context(context, data)
         elif structure == 'district':
-            self.__get_district_context(context, data)
+            self.__get_district_context(session, context, data)
         else:
             raise ValueError(
                 'Unknown demand structure "' + str(structure) + '"')
@@ -105,28 +122,93 @@ class DemandView(TemplateView):
     def get(self, request, *args, **kwargs):
         # Start session (if no session yet):
         SESSION_DATA.start_session(request)
-
-        # Set scenario in session
-        SESSION_DATA.get_session(request).scenario = BASIC_SCENARIO
+        session = SESSION_DATA.get_session(request)
+        session.scenario = BASIC_SCENARIO
 
         data = request.GET
-        context = self.get_context_data(data)
+        context = self.get_context_data(session, data)
         return self.render_to_response(context)
+
+    def __change_district_list(self, request, session):
+        session.district = {
+            hh: count
+            for hh, count in request.POST.items()
+            if hh not in (
+                'csrfmiddlewaretoken',
+                'trash',
+                'add_household',
+                'demand_submit'
+            )
+        }
+        if 'trash' in request.POST:
+            trash = request.POST['trash']
+            del session.district[trash]
+            data = {'structure': 'district'}
+            context = self.get_context_data(session, data)
+            return self.render_to_response(context)
+        elif 'add_household' in request.POST:
+            data = {
+                'structure': 'district',
+                'selection': 'add_household',
+            }
+            context = self.get_context_data(session, data)
+            return self.render_to_response(context)
 
     @check_session
     def post(self, request, session):
-        customer_dict = {}
-        customer_dict['customer_index'] = 1  # FIXME: Hardcoded
-        customer_dict['customer_case'] = 'district'
-        # if int(request.POST['single_district_switch']) == 2:
-        #     customer_dict['customer_index'] = 1  # FIXME: Hardcoded
-        #     customer_dict['customer_case'] = 'district'
-        # else:
-        #     customer_dict['customer_index'] = request.POST['profile']
-        #     customer_dict['customer_case'] = 'single'
-
-        session.parameter = customer_dict
-        return redirect('stemp:technology')
+        if 'done' not in request.POST:
+            return self.__change_district_list(request, session)
+        submit = request.POST.get('demand_submit')
+        if submit is None:
+            raise ValueError('Invalid demand post!')
+        if submit in ('single_questions', 'district_questions'):
+            hh_questions = HouseholdQuestionsForm(request.POST)
+            if hh_questions.is_valid():  # TODO: If not valid...
+                data = {
+                    'structure': request.POST['demand_submit'].split('_')[0],
+                    'selection': 'new',
+                    'hh_proposal': hh_questions.hh_proposal()
+                }
+                context = self.get_context_data(session, data)
+                return self.render_to_response(context)
+        if submit in ('single_new', 'district_new'):
+            hh_form = HouseholdForm(request.POST)
+            if hh_form.is_valid():  # TODO: If not valid...
+                hh = hh_form.save()
+                if submit.split('_')[0] == 'single':
+                    session.parameter = {
+                        'customer_index': hh.id,
+                        'customer_case': 'single'
+                    }
+                    return redirect('stemp:technology')
+                elif submit.split('_')[0] == 'district':
+                    session.district[str(hh.id)] = 1
+                    data = {'structure': 'district'}
+                    context = self.get_context_data(session, data)
+                    return self.render_to_response(context)
+                else:
+                    raise ValueError('Unknown submit key "' + submit)
+        if submit in ('single_list', 'district_list'):
+            hh = HouseholdSelectForm(request.POST)
+            if hh.is_valid():  # TODO: If not valid...
+                hh_id = hh.cleaned_data['profile'].id
+            if submit.split('_')[0] == 'single':
+                session.parameter = {
+                    'customer_index': hh_id,
+                    'customer_case': 'single'
+                }
+                return redirect('stemp:technology')
+            elif submit.split('_')[0] == 'district':
+                session.district[str(hh_id)] = 1
+                data = {'structure': 'district'}
+                context = self.get_context_data(session, data)
+                return self.render_to_response(context)
+            else:
+                raise ValueError('Unknown submit key "' + submit)
+        else:
+            # TODO: Correct parameter input of district:
+            session.parameter = session.district
+            return redirect('stemp:technology')
 
 
 class TechnologyView(TemplateView):
@@ -160,13 +242,30 @@ class TechnologyView(TemplateView):
         technology = request.POST['technology']
         session.parameter['technology'] = technology
         if 'continue' in request.POST:
-            session.import_scenario_module()
-            energysystem = create_energysystem(
-                session.scenario_module,
-                **session.parameter
-            )
-            session.energysystem = energysystem
-            simulate_energysystem(request)
+            # Load default parameters:
+            oep_scenario = OEPScenario.select_scenario('heat_scenario')
+            if oep_scenario is not None:
+                session.parameter['input_parameters'] = oep_scenario['data']
+
+            # Check if results already exist:
+            result_id = session.check_for_result()
+            if result_id is not None:
+                session.load_result(result_id)
+            else:
+                session.import_scenario_module()
+                energysystem = create_energysystem(
+                    session.scenario_module,
+                    **session.parameter
+                )
+                session.energysystem = energysystem
+                result, param_result = simulate_energysystem(request)
+
+                sa_session = SqlAlchemySession()
+                store_results(sa_session, param_result, result)
+                sa_session.close()
+
+                session.result = Results(result, param_result)
+                session.store_simulation()
             return redirect('stemp:result')
         else:
             return redirect('stemp:parameter')
@@ -180,7 +279,13 @@ class ParameterView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ParameterView, self).get_context_data(**kwargs)
-        context['scenario_input'] = get_scenario_input_values('heat_scenario')
+
+        # Get data from OEP:
+        oep_scenario = OEPScenario.select_scenario('heat_scenario')
+        if oep_scenario is not None:
+            context['scenario_input'] = get_scenario_input_values(
+                oep_scenario['data'])
+
         return context
 
     @check_session
@@ -200,7 +305,9 @@ class ParameterView(TemplateView):
             **session.parameter
         )
         session.energysystem = energysystem
-        simulate_energysystem(request)
+        result, param_result = simulate_energysystem(request)
+        session.result = Results(result, param_result)
+        session.store_simulation()
         return redirect('stemp:result')
 
 
@@ -210,22 +317,18 @@ class ResultView(TemplateView):
     def __init__(self, **kwargs):
         super(ResultView, self).__init__(**kwargs)
 
-    def get_context_data(self, result, result_config, **kwargs):
+    def get_context_data(self, result, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
-
         context['save'] = SaveSimulationForm()
-
-        result.create_visualization_data(result_config)
         context['visualizations'] = result.get_visualizations()
         return context
 
     @check_session
     def get(self, request, *args, **kwargs):
-        scenario = kwargs['session'].scenario
-        result_config = get_scenario_config(scenario).get('results')
-        result = kwargs['session'].result
-
-        context = self.get_context_data(result, result_config)
+        session = kwargs['session']
+        result_config = get_scenario_config(session.scenario).get('results')
+        session.result.create_visualization_data(result_config)
+        context = self.get_context_data(session.result)
         return self.render_to_response(context)
 
     @check_session

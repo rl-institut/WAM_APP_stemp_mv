@@ -1,6 +1,7 @@
 
 import warnings
-from django.forms import Select, RadioSelect
+from django.forms import Select, RadioSelect, Widget
+from django.utils import html
 
 
 class DynamicWidgetMixin(object):
@@ -133,3 +134,15 @@ class SelectWithDisabled(Select):
         if disabled:
             option_dict['attrs']['disabled'] = 'disabled'
         return option_dict
+
+
+class HouseholdWidget(Widget):
+    template_name = 'widgets/district_household.html'
+
+
+class SubmitWidget(Widget):
+    """From https://djangosnippets.org/snippets/2312/"""
+    def render(self, name, value, attrs=None, renderer=None):
+        return '<input type="submit" name="%s" value="%s">' % (
+            html.escape(name), html.escape(value)
+        )

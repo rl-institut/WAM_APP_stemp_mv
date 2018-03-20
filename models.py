@@ -1,18 +1,12 @@
 
 import pandas
+from django.utils import timezone
 
 from db_apps.oep import OEPTable
 from django.db import models
 from django.contrib.postgres.fields import ArrayField, JSONField
 
 from highcharts import Highchart
-
-
-class Result(models.Model):
-    data = JSONField()
-
-    def __str__(self):
-        return self.__class__.__name__ + '#' + str(self.id)
 
 
 class Setup(models.Model):
@@ -31,25 +25,25 @@ class Parameter(models.Model):
 
 class Scenario(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    last_change = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
 
 
 class Simulation(models.Model):
-    name = models.CharField(max_length=255)
-
     scenario = models.ForeignKey(Scenario)
     parameter = models.ForeignKey(Parameter)
     setup = models.ForeignKey(Setup)
-    result = models.ForeignKey(Result, blank=True, null=True)
+    result_id = models.IntegerField()
+    date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         ids = map(
             str,
-            [self.scenario, self.parameter, self.setup, self.result]
+            [self.scenario, self.parameter, self.setup, self.result_id]
         )
-        return self.name + ' (' + ','.join(ids) + ')'
+        return '(' + ','.join(ids) + ')'
 
 
 class District(models.Model):
@@ -202,3 +196,12 @@ class OEPScenario(OEPTable):
             ]
         }
     }
+
+    @classmethod
+    def select_scenario(cls, scenario_name):
+        where = '?where=name=' + scenario_name
+        scenario = super(OEPScenario, cls).select(where)
+        if scenario:
+            return scenario[0]
+        else:
+            return None
