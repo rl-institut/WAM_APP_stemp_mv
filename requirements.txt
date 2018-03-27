@@ -1,0 +1,13 @@
+docopt
+shapely
+feedinlib
+bokeh
+pandas
+numpy
+scipy
+configobj
+requests
+pathos
+psycopg2
+sqlalchemy
+sqlahelper
