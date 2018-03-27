@@ -4,7 +4,8 @@ from collections import namedtuple, OrderedDict
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
-from kopy.settings import SESSION_DATA, SqlAlchemySession
+from kopy.settings import SESSION_DATA
+from stemp.settings import SqlAlchemySession
 from stemp.bookkeeping import simulate_energysystem
 from db_apps.oemof_results import store_results
 from stemp.models import OEPScenario

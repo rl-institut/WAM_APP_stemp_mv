@@ -1,5 +1,5 @@
 
-from kopy.settings import SqlAlchemySession
+from stemp.settings import SqlAlchemySession
 from stemp.scenarios import import_scenario
 from stemp.models import Scenario, Setup, Parameter, Simulation
 from stemp.results import Results
