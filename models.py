@@ -179,13 +179,34 @@ class OEPScenario(OEPTable):
                     "is_nullable": "NO"
                 },
                 {
-                    "name": "name",
+                    "name": "scenario",
                     "data_type": "varchar",
                     "character_maximum_length": "50"
                 },
                 {
-                    "name": "data",
-                    "data_type": "jsonb"
+                    "name": "component",
+                    "data_type": "varchar",
+                    "character_maximum_length": "50"
+                },
+                {
+                    "name": "type",
+                    "data_type": "varchar",
+                    "character_maximum_length": "50"
+                },
+                {
+                    "name": "parameter",
+                    "data_type": "varchar",
+                    "character_maximum_length": "50"
+                },
+                {
+                    "name": "value_type",
+                    "data_type": "varchar",
+                    "character_maximum_length": "50"
+                },
+                {
+                    "name": "value",
+                    "data_type": "varchar",
+                    "character_maximum_length": "50"
                 }
             ],
             "constraints": [
@@ -199,7 +220,7 @@ class OEPScenario(OEPTable):
 
     @classmethod
     def select_scenario(cls, scenario_name):
-        where = '?where=name=' + scenario_name
+        where = 'scenario=' + scenario_name
         scenario = super(OEPScenario, cls).select(where)
         if scenario:
             return scenario[0]
