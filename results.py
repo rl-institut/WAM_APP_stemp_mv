@@ -7,7 +7,7 @@ from oemof.outputlib import views, processing
 from oemof.solph import economics
 from oemof.tools.economics import LCOE
 
-from highcharts import Highchart
+from utils.highcharts import Highchart
 
 
 VisualizationMeta = namedtuple(

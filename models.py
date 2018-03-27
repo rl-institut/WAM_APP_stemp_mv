@@ -6,7 +6,7 @@ from db_apps.oep import OEPTable
 from django.db import models
 from django.contrib.postgres.fields import ArrayField, JSONField
 
-from highcharts import Highchart
+from utils.highcharts import Highchart
 
 
 class Setup(models.Model):
