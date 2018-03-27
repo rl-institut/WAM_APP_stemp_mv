@@ -19,17 +19,65 @@ if __name__ == '__main__':
     application = get_wsgi_application()
 
 
-from stemp.models import District, Household
-from stemp.results import Results, VisualizationMeta
+from stemp.models import District, Household, OEPScenario
 
 
 NET_COSTS = 0.27
 PV_FEED_IN_TARIFF = -0.08
 
+SCENARIO = 'heat_scenario'
 
-VISUALIZATIONS = {
 
-}
+def upload_scenario_parameters():
+    if len(OEPScenario.select(where='scenario=' + SCENARIO)) == 0:
+        parameters = {
+            'query': [
+                {
+                    'scenario': SCENARIO,
+                    'component': 'General',
+                    'type': 'various',
+                    'parameter': 'net_connection',
+                    'value_type': 'boolean',
+                    'value': 'True'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'General',
+                    'type': 'cost',
+                    'parameter': 'net_costs',
+                    'value_type': 'float',
+                    'value': '0.27'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'General',
+                    'type': 'cost',
+                    'parameter': 'pv_feedin_tariff',
+                    'value_type': 'float',
+                    'value': '-0.08'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'PV',
+                    'type': 'cost',
+                    'parameter': 'invest',
+                    'value_type': 'float',
+                    'value': '2300'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'PV',
+                    'type': 'tech',
+                    'parameter': 'efficiency',
+                    'value_type': 'float',
+                    'value': '0.7'
+                }
+            ]
+        }
+        OEPScenario.insert(parameters)
+
+
+upload_scenario_parameters()
 
 
 class TechnologyOption(str, Enum):
