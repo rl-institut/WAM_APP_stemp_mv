@@ -1,5 +1,8 @@
 
+import os
 import pandas
+from collections import defaultdict, OrderedDict, ChainMap
+from configobj import ConfigObj
 from django.utils import timezone
 
 from db_apps.oep import OEPTable
@@ -7,6 +10,8 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField, JSONField
 
 from utils.highcharts import Highchart
+
+from kopy.settings import BASE_DIR
 
 
 class Setup(models.Model):
@@ -189,7 +194,7 @@ class OEPScenario(OEPTable):
                     "character_maximum_length": "50"
                 },
                 {
-                    "name": "type",
+                    "name": "parameter_type",
                     "data_type": "varchar",
                     "character_maximum_length": "50"
                 },
@@ -219,10 +224,40 @@ class OEPScenario(OEPTable):
     }
 
     @classmethod
-    def select_scenario(cls, scenario_name):
+    def get_scenario_parameters(cls, scenario_name):
+        def convert_value(v, v_type):
+            if v_type == 'boolean':
+                return bool(v)
+            elif v_type == 'integer':
+                return int(v)
+            elif v_type == 'float':
+                return float(v)
+            else:
+                return v
+
         where = 'scenario=' + scenario_name
         scenario = super(OEPScenario, cls).select(where)
-        if scenario:
-            return scenario[0]
-        else:
+        if not scenario:
             return None
+
+        # Get default descriptions:
+        attr_cfg_path = os.path.join(BASE_DIR, 'stemp/attributes.cfg')
+        description = ConfigObj(attr_cfg_path)
+
+        parameters = defaultdict(OrderedDict)
+        for item in scenario:
+            comp = item['component']
+            parameter = item['parameter']
+            param_dict = ChainMap(
+                {
+                    'value': convert_value(item['value'], item['value_type']),
+                    'parameter_type': item['parameter_type']
+                },
+                description.get(comp, {}).get(parameter, {})
+            )
+            parameters[comp][parameter] = param_dict
+
+        # Default factory has to be unset in order to support iterating over
+        # dict in django template:
+        parameters.default_factory = None
+        return parameters

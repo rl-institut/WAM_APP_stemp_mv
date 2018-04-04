@@ -17,7 +17,7 @@ from .forms import (
     HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm
 )
 from stemp.results import Comparison
-from stemp.scenarios import get_scenario_config, get_scenario_input_values
+from stemp.scenarios import get_scenario_config
 
 BASIC_SCENARIO = path.join('stemp', 'scenarios', 'heat_scenario')
 
@@ -244,7 +244,7 @@ class TechnologyView(TemplateView):
         session.parameter['technology'] = technology
         if 'continue' in request.POST:
             # Load default parameters:
-            oep_scenario = OEPScenario.select_scenario('heat_scenario')
+            oep_scenario = OEPScenario.get_scenario_parameters('heat_scenario')
             if oep_scenario is not None:
                 session.parameter['input_parameters'] = oep_scenario['data']
 
@@ -282,10 +282,9 @@ class ParameterView(TemplateView):
         context = super(ParameterView, self).get_context_data(**kwargs)
 
         # Get data from OEP:
-        oep_scenario = OEPScenario.select_scenario('heat_scenario')
+        oep_scenario = OEPScenario.get_scenario_parameters('heat_scenario')
         if oep_scenario is not None:
-            context['scenario_input'] = get_scenario_input_values(
-                oep_scenario['data'])
+            context['scenario_input'] = oep_scenario
 
         return context
 

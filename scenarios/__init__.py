@@ -50,46 +50,6 @@ def get_scenario_config(scenario):
     return ConfigObj(config_path)
 
 
-ScenarioInput = namedtuple(
-    'ScenarioInput',
-    ['value', 'label', 'description']
-)
-
-
-def get_scenario_input_values(scenario_data):
-    # Get default descriptions:
-    attr_cfg_path = os.path.join(BASE_DIR, 'stemp/attributes.cfg')
-    description = ConfigObj(attr_cfg_path)
-
-    # TODO: Use ChainMap?
-    # Check if it could be improved with ChainMap
-    # (to combine default- and scenario-dict)
-
-    # Prepare scenario input by combining default and scenario descriptions:
-    scenario_input = {}
-    for component, attributes in scenario_data.items():
-        scenario_input[component] = []
-        com_description = description.get(component, description['DEFAULT'])
-        for attribute, value in attributes.items():
-            attr_description = com_description.get(
-                attribute,
-                description['DEFAULT'].get(attribute)
-            )
-            if attr_description is not None:
-                scenario_input[component].append(
-                    ScenarioInput(
-                        value,
-                        attr_description.get('label', attribute),
-                        attr_description.get('description', '')
-                    )
-                )
-            else:
-                scenario_input[component].append(
-                    ScenarioInput(value, attribute, '')
-                )
-    return scenario_input
-
-
 def import_scenario(filename):
     splitted = filename.split(os.path.sep)
     module_name = '.'.join(splitted[1:])

@@ -35,7 +35,7 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'type': 'various',
+                    'parameter_type': 'various',
                     'parameter': 'net_connection',
                     'value_type': 'boolean',
                     'value': 'True'
@@ -43,7 +43,7 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'type': 'cost',
+                    'parameter_type': 'cost',
                     'parameter': 'net_costs',
                     'value_type': 'float',
                     'value': '0.27'
@@ -51,7 +51,7 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'type': 'cost',
+                    'parameter_type': 'cost',
                     'parameter': 'pv_feedin_tariff',
                     'value_type': 'float',
                     'value': '-0.08'
@@ -59,7 +59,7 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'PV',
-                    'type': 'cost',
+                    'parameter_type': 'cost',
                     'parameter': 'invest',
                     'value_type': 'float',
                     'value': '2300'
@@ -67,7 +67,7 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'PV',
-                    'type': 'tech',
+                    'parameter_type': 'tech',
                     'parameter': 'efficiency',
                     'value_type': 'float',
                     'value': '0.7'
