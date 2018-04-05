@@ -1,6 +1,6 @@
 
 import warnings
-from django.forms import Select, RadioSelect, Widget
+from django.forms import Select, RadioSelect, Widget, NumberInput
 from django.utils import html
 
 
@@ -146,3 +146,8 @@ class SubmitWidget(Widget):
         return '<input type="submit" name="%s" value="%s">' % (
             html.escape(name), html.escape(value)
         )
+
+
+class SliderInput(NumberInput):
+    input_type = 'number'
+    template_name = 'widgets/slider.html'

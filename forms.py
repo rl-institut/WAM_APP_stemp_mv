@@ -7,7 +7,7 @@ from django.forms import (
 )
 
 from stemp.fields import HouseholdField, SubmitField
-from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget
+from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget, SliderInput
 from stemp.models import LoadProfile, Household, Simulation, District
 
 PossibleField = namedtuple(
@@ -120,7 +120,13 @@ class LoadProfileForm(Form):
 
 
 class HouseholdQuestionsForm(Form):
-    count = IntegerField(label='Anzahl Personen im Haushalt')
+    count = IntegerField(
+        widget=SliderInput(attrs={'id': 'hh_question_count'}),
+        label='Anzahl Personen im Haushalt',
+        initial=2,
+        max_value=10,
+        min_value=1,
+    )
     at_home = BooleanField(
         label='Sind Personen tagsüber zu Hause?',
         required=False
