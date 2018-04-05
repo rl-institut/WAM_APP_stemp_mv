@@ -151,3 +151,12 @@ class SubmitWidget(Widget):
 class SliderInput(NumberInput):
     input_type = 'number'
     template_name = 'widgets/slider.html'
+
+    def __init__(self, step_size=1, attrs=None):
+        super(SliderInput, self).__init__(attrs)
+        self.step_size = step_size
+
+    def get_context(self, name, value, attrs):
+        context = super(SliderInput, self).get_context(name, value, attrs)
+        context['widget']['step_size'] = self.step_size
+        return context

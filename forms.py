@@ -1,7 +1,6 @@
 
-from collections import namedtuple
 from django.forms import (
-    Form, ChoiceField, IntegerField, FloatField, Select, CharField,
+    Form, ChoiceField, IntegerField, Select, CharField, FloatField,
     BooleanField, MultipleChoiceField, CheckboxSelectMultiple, ModelForm,
     ModelChoiceField
 )
@@ -9,64 +8,6 @@ from django.forms import (
 from stemp.fields import HouseholdField, SubmitField
 from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget, SliderInput
 from stemp.models import LoadProfile, Household, Simulation, District
-
-PossibleField = namedtuple(
-    'PossibleField',
-    ['field_class', 'default_kwargs', 'init_function']
-)
-PossibleField.__new__.__defaults__ = (None,)
-
-
-def init_choice_field(**data):
-    labels = data.pop('choice_labels', data['choices'])
-    data['choices'] = zip(data['choices'], labels)
-    return ChoiceField(**data)
-
-
-possible_fields = [
-    PossibleField(
-        ChoiceField,
-        {'label': '<Kein Label gesetzt>', 'choices': []},
-        init_choice_field
-    ),
-    PossibleField(
-        IntegerField,
-        {}
-    ),
-    PossibleField(
-        FloatField,
-        {}
-    )
-]
-
-
-def get_possible_field(name):
-    for field in possible_fields:
-        if field.field_class.__name__ == name:
-            return field
-    return None
-
-
-def create_field_from_config(parameter, data):
-    # Get field class:
-    field_key = data.pop('field', None)
-    if field_key is None:
-        raise KeyError(
-            '"field" attribute not set in parameter "' + parameter + '".')
-
-    field = get_possible_field(field_key)
-    if field is None:
-        raise TypeError(
-            'Field "' + field_key +
-            '" not included in allowed field types. See "possible fields".')
-
-    # Initiate field with default kwargs and data:
-    kwargs = field.default_kwargs
-    kwargs.update(data)
-    if field.init_function is not None:
-        return field.init_function(**kwargs)
-    else:
-        return field.field_class(**kwargs)
 
 
 class ChoiceForm(Form):
@@ -89,21 +30,53 @@ class ChoiceForm(Form):
 
 
 class ParameterForm(Form):
+    delimiter = '-'
+
+    @staticmethod
+    def __init_field(parameter_data):
+        if parameter_data['value_type'] == 'boolean':
+            return BooleanField(initial=parameter_data['value'])
+        elif parameter_data['value_type'] == 'float':
+            if all(map(lambda x: x in parameter_data, ('min', 'max'))):
+                step_size = parameter_data.get('step_size', 0.1)
+                return FloatField(
+                    widget=SliderInput(
+                        step_size=step_size,
+                    ),
+                    initial=parameter_data['value'],
+                    min_value=parameter_data['min'],
+                    max_value=parameter_data['max'],
+                )
+            else:
+                return FloatField(initial=parameter_data['value'])
+        elif parameter_data['value_type'] == 'integer':
+            if all(map(lambda x: x in parameter_data, ('min', 'max'))):
+                return IntegerField(
+                    widget=SliderInput,
+                    initial=parameter_data['value'],
+                    min_value=parameter_data['min'],
+                    max_value=parameter_data['max'],
+                )
+            else:
+                return IntegerField(initial=parameter_data['value'])
+        else:
+            raise TypeError(
+                'Unknown value type "' + parameter_data['value_type'] +
+                '" - cannot convert into FormField'
+            )
+
     def __init__(self, parameters, data=None, *args, **kwargs):
         super(ParameterForm, self).__init__(*args, **kwargs)
         if parameters is not None:
-            for parameter, value in parameters.items():
-                self.fields[parameter] = create_field_from_config(
-                    parameter,
-                    value
-                )
+            for component, component_data in parameters.items():
+                for parameter, parameter_data in component_data.items():
+                    field_name = self.delimiter.join((component, parameter))
+                    field = self.__init_field(parameter_data)
+                    field.group = component
+                    self.fields[field_name] = field
+
         self.is_bound = data is not None
         self.data = data or {}
-
-
-class EnergysystemForm(Form):
-    def __init__(self, param_results, *args, **kwargs):
-        super(EnergysystemForm, self).__init__(*args, **kwargs)
 
 
 class LoadProfileForm(Form):

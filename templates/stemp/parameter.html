@@ -3,7 +3,7 @@
 {% load staticfiles %}
 
 {% block header %}
-<script src="{% static 'highcharts.js' %}"></script>
+  <script src="{% static 'highcharts.js' %}"></script>
 {% endblock %}
 
 {% block submenu %}
@@ -13,11 +13,14 @@
 {% block content %}
 
 <form action="{% url 'stemp:parameter' %}" method="post">
-    {% csrf_token %}
-    <input type="hidden" name="scenario" value="{{scenario}}">
-    <input class="btn btn-default" type="submit" value="Parameter laden" name="load">
+  {% csrf_token %}
+  <input type="hidden" name="scenario" value="{{scenario}}">
+  <input class="btn btn-default" type="submit" value="Parameter laden" name="load">
 </form>
 
 <h2>Input data</h2>
-{% include "includes/component_list.html" with components=scenario_input %}
+<form>
+  {% csrf_token %}
+  {% include "includes/grouped_form.html" with form=parameter_form %}
+</form>
 {% endblock %}

@@ -225,16 +225,6 @@ class OEPScenario(OEPTable):
 
     @classmethod
     def get_scenario_parameters(cls, scenario_name):
-        def convert_value(v, v_type):
-            if v_type == 'boolean':
-                return bool(v)
-            elif v_type == 'integer':
-                return int(v)
-            elif v_type == 'float':
-                return float(v)
-            else:
-                return v
-
         where = 'scenario=' + scenario_name
         scenario = super(OEPScenario, cls).select(where)
         if not scenario:
@@ -250,7 +240,8 @@ class OEPScenario(OEPTable):
             parameter = item['parameter']
             param_dict = ChainMap(
                 {
-                    'value': convert_value(item['value'], item['value_type']),
+                    'value': item['value'],
+                    'value_type': item['value_type'],
                     'parameter_type': item['parameter_type']
                 },
                 description.get(comp, {}).get(parameter, {})

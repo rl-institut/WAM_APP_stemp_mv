@@ -14,7 +14,8 @@ from stemp.scenarios import create_energysystem
 
 from .forms import (
     SaveSimulationForm, ComparisonForm, ChoiceForm, HouseholdForm,
-    HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm
+    HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm,
+    ParameterForm
 )
 from stemp.results import Comparison
 from stemp.scenarios import get_scenario_config
@@ -284,7 +285,7 @@ class ParameterView(TemplateView):
         # Get data from OEP:
         oep_scenario = OEPScenario.get_scenario_parameters('heat_scenario')
         if oep_scenario is not None:
-            context['scenario_input'] = oep_scenario
+            context['parameter_form'] = ParameterForm(oep_scenario)
 
         return context
 
