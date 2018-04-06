@@ -1,5 +1,6 @@
 
-from stemp.settings import SqlAlchemySession
+from os import path
+from stemp.settings import SqlAlchemySession, SCENARIO_PATH
 from stemp.scenarios import import_scenario
 from stemp.models import Scenario, Setup, Parameter, Simulation
 from stemp.results import Results
@@ -77,7 +78,6 @@ class UserSession(object):
     def import_scenario_module(self):
         if self.scenario is None:
             raise KeyError('no scenario found')
-        scenario_module = import_scenario(self.scenario)
+        scenario_module = import_scenario(
+            path.join(SCENARIO_PATH, self.scenario))
         self.scenario_module = scenario_module
-
-

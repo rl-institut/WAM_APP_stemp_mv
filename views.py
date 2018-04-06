@@ -20,8 +20,6 @@ from .forms import (
 from stemp.results import Comparison
 from stemp.scenarios import get_scenario_config
 
-BASIC_SCENARIO = path.join('stemp', 'scenarios', 'heat_scenario')
-
 Option = namedtuple('Option', ['label', 'value', 'image'])
 demand_options = OrderedDict(
     [
@@ -125,7 +123,6 @@ class DemandView(TemplateView):
         # Start session (if no session yet):
         SESSION_DATA.start_session(request)
         session = SESSION_DATA.get_session(request)
-        session.scenario = BASIC_SCENARIO
 
         data = request.GET
         context = self.get_context_data(session, data)
@@ -222,9 +219,9 @@ class TechnologyView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TechnologyView, self).get_context_data(**kwargs)
         choices = (
-            ('bhkw', 'BHKW'),
-            ('pv_wp', 'PV + Wärmepumpe'),
-            ('oil', 'Ölheizung')
+            ('bhkw_scenario', 'BHKW'),
+            ('pv_heatpump_scenario', 'PV + Wärmepumpe'),
+            ('oil_scenario', 'Ölheizung')
         )
         context['technology'] = ChoiceForm(
             'technology',
@@ -241,11 +238,12 @@ class TechnologyView(TemplateView):
 
     @check_session
     def post(self, request, session):
-        technology = request.POST['technology']
-        session.parameter['technology'] = technology
+        scenario = request.POST['technology']
+        session.scenario = scenario
+        session.import_scenario_module()
         if 'continue' in request.POST:
             # Load default parameters:
-            oep_scenario = OEPScenario.get_scenario_parameters('heat_scenario')
+            oep_scenario = OEPScenario.get_scenario_parameters(scenario)
             if oep_scenario is not None:
                 session.parameter['input_parameters'] = oep_scenario['data']
 
@@ -254,7 +252,6 @@ class TechnologyView(TemplateView):
             if result_id is not None:
                 session.load_result(result_id)
             else:
-                session.import_scenario_module()
                 energysystem = create_energysystem(
                     session.scenario_module,
                     **session.parameter
@@ -279,11 +276,11 @@ class ParameterView(TemplateView):
     def __init__(self, **kwargs):
         super(ParameterView, self).__init__(**kwargs)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, scenario, **kwargs):
         context = super(ParameterView, self).get_context_data(**kwargs)
 
         # Get data from OEP:
-        oep_scenario = OEPScenario.get_scenario_parameters('heat_scenario')
+        oep_scenario = OEPScenario.get_scenario_parameters(scenario)
         if oep_scenario is not None:
             context['parameter_form'] = ParameterForm(oep_scenario)
 

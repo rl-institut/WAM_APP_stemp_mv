@@ -1,4 +1,5 @@
 
+from os import path
 from kopy.settings import db_config
 import sqlalchemy
 from sqlalchemy import orm
@@ -15,3 +16,5 @@ SqlAlchemySession = orm.sessionmaker(bind=engine)
 from db_apps.oemof_results import Base
 Base.metadata.bind = engine
 Base.metadata.create_all()
+
+SCENARIO_PATH = path.join('stemp', 'scenarios')

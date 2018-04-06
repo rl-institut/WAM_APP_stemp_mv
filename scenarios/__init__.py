@@ -18,6 +18,7 @@ SCENARIO_PATH = 'stemp.scenarios'
 import_module(SCENARIO_PATH)
 EXCLUDED_PATHS = ('__init__.py',)
 CREATE_ENERGYSYSTEM_FCT = 'create_energysystem'
+NEEDED_PARAMETERS = 'NEEDED_PARAMETERS'
 SIMULATE_FCT = 'simulate'
 
 
@@ -57,6 +58,27 @@ def import_scenario(filename):
 
 
 def create_energysystem(scenario_module, **parameters):
+    # Check if all needed parameters are given:
+    needed = getattr(
+        scenario_module,
+        NEEDED_PARAMETERS
+    )
+    missing_components = [key for key in needed if key not in parameters]
+    if len(missing_components) > 0:
+        raise KeyError(
+            'Missing components in parameters for scenario "' +
+            scenario_module.__file__ + '": ' +
+            ', '.join(missing_components)
+        )
+    for com in needed:
+        missing_keys = [key for key in needed[com] if key not in parameters[com]]
+        raise KeyError(
+            'Missing parameters for component "' + com + '" in scenario "' +
+            scenario_module.__file__ + '": ' +
+            ', '.join(missing_keys)
+        )
+
+    # Create energysystem:
     create = getattr(
         scenario_module,
         CREATE_ENERGYSYSTEM_FCT
@@ -76,48 +98,6 @@ def get_simulation_function(scenario_module):
         default_simulate_fct
     )
     return simulate_fct
-
-
-def adapt_parameters_to_energysystem(es, parameters):
-    def adapt_source_parameters(source, outputs):
-        for output in outputs:
-            bus_name = output.pop('bus')
-            try:
-                bus = es.groups[bus_name]
-            except KeyError:
-                raise KeyError(
-                    'Could not find bus "' + str(bus_name) +
-                    '" in energysystem'
-                )
-            try:
-                flow = source.outputs[bus]
-            except KeyError:
-                raise KeyError(
-                    'Could not find flow "' + str(bus) + '" in source "' +
-                    str(source) + '"'
-                )
-            for key, value in output.items():
-                attr = getattr(flow, key)
-                if isinstance(attr, _Sequence):
-                    value = sequence(value)
-                flow.__setattr__(key, value)
-
-    for component in parameters['entities']:
-        try:
-            name = component['name']
-        except KeyError:
-            raise KeyError(
-                'No name given for component with data:\n' +
-                str(component)
-            )
-        try:
-            entity = es.groups[name]
-        except KeyError:
-            raise KeyError('Could not find component "' + name +
-                           '" in energysystem')
-
-        if isinstance(entity, Source):
-            adapt_source_parameters(entity, component['outputs'])
 
 
 def default_simulate_fct(
