@@ -38,12 +38,12 @@ demand_options = OrderedDict(
 
 
 def check_session(func):
-    def func_wrapper(self, request, *args):
+    def func_wrapper(self, request, *args, **kwargs):
         try:
             session = SESSION_DATA.get_session(request)
         except KeyError:
             return render(request, 'stemp/session_not_found.html')
-        return func(self, request, session=session, *args)
+        return func(self, request, session=session, *args, **kwargs)
     return func_wrapper
 
 
@@ -151,7 +151,7 @@ class DemandView(TemplateView):
             return self.render_to_response(context)
 
     @check_session
-    def post(self, request, session):
+    def post(self, request, session, selection):
         if 'done' not in request.POST:
             return self.__change_district_list(request, session)
         submit = request.POST.get('demand_submit')
