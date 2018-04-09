@@ -71,12 +71,14 @@ def create_energysystem(scenario_module, **parameters):
             ', '.join(missing_components)
         )
     for com in needed:
-        missing_keys = [key for key in needed[com] if key not in parameters[com]]
-        raise KeyError(
-            'Missing parameters for component "' + com + '" in scenario "' +
-            scenario_module.__file__ + '": ' +
-            ', '.join(missing_keys)
-        )
+        missing_keys = [
+            key for key in needed[com] if key not in parameters[com]]
+        if len(missing_keys) > 0:
+            raise KeyError(
+                'Missing parameters for component "' +
+                com + '" in scenario "' + scenario_module.__file__ + '": ' +
+                ', '.join(missing_keys)
+            )
 
     # Create energysystem:
     create = getattr(
