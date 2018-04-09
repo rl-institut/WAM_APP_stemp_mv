@@ -1,17 +1,22 @@
 
 from pathos.helpers import mp
-from kopy.settings import SESSION_DATA
+from db_apps.oemof_results import store_results
+from stemp.settings import SqlAlchemySession
+from stemp.results import Results
 from stemp.scenarios import get_simulation_function
 
-# mp.set_start_method('fork')
 
-
-def simulate_energysystem(request):
-    energysystem = SESSION_DATA.get_session(request).energysystem
-    simulation_fct = get_simulation_function(
-        SESSION_DATA.get_session(request).scenario_module)
-    return multiprocess_energysystem(
+def simulate_energysystem(session):
+    energysystem = session.energysystem
+    simulation_fct = get_simulation_function(session.scenario_module)
+    result, param_result = multiprocess_energysystem(
         energysystem, simulation_fct)
+    sa_session = SqlAlchemySession()
+    store_results(sa_session, param_result, result)
+    sa_session.close()
+
+    session.result = Results(result, param_result)
+    session.store_simulation()
 
 
 # TODO: Create user-dependent pool in settings
