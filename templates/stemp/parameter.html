@@ -14,13 +14,9 @@
 
 <form action="{% url 'stemp:parameter' %}" method="post">
   {% csrf_token %}
+  {% include "includes/grouped_form.html" with form=parameter_form %}
   <input type="hidden" name="scenario" value="{{scenario}}">
   <input class="btn btn-default" type="submit" value="Parameter laden" name="load">
 </form>
 
-<h2>Input data</h2>
-<form>
-  {% csrf_token %}
-  {% include "includes/grouped_form.html" with form=parameter_form %}
-</form>
 {% endblock %}

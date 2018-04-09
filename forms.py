@@ -1,4 +1,5 @@
 
+from collections import defaultdict
 from django.forms import (
     Form, ChoiceField, IntegerField, Select, CharField, FloatField,
     BooleanField, MultipleChoiceField, CheckboxSelectMultiple, ModelForm,
@@ -35,7 +36,7 @@ class ParameterForm(Form):
     @staticmethod
     def __init_field(parameter_data):
         if parameter_data['value_type'] == 'boolean':
-            return BooleanField(initial=parameter_data['value'])
+            return BooleanField(initial=bool(parameter_data['value']))
         elif parameter_data['value_type'] == 'float':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
                 step_size = parameter_data.get('step_size', 0.1)
@@ -43,22 +44,22 @@ class ParameterForm(Form):
                     widget=SliderInput(
                         step_size=step_size,
                     ),
-                    initial=parameter_data['value'],
-                    min_value=parameter_data['min'],
-                    max_value=parameter_data['max'],
+                    initial=float(parameter_data['value']),
+                    min_value=float(parameter_data['min']),
+                    max_value=float(parameter_data['max']),
                 )
             else:
-                return FloatField(initial=parameter_data['value'])
+                return FloatField(initial=float(parameter_data['value']))
         elif parameter_data['value_type'] == 'integer':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
                 return IntegerField(
                     widget=SliderInput,
-                    initial=parameter_data['value'],
-                    min_value=parameter_data['min'],
-                    max_value=parameter_data['max'],
+                    initial=int(parameter_data['value']),
+                    min_value=int(parameter_data['min']),
+                    max_value=int(parameter_data['max']),
                 )
             else:
-                return IntegerField(initial=parameter_data['value'])
+                return IntegerField(initial=int(parameter_data['value']))
         else:
             raise TypeError(
                 'Unknown value type "' + parameter_data['value_type'] +
@@ -77,6 +78,18 @@ class ParameterForm(Form):
 
         self.is_bound = data is not None
         self.data = data or {}
+
+    def prepared_data(self):
+        data = defaultdict(dict)
+        if not self.is_bound:
+            for field_name, field in self.fields.items():
+                component, parameter = field_name.split(self.delimiter)
+                data[component][parameter] = field.initial
+            return data
+        for item, value in self.cleaned_data.items():
+            component, parameter = item.split(self.delimiter)
+            data[component][parameter] = value
+        return data
 
 
 class LoadProfileForm(Form):

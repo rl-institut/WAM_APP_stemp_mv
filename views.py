@@ -240,8 +240,8 @@ class TechnologyView(TemplateView):
         if 'continue' in request.POST:
             # Load default parameters:
             oep_scenario = OEPScenario.get_scenario_parameters(scenario)
-            if oep_scenario is not None:
-                session.parameter['input_parameters'] = oep_scenario['data']
+            parameter_form = ParameterForm(oep_scenario)
+            session.parameter.update(parameter_form.prepared_data())
 
             # Check if results already exist:
             result_id = session.check_for_result()
@@ -265,31 +265,36 @@ class ParameterView(TemplateView):
     def __init__(self, **kwargs):
         super(ParameterView, self).__init__(**kwargs)
 
-    def get_context_data(self, scenario, **kwargs):
-        context = super(ParameterView, self).get_context_data(**kwargs)
+    @staticmethod
+    def get_scenario_parameters(session, data=None):
+        scenario = session.scenario
+        if scenario is None:
+            raise KeyError('No scenario found')
 
         # Get data from OEP:
         oep_scenario = OEPScenario.get_scenario_parameters(scenario)
         if oep_scenario is not None:
-            context['parameter_form'] = ParameterForm(oep_scenario)
-
-        return context
+            return ParameterForm(oep_scenario, data)
+        else:
+            return {}
 
     @check_session
     def get(self, request, *args, **kwargs):
-        scenario = kwargs['session'].scenario
-        if scenario is None:
-            raise KeyError('No scenario found')
-        context = self.get_context_data(scenario=scenario)
-
+        context = self.get_context_data()
+        context['parameter_form'] = self.get_scenario_parameters(
+            kwargs['session'])
         return self.render_to_response(context)
 
     @check_session
     def post(self, request, session):
+        parameter_form = self.get_scenario_parameters(session, request.POST)
+        if not parameter_form.is_valid():
+            raise ValueError('Invalid scenario parameters')
+        session.parameter.update(parameter_form.prepared_data())
         session.import_scenario_module()
         energysystem = create_energysystem(
             session.scenario_module,
-            **session.parameter
+            **session.parameter,
         )
         session.energysystem = energysystem
         simulate_energysystem(session)
