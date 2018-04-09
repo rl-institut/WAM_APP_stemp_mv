@@ -1,5 +1,5 @@
 
-from oemof.solph import Flow
+from oemof.solph import Flow, Bus
 from oemof.solph.components import ExtractionTurbineCHP
 
 # Load django settings if run locally:
@@ -77,6 +77,10 @@ upload_scenario_parameters()
 
 def create_energysystem(periods=2, **parameters):
     energysystem = basic_setup.add_basic_energysystem(periods)
+
+    # Create oil bus
+    b_gas = Bus(label="b_gas", balanced=False)
+    energysystem.add(b_gas)
 
     # Add households separately or as whole district:
     basic_setup.add_households(

@@ -23,9 +23,6 @@ def add_basic_energysystem(periods):
     b_el_net = Bus(label="b_el_net")
     energysystem.add(b_el_net)
 
-    b_oil = Bus(label="b_oil", balanced=False)
-    energysystem.add(b_oil)
-
     # add excess sink to help avoid infeasible problems
     ex_el = Sink(
         label="excess_el",
