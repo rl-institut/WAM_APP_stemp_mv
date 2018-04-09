@@ -50,8 +50,9 @@ def check_session(func):
 class SelectView(TemplateView):
     template_name = 'stemp/select.html'
 
-    def __init__(self, **kwargs):
-        super(SelectView, self).__init__(**kwargs)
+
+class DemandSelectionView(TemplateView):
+    template_name = 'stemp/demand_selection.html'
 
 
 class DemandView(TemplateView):

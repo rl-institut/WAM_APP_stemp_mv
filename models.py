@@ -37,9 +37,9 @@ class Scenario(models.Model):
 
 
 class Simulation(models.Model):
-    scenario = models.ForeignKey(Scenario)
-    parameter = models.ForeignKey(Parameter)
-    setup = models.ForeignKey(Setup)
+    scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
+    parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE)
+    setup = models.ForeignKey(Setup, on_delete=models.CASCADE)
     result_id = models.IntegerField()
     date = models.DateTimeField(default=timezone.now)
 
@@ -132,8 +132,8 @@ class Household(models.Model):
     districts = models.ManyToManyField(District, through='DistrictHouseholds')
     load_demand = models.FloatField(verbose_name='Jährlicher Strombedarf')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
-    load_profile = models.ForeignKey(LoadProfile)
-    heat_profile = models.ForeignKey(HeatProfile)
+    load_profile = models.ForeignKey(LoadProfile, on_delete=models.CASCADE)
+    heat_profile = models.ForeignKey(HeatProfile, on_delete=models.CASCADE)
     predefined = models.BooleanField(
         verbose_name='Vordefiniert', default=False)
 
@@ -167,8 +167,8 @@ class Household(models.Model):
 
 
 class DistrictHouseholds(models.Model):
-    district = models.ForeignKey(District)
-    household = models.ForeignKey(Household)
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
+    household = models.ForeignKey(Household, on_delete=models.CASCADE)
     amount = models.IntegerField()
 
 
