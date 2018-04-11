@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block submenu %}
+{% include "includes/submenu.html" with current_menu="demand"%}
+{% endblock %}
+
+{% block content %}
+
+<form method="post">
+  {% csrf_token %}
+  <table>
+    {{district_form}}
+  </table>
+  <input type="submit" value="Weiter" name="done">
+</form>
+
+{% endblock %}

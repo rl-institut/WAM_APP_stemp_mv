@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block header %}
+<script src="{% static 'highcharts.js' %}"></script>
+{% endblock %}
+
+{% block submenu %}
+{% include "includes/submenu.html" with current_menu="demand"%}
+{% endblock %}
+
+{% block content %}
+
+<ul class="tabs" data-tabs id="demand_tabs">
+  <li class="tabs-title is-active"><a href="#questions">Benutzerdefiniert</a></li>
+  <li class="tabs-title"><a href="#list">Aus Liste</a></li>
+</ul>
+
+<div class="tabs-content" data-tabs-content="demand_tabs">
+  <div class="tabs-panel is-active" id="questions">
+    <form method="post">
+      {% csrf_token %}
+      <table>
+        {{specific_form}}
+      </table>
+      <input type="submit" value="Weiter" name="questions">
+    </form>
+    {% if new_form %}
+      <form method="post">
+        {% csrf_token %}
+        <table>
+          {{new_form}}
+        </table>
+        <input type="submit" value="Weiter" name="new">
+      </form>
+    {% endif %}
+  </div>
+  <div class="tabs-panel" id="list">
+    <form method="post">
+      {% csrf_token %}
+      <table>
+        {{list_form}}
+      </table>
+      <input type="submit" value="Weiter" name="list">
+    </form>
+  </div>
+</div>
+
+{% endblock %}
