@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
 from kopy.settings import SESSION_DATA
+from stemp.tasks import add
 from stemp.bookkeeping import simulate_energysystem
 from stemp.models import OEPScenario
 from stemp.scenarios import create_energysystem
@@ -49,6 +50,9 @@ class DemandSingleView(TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
+        # Test celery:
+        add.delay(4, 4)
+
         # Start session (if no session yet):
         SESSION_DATA.start_session(request)
         request.session.modified = True
