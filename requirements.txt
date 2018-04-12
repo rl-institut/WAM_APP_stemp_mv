@@ -11,3 +11,4 @@ pathos
 psycopg2
 sqlalchemy
 sqlahelper
+celery
