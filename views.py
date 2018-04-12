@@ -51,6 +51,7 @@ class DemandSingleView(TemplateView):
     def get(self, request, *args, **kwargs):
         # Start session (if no session yet):
         SESSION_DATA.start_session(request)
+        request.session.modified = True
 
         context = self.get_context_data()
         return self.render_to_response(context)
