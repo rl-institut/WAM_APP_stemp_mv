@@ -166,6 +166,24 @@ class Household(models.Model):
         return Highchart(df, style, **layout)
 
 
+class Question(models.Model):
+    number_of_person = models.IntegerField()
+
+
+class QuestionHousehold(models.Model):
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name='question_household'
+    )
+    household = models.ForeignKey(
+        Household,
+        on_delete=models.CASCADE,
+        related_name='question_household'
+    )
+    default = models.BooleanField(default=False)
+
+
 class DistrictHouseholds(models.Model):
     district = models.ForeignKey(District, on_delete=models.CASCADE)
     household = models.ForeignKey(Household, on_delete=models.CASCADE)
