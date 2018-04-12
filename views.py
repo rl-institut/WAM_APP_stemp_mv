@@ -50,16 +50,15 @@ class DemandSingleView(TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
-        # Test celery:
-        result = add.delay(4, 4)
-        print(result.ready())
-        print(result.get(timeout=1))
-
         # Start session (if no session yet):
         SESSION_DATA.start_session(request)
         request.session.modified = True
 
         context = self.get_context_data()
+        # Test celery:
+        result = add.delay(4, 4)
+        context['ready'] = result.ready()
+        context['get'] = result.get(timeout=1)
         return self.render_to_response(context)
 
     @check_session
