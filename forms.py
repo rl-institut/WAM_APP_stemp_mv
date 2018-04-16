@@ -67,14 +67,26 @@ class ParameterForm(Form):
             )
 
     def __init__(self, parameters, data=None, *args, **kwargs):
+        if parameters is None:
+            raise ValueError('No parameters given')
+
         super(ParameterForm, self).__init__(*args, **kwargs)
-        if parameters is not None:
-            for component, component_data in parameters.items():
-                for parameter, parameter_data in component_data.items():
-                    field_name = self.delimiter.join((component, parameter))
-                    field = self.__init_field(parameter_data)
-                    field.group = component
-                    self.fields[field_name] = field
+
+        field_order = []
+        for component, component_data in parameters.items():
+            param_order = []
+            for parameter, parameter_data in component_data.items():
+                field_name = self.delimiter.join((component, parameter))
+                field = self.__init_field(parameter_data)
+                field.type = parameter_data.get('parameter_type')
+                if field.type == 'cost':
+                    param_order.insert(0, field_name)
+                else:
+                    param_order.append(field_name)
+                field.group = component
+                self.fields[field_name] = field
+            field_order += param_order
+        self.order_fields(field_order)
 
         self.is_bound = data is not None
         self.data = data or {}
