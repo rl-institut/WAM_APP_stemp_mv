@@ -1,5 +1,6 @@
 
-from oemof.solph import Flow, Transformer, Bus
+from oemof.solph import Flow, Transformer, Bus, Investment
+from oemof.tools.economics import annuity
 
 # Load django settings if run locally:
 if __name__ == '__main__':
@@ -14,11 +15,11 @@ from stemp.scenarios import basic_setup
 
 
 SCENARIO = 'oil_scenario'
-NEEDED_PARAMETERS = {
-    'General': (
-        'net_costs',
-    )
-}
+SHORT_NAME = 'Oil'
+NEEDED_PARAMETERS = basic_setup.NEEDED_PARAMETERS
+NEEDED_PARAMETERS[SHORT_NAME] = [
+    'oil_lifetime', 'oil_capex', 'oil_efficiency'
+]
 
 
 def upload_scenario_parameters():
@@ -28,10 +29,10 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'parameter_type': 'various',
-                    'parameter': 'net_connection',
-                    'value_type': 'boolean',
-                    'value': 'True'
+                    'parameter_type': 'cost',
+                    'parameter': 'wacc',
+                    'value_type': 'float',
+                    'value': '0.05'
                 },
                 {
                     'scenario': SCENARIO,
@@ -43,34 +44,31 @@ def upload_scenario_parameters():
                 },
                 {
                     'scenario': SCENARIO,
-                    'component': 'General',
+                    'component': SHORT_NAME,
                     'parameter_type': 'cost',
-                    'parameter': 'pv_feedin_tariff',
-                    'value_type': 'float',
-                    'value': '-0.08'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'Oil',
-                    'parameter_type': 'cost',
-                    'parameter': 'invest',
+                    'parameter': 'oil_capex',
                     'value_type': 'float',
                     'value': '1200'
                 },
                 {
                     'scenario': SCENARIO,
-                    'component': 'Oil',
+                    'component': SHORT_NAME,
+                    'parameter_type': 'cost',
+                    'parameter': 'oil_lifetime',
+                    'value_type': 'integer',
+                    'value': '20'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': SHORT_NAME,
                     'parameter_type': 'tech',
-                    'parameter': 'efficiency',
+                    'parameter': 'oil_efficiency',
                     'value_type': 'float',
                     'value': '0.6'
                 }
             ]
         }
         OEPScenario.insert(parameters)
-
-
-upload_scenario_parameters()
 
 
 def create_energysystem(periods=2, **parameters):
@@ -92,12 +90,19 @@ def create_energysystem(periods=2, **parameters):
 
 
 def add_oil_technology(label, energysystem, timeseries, parameters):
+    # Get investment parameters:
+    wacc = parameters['General']['wacc']
+    capex = parameters[SHORT_NAME]['oil_capex']
+    lifetime = parameters[SHORT_NAME]['oil_lifetime']
+    epc = annuity(capex, lifetime, wacc)
+
     # Get subgrid busses:
     sub_b_th = energysystem.groups["b_{}_th".format(label)]
     oil_heating = Transformer(
         label='{}_oil_heating'.format(label),
-        inputs={energysystem.groups['b_oil']: Flow(nominal_value=10e10)},
+        inputs={energysystem.groups['b_oil']: Flow(
+            investment=Investment(ep_costs=epc))},
         outputs={sub_b_th: Flow()},
-        conversion_factors={sub_b_th: 0.3},
+        conversion_factors={sub_b_th: parameters[SHORT_NAME]['oil_efficiency']}
     )
     energysystem.add(oil_heating)

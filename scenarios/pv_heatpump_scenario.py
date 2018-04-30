@@ -2,6 +2,7 @@
 import pandas
 
 from oemof.solph import Flow, Transformer, Investment, Source
+from oemof.tools.economics import annuity
 
 # Load django settings if run locally:
 if __name__ == '__main__':
@@ -16,11 +17,10 @@ from stemp.scenarios import basic_setup
 
 
 SCENARIO = 'pv_heatpump_scenario'
-NEEDED_PARAMETERS = {
-    'General': (
-        'net_costs',
-    )
-}
+NEEDED_PARAMETERS = basic_setup.NEEDED_PARAMETERS
+NEEDED_PARAMETERS['General'].append('pv_feedin_tariff')
+NEEDED_PARAMETERS['PV'] = ['pv_lifetime', 'pv_capex', 'pv_opex']
+NEEDED_PARAMETERS['HP'] = ['hp_lifetime', 'hp_capex', 'hp_opex']
 
 
 def upload_scenario_parameters():
@@ -30,10 +30,10 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'parameter_type': 'various',
-                    'parameter': 'net_connection',
-                    'value_type': 'boolean',
-                    'value': 'True'
+                    'parameter_type': 'cost',
+                    'parameter': 'wacc',
+                    'value_type': 'float',
+                    'value': '0.05'
                 },
                 {
                     'scenario': SCENARIO,
@@ -55,24 +55,53 @@ def upload_scenario_parameters():
                     'scenario': SCENARIO,
                     'component': 'PV',
                     'parameter_type': 'cost',
-                    'parameter': 'invest',
+                    'parameter': 'pv_lifetime',
                     'value_type': 'float',
                     'value': '1200'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'PV',
-                    'parameter_type': 'tech',
-                    'parameter': 'efficiency',
+                    'parameter_type': 'cost',
+                    'parameter': 'pv_capex',
+                    'value_type': 'float',
+                    'value': '1200'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'PV',
+                    'parameter_type': 'cost',
+                    'parameter': 'pv_opex',
+                    'value_type': 'float',
+                    'value': '0.6'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'HP',
+                    'parameter_type': 'cost',
+                    'parameter': 'hp_lifetime',
+                    'value_type': 'float',
+                    'value': '1200'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'HP',
+                    'parameter_type': 'cost',
+                    'parameter': 'hp_capex',
+                    'value_type': 'float',
+                    'value': '1200'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'HP',
+                    'parameter_type': 'cost',
+                    'parameter': 'hp_opex',
                     'value_type': 'float',
                     'value': '0.6'
                 }
             ]
         }
         OEPScenario.insert(parameters)
-
-
-upload_scenario_parameters()
 
 
 def get_timeseries():
@@ -103,16 +132,28 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     sub_b_el = energysystem.groups["b_{}_el".format(label)]
     sub_b_th = energysystem.groups["b_{}_th".format(label)]
 
+    # get investment parameters
+    wacc = parameters['General']['wacc']
+
+    capex = parameters['HP']['hp_capex']
+    lifetime = parameters['HP']['hp_lifetime']
+    epc_hp = annuity(capex, lifetime, wacc)
+
+    capex = parameters['PV']['pv_capex']
+    lifetime = parameters['PV']['pv_lifetime']
+    epc_pv = annuity(capex, lifetime, wacc)
+
     # Add heat pump:
     COP = cop_heating(timeseries['temp'], type_hp='brine')
     hp = Transformer(
         label="{}_heat_pump".format(label),
         inputs={
             sub_b_el: Flow(
-                investment=Investment(ep_costs=3)
+                investment=Investment(ep_costs=epc_hp)
             )
         },
-        outputs={sub_b_th: Flow(variable_costs=10)},
+        outputs={sub_b_th: Flow(
+            variable_costs=parameters['HP']['hp_opex'])},
         conversion_factors={sub_b_th: COP}
     )
 
@@ -122,10 +163,9 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
         outputs={
             sub_b_el: Flow(
                 actual_value=timeseries['pv'],
-                # nominal_value=200,
-                variable_costs=2,
+                variable_costs=parameters['PV']['pv_opex'],
                 fixed=True,
-                investment=Investment(ep_costs=0.1)
+                investment=Investment(ep_costs=epc_pv)
             )
         }
     )

@@ -18,9 +18,9 @@ except AppRegistryNotReady:
 
 
 NEEDED_PARAMETERS = {
-    'General': (
+    'General': [
         'net_costs', 'wacc'
-    )
+    ]
 }
 
 

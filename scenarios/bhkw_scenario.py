@@ -8,11 +8,12 @@ from stemp.scenarios import basic_setup
 
 
 SCENARIO = 'bhkw_scenario'
+SHORT_NAME = 'BHKW'
 NEEDED_PARAMETERS = basic_setup.NEEDED_PARAMETERS
-NEEDED_PARAMETERS['BHKW'] = (
+NEEDED_PARAMETERS[SHORT_NAME] = [
     'invest', 'conversion_factor_el', 'conversion_factor_th',
     'full_condensation_factor_el'
-)
+]
 
 
 def upload_scenario_parameters():
@@ -37,7 +38,7 @@ def upload_scenario_parameters():
                 },
                 {
                     'scenario': SCENARIO,
-                    'component': 'BHKW',
+                    'component': SHORT_NAME,
                     'parameter_type': 'cost',
                     'parameter': 'invest',
                     'value_type': 'float',
@@ -45,7 +46,7 @@ def upload_scenario_parameters():
                 },
                 {
                     'scenario': SCENARIO,
-                    'component': 'BHKW',
+                    'component': SHORT_NAME,
                     'parameter_type': 'cost',
                     'parameter': 'lifetime',
                     'value_type': 'integer',
@@ -53,7 +54,7 @@ def upload_scenario_parameters():
                 },
                 {
                     'scenario': SCENARIO,
-                    'component': 'BHKW',
+                    'component': SHORT_NAME,
                     'parameter_type': 'tech',
                     'parameter': 'conversion_factor_el',
                     'value_type': 'float',
@@ -61,7 +62,7 @@ def upload_scenario_parameters():
                 },
                 {
                     'scenario': SCENARIO,
-                    'component': 'BHKW',
+                    'component': SHORT_NAME,
                     'parameter_type': 'tech',
                     'parameter': 'conversion_factor_th',
                     'value_type': 'float',
@@ -69,7 +70,7 @@ def upload_scenario_parameters():
                 },
                 {
                     'scenario': SCENARIO,
-                    'component': 'BHKW',
+                    'component': SHORT_NAME,
                     'parameter_type': 'tech',
                     'parameter': 'full_condensation_factor_el',
                     'value_type': 'float',
@@ -102,8 +103,8 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
     sub_b_el = energysystem.groups["b_{}_el".format(label)]
     sub_b_th = energysystem.groups["b_{}_th".format(label)]
 
-    capex = parameters['BHKW']['invest']
-    lifetime = parameters['BHKW']['lifetime']
+    capex = parameters[SHORT_NAME]['invest']
+    lifetime = parameters[SHORT_NAME]['lifetime']
     wacc = parameters['General']['wacc']
     epc = annuity(capex, lifetime, wacc)
 
@@ -113,10 +114,10 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
             investment=Investment(ep_costs=epc))},
         outputs={sub_b_el: Flow(), sub_b_th: Flow()},
         conversion_factors={
-            sub_b_el: parameters['BHKW']['conversion_factor_el'],
-            sub_b_th: parameters['BHKW']['conversion_factor_th']
+            sub_b_el: parameters[SHORT_NAME]['conversion_factor_el'],
+            sub_b_th: parameters[SHORT_NAME]['conversion_factor_th']
         },
         conversion_factor_full_condensation={
-            sub_b_el: parameters['BHKW']['full_condensation_factor_el']}
+            sub_b_el: parameters[SHORT_NAME]['full_condensation_factor_el']}
     )
     energysystem.add(chp)
