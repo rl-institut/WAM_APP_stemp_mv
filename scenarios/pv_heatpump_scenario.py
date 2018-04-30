@@ -11,8 +11,7 @@ if __name__ == '__main__':
     os.environ['DJANGO_SETTINGS_MODULE'] = 'kopy.settings'
     application = get_wsgi_application()
 
-
-from stemp.models import OEPScenario
+from stemp.oep_models import OEPScenario
 from stemp.scenarios import basic_setup
 
 

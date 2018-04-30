@@ -4,14 +4,18 @@ import pandas
 from importlib import import_module
 import logging
 from configobj import ConfigObj
-from collections import namedtuple
 
-from oemof.solph import Model, Source
-from oemof.solph.plumbing import sequence, _Sequence
+from oemof.solph import Model
 from oemof import outputlib
 from oemof.tools import helpers
 
-from kopy.settings import BASE_DIR
+try:
+    from kopy.settings import BASE_DIR
+except KeyError:
+    logging.warning(
+        'Could not find kopy settings. '
+        'Maybe you have to start django application first.'
+    )
 
 
 SCENARIO_PATH = 'stemp.scenarios'

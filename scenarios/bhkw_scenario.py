@@ -1,40 +1,24 @@
 
-from oemof.solph import Flow, Bus
+from oemof.solph import Flow, Bus, Investment
 from oemof.solph.components import ExtractionTurbineCHP
+from oemof.tools.economics import annuity
 
-# Load django settings if run locally:
-if __name__ == '__main__':
-    import os
-    from django.core.wsgi import get_wsgi_application
-
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'kopy.settings'
-    application = get_wsgi_application()
-
-
-from stemp.models import OEPScenario
+from stemp.oep_models import OEPScenario
 from stemp.scenarios import basic_setup
 
 
 SCENARIO = 'bhkw_scenario'
-NEEDED_PARAMETERS = {
-    'General': (
-        'net_costs',
-    )
-}
+NEEDED_PARAMETERS = basic_setup.NEEDED_PARAMETERS
+NEEDED_PARAMETERS['BHKW'] = (
+    'invest', 'conversion_factor_el', 'conversion_factor_th',
+    'full_condensation_factor_el'
+)
 
 
 def upload_scenario_parameters():
     if len(OEPScenario.select(where='scenario=' + SCENARIO)) == 0:
         parameters = {
             'query': [
-                {
-                    'scenario': SCENARIO,
-                    'component': 'General',
-                    'parameter_type': 'various',
-                    'parameter': 'net_connection',
-                    'value_type': 'boolean',
-                    'value': 'True'
-                },
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
@@ -47,9 +31,9 @@ def upload_scenario_parameters():
                     'scenario': SCENARIO,
                     'component': 'General',
                     'parameter_type': 'cost',
-                    'parameter': 'pv_feedin_tariff',
+                    'parameter': 'wacc',
                     'value_type': 'float',
-                    'value': '-0.08'
+                    'value': '0.05'
                 },
                 {
                     'scenario': SCENARIO,
@@ -62,17 +46,38 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'BHKW',
+                    'parameter_type': 'cost',
+                    'parameter': 'lifetime',
+                    'value_type': 'integer',
+                    'value': '20'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'BHKW',
                     'parameter_type': 'tech',
-                    'parameter': 'efficiency',
+                    'parameter': 'conversion_factor_el',
                     'value_type': 'float',
-                    'value': '0.6'
+                    'value': '0.5'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'BHKW',
+                    'parameter_type': 'tech',
+                    'parameter': 'conversion_factor_th',
+                    'value_type': 'float',
+                    'value': '0.3'
+                },
+                {
+                    'scenario': SCENARIO,
+                    'component': 'BHKW',
+                    'parameter_type': 'tech',
+                    'parameter': 'full_condensation_factor_el',
+                    'value_type': 'float',
+                    'value': '0.5'
                 }
             ]
         }
         OEPScenario.insert(parameters)
-
-
-upload_scenario_parameters()
 
 
 def create_energysystem(periods=2, **parameters):
@@ -97,11 +102,21 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
     sub_b_el = energysystem.groups["b_{}_el".format(label)]
     sub_b_th = energysystem.groups["b_{}_th".format(label)]
 
+    capex = parameters['BHKW']['invest']
+    lifetime = parameters['BHKW']['lifetime']
+    wacc = parameters['General']['wacc']
+    epc = annuity(capex, lifetime, wacc)
+
     chp = ExtractionTurbineCHP(
         label='{}_chp'.format(label),
-        inputs={energysystem.groups['b_gas']: Flow(nominal_value=10e10)},
+        inputs={energysystem.groups['b_gas']: Flow(
+            investment=Investment(ep_costs=epc))},
         outputs={sub_b_el: Flow(), sub_b_th: Flow()},
-        conversion_factors={sub_b_el: 0.3, sub_b_th: 0.5},
-        conversion_factor_full_condensation={sub_b_el: 0.5}
+        conversion_factors={
+            sub_b_el: parameters['BHKW']['conversion_factor_el'],
+            sub_b_th: parameters['BHKW']['conversion_factor_th']
+        },
+        conversion_factor_full_condensation={
+            sub_b_el: parameters['BHKW']['full_condensation_factor_el']}
     )
     energysystem.add(chp)

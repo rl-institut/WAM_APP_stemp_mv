@@ -1,11 +1,27 @@
 
 import pandas
+import logging
 from enum import Enum
+from django.core.exceptions import AppRegistryNotReady
 
 from oemof.solph import (
     EnergySystem, Bus, Flow, Sink, Transformer, Source
 )
-from stemp.models import District, Household
+
+try:
+    from stemp.models import District, Household
+except AppRegistryNotReady:
+    logging.warning(
+        'Could not find django models. '
+        'Maybe you have to start django application first.'
+    )
+
+
+NEEDED_PARAMETERS = {
+    'General': (
+        'net_costs', 'wacc'
+    )
+}
 
 
 class CustomerOption(str, Enum):

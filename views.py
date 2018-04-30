@@ -1,11 +1,15 @@
 
+import os
+from collections import defaultdict, OrderedDict, ChainMap
+from configobj import ConfigObj
+
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
-from kopy.settings import SESSION_DATA
+from kopy.settings import SESSION_DATA, BASE_DIR
 from stemp.tasks import add
 from stemp.bookkeeping import simulate_energysystem
-from stemp.models import OEPScenario
+from stemp.oep_models import OEPScenario
 from stemp.scenarios import create_energysystem
 
 from .forms import (
@@ -202,10 +206,29 @@ class ParameterView(TemplateView):
 
         # Get data from OEP:
         oep_scenario = OEPScenario.get_scenario_parameters(scenario)
-        if oep_scenario is not None:
-            return ParameterForm(oep_scenario, data)
-        else:
-            return {}
+
+        # Get default descriptions:
+        attr_cfg_path = os.path.join(BASE_DIR, 'stemp/attributes.cfg')
+        description = ConfigObj(attr_cfg_path)
+
+        parameters = defaultdict(OrderedDict)
+        for item in oep_scenario:
+            comp = item['component']
+            parameter = item['parameter']
+            param_dict = ChainMap(
+                {
+                    'value': item['value'],
+                    'value_type': item['value_type'],
+                    'parameter_type': item['parameter_type']
+                },
+                description.get(comp, {}).get(parameter, {})
+            )
+            parameters[comp][parameter] = param_dict
+
+        # Default factory has to be unset in order to support iterating over
+        # dict in django template:
+        parameters.default_factory = None
+        return ParameterForm(parameters, data)
 
     @check_session
     def get(self, request, *args, **kwargs):
