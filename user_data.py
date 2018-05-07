@@ -1,7 +1,8 @@
 
 from os import path
 from stemp.settings import SqlAlchemySession, SCENARIO_PATH
-from stemp.scenarios import import_scenario
+from stemp.scenarios import import_scenario, create_energysystem
+from stemp.bookkeeping import simulate_energysystem
 from stemp.models import Scenario, Setup, Parameter, Simulation
 from stemp.results import Results
 from db_apps.oemof_results import store_results, restore_results
@@ -51,6 +52,19 @@ class UserSession(object):
 
         # Simulation not found:
         return None
+
+    def load_or_simulate(self):
+        # Check if results already exist:
+        result_id = self.check_for_result()
+        if result_id is not None:
+            self.load_result(result_id)
+        else:
+            energysystem = create_energysystem(
+                self.scenario_module,
+                **self.parameter
+            )
+            self.energysystem = energysystem
+            simulate_energysystem(self)
 
     def store_simulation(self):
         # Store scenario, parameter and setup via Django ORM

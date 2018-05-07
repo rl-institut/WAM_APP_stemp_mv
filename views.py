@@ -5,6 +5,8 @@ from configobj import ConfigObj
 
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
+from django. forms import MultipleChoiceField
+from django.forms.widgets import CheckboxSelectMultiple
 
 from kopy.settings import SESSION_DATA, BASE_DIR
 from stemp.tasks import add
@@ -156,6 +158,8 @@ class TechnologyView(TemplateView):
             'technology',
             'Technology',
             choices=choices,
+            field=MultipleChoiceField,
+            widget=CheckboxSelectMultiple,
             submit_on_change=False
         )
         return context
@@ -167,6 +171,7 @@ class TechnologyView(TemplateView):
 
     @check_session
     def post(self, request, session):
+        # scenario = request.POST.getlist('technology')
         scenario = request.POST['technology']
         session.scenario = scenario
         session.import_scenario_module()
@@ -176,17 +181,7 @@ class TechnologyView(TemplateView):
             parameter_form = ParameterForm(oep_scenario)
             session.parameter.update(parameter_form.prepared_data())
 
-            # Check if results already exist:
-            result_id = session.check_for_result()
-            if result_id is not None:
-                session.load_result(result_id)
-            else:
-                energysystem = create_energysystem(
-                    session.scenario_module,
-                    **session.parameter
-                )
-                session.energysystem = energysystem
-                simulate_energysystem(session)
+            session.load_or_simulate()
             return redirect('stemp:result')
         else:
             return redirect('stemp:parameter')
@@ -243,13 +238,7 @@ class ParameterView(TemplateView):
         if not parameter_form.is_valid():
             raise ValueError('Invalid scenario parameters')
         session.parameter.update(parameter_form.prepared_data())
-        session.import_scenario_module()
-        energysystem = create_energysystem(
-            session.scenario_module,
-            **session.parameter,
-        )
-        session.energysystem = energysystem
-        simulate_energysystem(session)
+        session.load_or_simulate()
         return redirect('stemp:result')
 
 
