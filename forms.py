@@ -14,7 +14,7 @@ from stemp.models import LoadProfile, Household, Simulation, District
 class ChoiceForm(Form):
     def __init__(
             self, name, label=None, choices=None, submit_on_change=True,
-            initial=None, widget=Select, *args, **kwargs
+            initial=None, field=ChoiceField, widget=Select, *args, **kwargs
     ):
         super(ChoiceForm, self).__init__(*args, **kwargs)
         choices = [] if choices is None else choices
@@ -22,7 +22,7 @@ class ChoiceForm(Form):
         attrs = {'class': 'btn btn-default'}
         if submit_on_change:
             attrs['onchange'] = 'this.form.submit();'
-        self.fields[name] = ChoiceField(
+        self.fields[name] = field(
             label=label,
             choices=choices,
             initial=initial,

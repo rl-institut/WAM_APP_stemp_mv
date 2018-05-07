@@ -1,4 +1,5 @@
 
+import os
 import pandas
 
 from oemof.solph import Flow, Transformer, Investment, Source
@@ -99,7 +100,8 @@ def upload_scenario_parameters():
 def get_timeseries():
     # FIXME: Get timeseries from open energy platform or elsewhere public
     csv_path = 'timeseries.csv'
-    timeseries = pandas.read_csv(csv_path)
+    timeseries = pandas.read_csv(
+        os.path.join(os.path.dirname(__file__), csv_path))
     return timeseries
 
 
