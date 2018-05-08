@@ -3,26 +3,18 @@ from os import path
 from stemp.settings import SqlAlchemySession, SCENARIO_PATH
 from stemp.scenarios import import_scenario, create_energysystem
 from stemp.bookkeeping import simulate_energysystem
-from stemp.models import Scenario, Setup, Parameter, Simulation
-from stemp.results import Results
+from stemp.models import Scenario, Parameter, Simulation
 from db_apps.oemof_results import store_results, restore_results
 
 
-class UserSession(object):
-    def __init__(self):
-        self.scenario = None
-        self.scenario_module = None
-        self.parameter = {}
-        self.setup = {}
+class SessionSimulation(object):
+    def __init__(self, name):
+        self.name = name
+        self.module = None
         self.energysystem = None
-        self.result = None
-        self.district = {}
-
-    def load_result(self, result_id):
-        sa_session = SqlAlchemySession()
-        param_results, results = restore_results(sa_session, result_id)
-        self.result = Results(results, param_results)
-        sa_session.close()
+        self.parameter = {}
+        self.result_id = None
+        self.import_scenario_module()
 
     def check_for_result(self):
         """
@@ -38,7 +30,7 @@ class UserSession(object):
         int: Simulation ID if results were found, else None
         """
         for simulation in Simulation.objects.filter(
-                scenario__name=self.scenario):
+                scenario__name=self.name):
 
             # Check if result is outdated:
             if simulation.date < simulation.scenario.last_change:
@@ -57,27 +49,26 @@ class UserSession(object):
         # Check if results already exist:
         result_id = self.check_for_result()
         if result_id is not None:
-            self.load_result(result_id)
+            self.result_id = result_id
         else:
             energysystem = create_energysystem(
-                self.scenario_module,
+                self.module,
                 **self.parameter
             )
             self.energysystem = energysystem
-            simulate_energysystem(self)
+            self.result_id = simulate_energysystem(self)
 
-    def store_simulation(self):
+    def store_results(self, results, param_results):
         # Store scenario, parameter and setup via Django ORM
-        scenario = Scenario.objects.get_or_create(name=self.scenario)[0]
+        scenario = Scenario.objects.get_or_create(name=self.name)[0]
         parameter = Parameter.objects.get_or_create(data=self.parameter)[0]
-        setup = Setup.objects.get_or_create(data=self.setup)[0]
 
         # Store oemeof results via SQLAlchemy:
         sa_session = SqlAlchemySession()
         result_id = store_results(
             sa_session,
-            self.result.param_results,
-            self.result.results
+            param_results,
+            results
         )
         sa_session.close()
 
@@ -85,13 +76,27 @@ class UserSession(object):
         Simulation.objects.get_or_create(
             scenario=scenario,
             parameter=parameter,
-            setup=setup,
             result_id=result_id
         )
+        return result_id
 
     def import_scenario_module(self):
-        if self.scenario is None:
-            raise KeyError('no scenario found')
-        scenario_module = import_scenario(
-            path.join(SCENARIO_PATH, self.scenario))
-        self.scenario_module = scenario_module
+        self.module = import_scenario(
+            path.join(SCENARIO_PATH, self.name))
+
+
+class UserSession(object):
+    def __init__(self):
+        self.scenarios = []
+        self.demand = {}
+
+    @staticmethod
+    def load_results(result_id):
+        sa_session = SqlAlchemySession()
+        param_results, results = restore_results(sa_session, result_id)
+        sa_session.close()
+        return results, param_results
+
+    def init_scenarios(self, scenario_names):
+        for scenario in scenario_names:
+            self.scenarios.append(SessionSimulation(scenario))

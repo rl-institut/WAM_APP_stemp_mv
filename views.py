@@ -10,17 +10,13 @@ from django.forms.widgets import CheckboxSelectMultiple
 
 from kopy.settings import SESSION_DATA, BASE_DIR
 from stemp.tasks import add
-from stemp.bookkeeping import simulate_energysystem
 from stemp.oep_models import OEPScenario
-from stemp.scenarios import create_energysystem
-
-from .forms import (
-    SaveSimulationForm, ComparisonForm, ChoiceForm, HouseholdForm,
+from stemp import results
+from stemp.forms import (
+    SaveSimulationForm, ChoiceForm, HouseholdForm,
     HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm,
     ParameterForm
 )
-from stemp.results import Comparison
-from stemp.scenarios import get_scenario_config
 
 
 def check_session(func):
@@ -87,10 +83,10 @@ class DemandSingleView(TemplateView):
                 hh_id = hh.cleaned_data['profile'].id
 
         if self.is_district_hh:
-            session.district[str(hh_id)] = 1
+            session.demand[str(hh_id)] = 1
             return redirect('stemp:demand_district')
         else:
-            session.parameter = {
+            session.demand = {
                 'customer_index': hh_id,
                 'customer_case': 'single'
             }
@@ -114,7 +110,7 @@ class DemandDistrictView(TemplateView):
         return self.render_to_response(context)
 
     def __change_district_list(self, request, session):
-        session.district = {
+        session.demand = {
             hh: count
             for hh, count in request.POST.items()
             if hh not in (
@@ -126,7 +122,7 @@ class DemandDistrictView(TemplateView):
         }
         if 'trash' in request.POST:
             trash = request.POST['trash']
-            del session.district[trash]
+            del session.demand[trash]
             context = self.get_context_data(session)
             return self.render_to_response(context)
         elif 'add_household' in request.POST:
@@ -135,7 +131,6 @@ class DemandDistrictView(TemplateView):
     @check_session
     def post(self, request, session):
         if 'done' in request.POST:
-            session.parameter = session.district
             return redirect('stemp:technology')
         else:
             return self.__change_district_list(request, session)
@@ -171,17 +166,17 @@ class TechnologyView(TemplateView):
 
     @check_session
     def post(self, request, session):
-        # scenario = request.POST.getlist('technology')
-        scenario = request.POST['technology']
-        session.scenario = scenario
-        session.import_scenario_module()
+        scenarios = request.POST.getlist('technology')
+        session.init_scenarios(scenarios)
         if 'continue' in request.POST:
-            # Load default parameters:
-            oep_scenario = OEPScenario.get_scenario_parameters(scenario)
-            parameter_form = ParameterForm(oep_scenario)
-            session.parameter.update(parameter_form.prepared_data())
-
-            session.load_or_simulate()
+            for scenario in session.scenarios:
+                # Load default parameters:
+                oep_scenario = OEPScenario.get_scenario_parameters(
+                    scenario.name)
+                # TODO: Refactor function from ParameterView to load parameter
+                parameter_form = ParameterForm(oep_scenario)
+                scenario.parameter.update(parameter_form.prepared_data())
+                scenario.load_or_simulate()
             return redirect('stemp:result')
         else:
             return redirect('stemp:parameter')
@@ -195,14 +190,18 @@ class ParameterView(TemplateView):
 
     @staticmethod
     def get_scenario_parameters(session, data=None):
-        scenario = session.scenario
-        if scenario is None:
-            raise KeyError('No scenario found')
+        scenarios = session.scenarios
+        if not scenarios:
+            raise KeyError('No scenarios found')
+
+        scenario = scenarios[0]
+        # TODO: Mix multiple, overlapping scenario parameters!
 
         # Get data from OEP:
-        oep_scenario = OEPScenario.get_scenario_parameters(scenario)
+        oep_scenario = OEPScenario.get_scenario_parameters(scenario.name)
 
         # Get default descriptions:
+        # TODO: Refactor into seperate function
         attr_cfg_path = os.path.join(BASE_DIR, 'stemp/attributes.cfg')
         description = ConfigObj(attr_cfg_path)
 
@@ -237,8 +236,9 @@ class ParameterView(TemplateView):
         parameter_form = self.get_scenario_parameters(session, request.POST)
         if not parameter_form.is_valid():
             raise ValueError('Invalid scenario parameters')
-        session.parameter.update(parameter_form.prepared_data())
-        session.load_or_simulate()
+        # TODO: Multiple scenarios!
+        session.scenarios[0].parameter.update(parameter_form.prepared_data())
+        session.scenarios[0].load_or_simulate()
         return redirect('stemp:result')
 
 
@@ -251,14 +251,15 @@ class ResultView(TemplateView):
     def get_context_data(self, result, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
         context['save'] = SaveSimulationForm()
-        context['visualizations'] = result.get_visualizations()
+        context['visualizations'] = result.visualize('LCOE')
         return context
 
     @check_session
     def get(self, request, *args, **kwargs):
         session = kwargs['session']
-        result_config = get_scenario_config(session.scenario).get('results')
-        session.result.create_visualization_data(result_config)
+        # FIXME: Remove static config
+        session.result.add_visualization(
+            results.DEFAULT_VISUALIZATIONS['lcoe'])
         context = self.get_context_data(session.result)
         return self.render_to_response(context)
 
@@ -272,28 +273,3 @@ class ResultView(TemplateView):
                 return render(request, 'stemp/session_not_found.html')
             session.store_simulation(simulation_name)
             return self.render_to_response({})
-
-
-class ComparisonView(TemplateView):
-    template_name = 'stemp/comparison.html'
-
-    def __init__(self, **kwargs):
-        super(ComparisonView, self).__init__(**kwargs)
-
-    def get_context_data(self, sim_ids=None, **kwargs):
-        context = super(ComparisonView, self).get_context_data(**kwargs)
-        if sim_ids is None:
-            context['comparison'] = ComparisonForm()
-        else:
-            comparison = Comparison(sim_ids)
-            context['visualizations'] = comparison.get_visualizations()
-        return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        return self.render_to_response(context)
-
-    def post(self, request):
-        sim_ids = request.POST.getlist('comparison')
-        context = self.get_context_data(sim_ids)
-        return self.render_to_response(context)

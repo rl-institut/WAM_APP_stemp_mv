@@ -8,13 +8,6 @@ from django.contrib.postgres.fields import ArrayField, JSONField
 from utils.highcharts import Highchart
 
 
-class Setup(models.Model):
-    data = JSONField(unique=True)
-
-    def __str__(self):
-        return self.__class__.__name__ + '#' + str(self.id)
-
-
 class Parameter(models.Model):
     data = JSONField(unique=True)
 
@@ -33,14 +26,13 @@ class Scenario(models.Model):
 class Simulation(models.Model):
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
     parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE)
-    setup = models.ForeignKey(Setup, on_delete=models.CASCADE)
     result_id = models.IntegerField()
     date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         ids = map(
             str,
-            [self.scenario, self.parameter, self.setup, self.result_id]
+            [self.scenario, self.parameter, self.result_id]
         )
         return '(' + ','.join(ids) + ')'
 

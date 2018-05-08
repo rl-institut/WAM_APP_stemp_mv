@@ -1,6 +1,5 @@
 
 from pathos.helpers import mp
-from stemp.results import Results
 from stemp.scenarios import get_simulation_function
 
 
@@ -9,9 +8,7 @@ def simulate_energysystem(session):
     simulation_fct = get_simulation_function(session.scenario_module)
     result, param_result = multiprocess_energysystem(
         energysystem, simulation_fct)
-
-    session.result = Results(result, param_result)
-    session.store_simulation()
+    return session.store_result(result, param_result)
 
 
 # TODO: Create user-dependent pool in settings

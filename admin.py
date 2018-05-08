@@ -11,7 +11,6 @@ admin.site.register(models.HeatProfile)
 # Register simulations
 admin.site.register(models.Scenario)
 admin.site.register(models.Parameter)
-admin.site.register(models.Setup)
 admin.site.register(models.Simulation)
 admin.site.register(models.Question)
 admin.site.register(models.QuestionHousehold)

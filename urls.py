@@ -2,7 +2,7 @@
 from django.urls import path
 from django.views.generic.base import TemplateView
 from stemp.views import (
-    SelectView, ResultView, ParameterView, ComparisonView, DemandSingleView,
+    SelectView, ResultView, ParameterView, DemandSingleView,
     DemandDistrictView, TechnologyView,
     DemandSelectionView
 )
@@ -36,7 +36,6 @@ urlpatterns = [
     path('technology/', TechnologyView.as_view(), name='technology'),
     path('parameter/', ParameterView.as_view(), name='parameter'),
     path('result/', ResultView.as_view(), name='result'),
-    path('comparison/', ComparisonView.as_view(), name='comparison'),
     path(
         'demand/household_profile/',
         HouseholdProfileView.as_view(),
