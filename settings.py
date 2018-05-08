@@ -1,14 +1,14 @@
 
 from os import path
-from kopy.settings import config
+from kopy import settings
 import sqlalchemy
 from sqlalchemy import orm
 import sqlahelper
 
 # Add sqlalchemy:
 db_url = '{engine}://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}'.format(
-    engine=config['KOPERNIKUS']['ENGINE'].split('.')[-1],
-    **config['KOPERNIKUS']
+    engine=settings.config['DEFAULT_DB']['ENGINE'].split('.')[-1],
+    **settings.config['DEFAULT_DB']
 )
 engine = sqlalchemy.create_engine(db_url)
 sqlahelper.add_engine(engine)
