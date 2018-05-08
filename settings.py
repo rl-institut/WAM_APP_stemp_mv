@@ -7,8 +7,8 @@ import sqlahelper
 
 # Add sqlalchemy:
 db_url = '{engine}://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}'.format(
-    engine=settings.config['DEFAULT_DB']['ENGINE'].split('.')[-1],
-    **settings.config['DEFAULT_DB']
+    engine=settings.config['DEFAULT']['ENGINE'].split('.')[-1],
+    **settings.config['DEFAULT']
 )
 engine = sqlalchemy.create_engine(db_url)
 sqlahelper.add_engine(engine)
