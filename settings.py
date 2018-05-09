@@ -18,3 +18,5 @@ Base.metadata.bind = engine
 Base.metadata.create_all()
 
 SCENARIO_PATH = path.join('stemp', 'scenarios')
+
+PARAMETER_CONFIG = 'stemp/attributes.cfg'

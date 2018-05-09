@@ -1,14 +1,10 @@
 
-import os
-from collections import defaultdict, OrderedDict, ChainMap
-from configobj import ConfigObj
-
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 from django. forms import MultipleChoiceField
 from django.forms.widgets import CheckboxSelectMultiple
 
-from kopy.settings import SESSION_DATA, BASE_DIR
+from kopy.settings import SESSION_DATA
 from stemp.tasks import add
 from stemp.oep_models import OEPScenario
 from stemp import results
@@ -87,8 +83,8 @@ class DemandSingleView(TemplateView):
             return redirect('stemp:demand_district')
         else:
             session.demand = {
-                'customer_index': hh_id,
-                'customer_case': 'single'
+                'index': hh_id,
+                'type': 'single'
             }
             return redirect('stemp:technology')
 
@@ -171,10 +167,8 @@ class TechnologyView(TemplateView):
         if 'continue' in request.POST:
             for scenario in session.scenarios:
                 # Load default parameters:
-                oep_scenario = OEPScenario.get_scenario_parameters(
-                    scenario.name)
-                # TODO: Refactor function from ParameterView to load parameter
-                parameter_form = ParameterForm(oep_scenario)
+                parameters = OEPScenario.get_scenario_parameters(scenario.name)
+                parameter_form = ParameterForm(parameters)
                 scenario.parameter.update(parameter_form.prepared_data())
                 scenario.load_or_simulate()
             return redirect('stemp:result')
@@ -198,30 +192,7 @@ class ParameterView(TemplateView):
         # TODO: Mix multiple, overlapping scenario parameters!
 
         # Get data from OEP:
-        oep_scenario = OEPScenario.get_scenario_parameters(scenario.name)
-
-        # Get default descriptions:
-        # TODO: Refactor into seperate function
-        attr_cfg_path = os.path.join(BASE_DIR, 'stemp/attributes.cfg')
-        description = ConfigObj(attr_cfg_path)
-
-        parameters = defaultdict(OrderedDict)
-        for item in oep_scenario:
-            comp = item['component']
-            parameter = item['parameter']
-            param_dict = ChainMap(
-                {
-                    'value': item['value'],
-                    'value_type': item['value_type'],
-                    'parameter_type': item['parameter_type']
-                },
-                description.get(comp, {}).get(parameter, {})
-            )
-            parameters[comp][parameter] = param_dict
-
-        # Default factory has to be unset in order to support iterating over
-        # dict in django template:
-        parameters.default_factory = None
+        parameters = OEPScenario.get_scenario_parameters(scenario.name)
         return ParameterForm(parameters, data)
 
     @check_session
@@ -248,19 +219,17 @@ class ResultView(TemplateView):
     def __init__(self, **kwargs):
         super(ResultView, self).__init__(**kwargs)
 
-    def get_context_data(self, result, **kwargs):
+    def get_context_data(self, session, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
         context['save'] = SaveSimulationForm()
-        context['visualizations'] = result.visualize('LCOE')
+        visualization = results.ResultAnalysisVisualization(session.scenarios)
+        context['visualizations'] = [visualization.visualize('invest')]
         return context
 
     @check_session
     def get(self, request, *args, **kwargs):
         session = kwargs['session']
-        # FIXME: Remove static config
-        session.result.add_visualization(
-            results.DEFAULT_VISUALIZATIONS['lcoe'])
-        context = self.get_context_data(session.result)
+        context = self.get_context_data(session)
         return self.render_to_response(context)
 
     @check_session

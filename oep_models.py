@@ -1,3 +1,8 @@
+import os
+from collections import defaultdict, OrderedDict, ChainMap
+from configobj import ConfigObj
+from kopy.settings import BASE_DIR
+from stemp.settings import PARAMETER_CONFIG
 from db_apps.oep import OEPTable
 
 
@@ -58,4 +63,26 @@ class OEPScenario(OEPTable):
         scenario = super(OEPScenario, cls).select(where)
         if not scenario:
             return None
-        return scenario
+
+        # Get default descriptions:
+        attr_cfg_path = os.path.join(BASE_DIR, PARAMETER_CONFIG)
+        description = ConfigObj(attr_cfg_path)
+
+        parameters = defaultdict(OrderedDict)
+        for item in scenario:
+            comp = item['component']
+            parameter = item['parameter']
+            param_dict = ChainMap(
+                {
+                    'value': item['value'],
+                    'value_type': item['value_type'],
+                    'parameter_type': item['parameter_type']
+                },
+                description.get(comp, {}).get(parameter, {})
+            )
+            parameters[comp][parameter] = param_dict
+
+        # Default factory has to be unset in order to support iterating over
+        # dict in django template:
+        parameters.default_factory = None
+        return parameters
