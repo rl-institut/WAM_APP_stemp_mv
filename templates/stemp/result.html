@@ -13,20 +13,14 @@
 {% block content %}
 
 <form action="{% url 'stemp:result' %}" method="post">
-    {% csrf_token %}
-    {{save}}
-    <input class="btn btn-default" type="submit" value="Simulationsergebnisse speichern" name="save">
+  {% csrf_token %}
+  {{save}}
+  <input class="btn btn-default" type="submit" value="Simulationsergebnisse speichern" name="save">
 </form>
 
 {% for visualization in visualizations %}
-    {% include "includes/detailed_result_widget.html" with visualization=visualization %}
+  {{visualization.div | safe}}
+  {{visualization.script | safe}}
 {% endfor %}
-<!--<h2>Investment:</h2>-->
-<!--{{investment.div | safe}}-->
-<!--{{investment.script | safe}}-->
-
-<!--<h2>Energieflüsse:</h2>-->
-<!--{{energy.div | safe}}-->
-<!--{{energy.script | safe}}-->
 
 {% endblock %}

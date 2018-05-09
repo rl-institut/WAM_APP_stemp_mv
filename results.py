@@ -1,20 +1,38 @@
 
+import pandas
 from collections import namedtuple
 from oemof.solph import analyzer as an
 from stemp.settings import SqlAlchemySession
 from utils.highcharts import Highchart
 from db_apps.oemof_results import restore_results
 
-Visualization = namedtuple('Visualization', ['analyzer', 'style', 'kwargs'])
+Visualization = namedtuple(
+    'Visualization',
+    ['name', 'analyzer', 'use_total', 'style', 'kwargs']
+)
 VISUALIZATIONS = {
     'invest': Visualization(
+        'Invest',
         an.InvestAnalyzer,
+        True,
         'column',
         {
             'title': 'Investment',
             'x_title': 'Technologie',
             'y_title': 'Investemnt [€]',
-            'stacked': True
+            'stacked': 'true'
+        }
+    ),
+    'invest_detail': Visualization(
+        'Invest',
+        an.InvestAnalyzer,
+        False,
+        'column',
+        {
+            'title': 'Investment',
+            'x_title': 'Technologie',
+            'y_title': 'Investemnt [€]',
+            'stacked': 'true'
         }
     )
 }
@@ -47,7 +65,7 @@ class ResultAnalysisVisualization(object):
 
     def analyze(self):
         for result in self.results:
-            result.analysis = an.Analysis(*result.data)
+            result.analysis = an.Analysis(result.data[1], result.data[0])
             result.analysis.add_analyzer(an.SequenceFlowSumAnalyzer())
             result.analysis.add_analyzer(an.FlowTypeAnalyzer())
             result.analysis.add_analyzer(an.InvestAnalyzer())
@@ -57,13 +75,29 @@ class ResultAnalysisVisualization(object):
             # TODO: How to set demand outputs?
             # result.analysis.add_analyzer(analyzer.LCOEAnalyzer())
 
-    def __get_result_dict(self, analyzer):
-        return {
-            result.scenario: result.analysis.get_analyzer(analyzer).result
-            for result in self.results
-        }
+    def __prepare_result_data(self, visualization):
+        if visualization.use_total:
+            series = pandas.Series(
+                {
+                    result.scenario.name:
+                    result.analysis.get_analyzer(visualization.analyzer).total
+                    for result in self.results
+                }
+            )
+            series.name = visualization.name
+            return series
+        else:
+            return pandas.DataFrame(
+                {
+                    result.scenario.name:
+                        result.analysis.get_analyzer(
+                            visualization.analyzer).result
+                    for result in self.results
+                }
+            ).transpose()
 
     def visualize(self, name):
         visualization = VISUALIZATIONS[name]
-        data = self.__get_result_dict(visualization.analyzer)
-        return Highchart(data, visualization.style, **visualization.kwargs)
+        data = self.__prepare_result_data(visualization)
+        return Highchart(
+            data, visualization.style, **visualization.kwargs).render()

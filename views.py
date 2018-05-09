@@ -223,7 +223,10 @@ class ResultView(TemplateView):
         context = super(ResultView, self).get_context_data(**kwargs)
         context['save'] = SaveSimulationForm()
         visualization = results.ResultAnalysisVisualization(session.scenarios)
-        context['visualizations'] = [visualization.visualize('invest')]
+        context['visualizations'] = [
+            visualization.visualize('invest'),
+            visualization.visualize('invest_detail')
+        ]
         return context
 
     @check_session
