@@ -4,11 +4,12 @@ from stemp.settings import SqlAlchemySession, SCENARIO_PATH
 from stemp.scenarios import import_scenario, create_energysystem
 from stemp.bookkeeping import simulate_energysystem
 from stemp.models import Scenario, Parameter, Simulation
-from db_apps.oemof_results import store_results, restore_results
+from db_apps.oemof_results import store_results
 
 
 class SessionSimulation(object):
-    def __init__(self, name):
+    def __init__(self, name, session):
+        self.session = session
         self.name = name
         self.module = None
         self.energysystem = None
@@ -46,6 +47,8 @@ class SessionSimulation(object):
         return None
 
     def load_or_simulate(self):
+        self.include_demand()
+        
         # Check if results already exist:
         result_id = self.check_for_result()
         if result_id is not None:
@@ -84,19 +87,15 @@ class SessionSimulation(object):
         self.module = import_scenario(
             path.join(SCENARIO_PATH, self.name))
 
+    def include_demand(self):
+        self.parameter['demand'] = self.session.demand
+
 
 class UserSession(object):
     def __init__(self):
         self.scenarios = []
         self.demand = {}
 
-    @staticmethod
-    def load_results(result_id):
-        sa_session = SqlAlchemySession()
-        param_results, results = restore_results(sa_session, result_id)
-        sa_session.close()
-        return results, param_results
-
     def init_scenarios(self, scenario_names):
         for scenario in scenario_names:
-            self.scenarios.append(SessionSimulation(scenario))
+            self.scenarios.append(SessionSimulation(scenario, self))

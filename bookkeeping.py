@@ -5,17 +5,17 @@ from stemp.scenarios import get_simulation_function
 
 def simulate_energysystem(session):
     energysystem = session.energysystem
-    simulation_fct = get_simulation_function(session.scenario_module)
+    simulation_fct = get_simulation_function(session.module)
     result, param_result = multiprocess_energysystem(
         energysystem, simulation_fct)
-    return session.store_result(result, param_result)
+    return session.store_results(result, param_result)
 
 
 # TODO: Create user-dependent pool in settings
 def multiprocess_energysystem(energysystem, simulate_fct):
     queue = mp.Queue()
     p = mp.Process(
-        target=queue_energysytem,
+        target=queue_energysystem,
         args=(queue, energysystem, simulate_fct)
     )
     p.start()
@@ -24,7 +24,7 @@ def multiprocess_energysystem(energysystem, simulate_fct):
     return results
 
 
-def queue_energysytem(queue, energysystem, simulate_fct):
+def queue_energysystem(queue, energysystem, simulate_fct):
     """
     All function in fcts are succesively run on energysystem
     """

@@ -18,9 +18,8 @@ except AppRegistryNotReady:
 
 
 NEEDED_PARAMETERS = {
-    'General': [
-        'net_costs', 'wacc'
-    ]
+    'General': ['net_costs', 'wacc'],
+    'demand': ['index', 'type']
 }
 
 
@@ -121,8 +120,8 @@ def add_households(
         technology_fct(customer.name, energysystem, timeseries, parameters)
 
     # Init parameters:
-    customer_index = parameters.get('customer_index', 0)
-    customer_case = parameters.get('customer_case', CustomerOption.District)
+    customer_index = parameters['demand']['index']
+    customer_case = parameters['demand']['type']
 
     if customer_case == CustomerOption.Single:
         household = Household.objects.get(id=customer_index)
