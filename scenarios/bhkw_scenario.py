@@ -1,4 +1,6 @@
 
+from copy import deepcopy
+
 from oemof.solph import Flow, Bus, Investment
 from oemof.solph.components import ExtractionTurbineCHP
 from oemof.tools.economics import annuity
@@ -9,7 +11,7 @@ from stemp.scenarios import basic_setup
 
 SCENARIO = 'bhkw_scenario'
 SHORT_NAME = 'BHKW'
-NEEDED_PARAMETERS = basic_setup.NEEDED_PARAMETERS
+NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
 NEEDED_PARAMETERS[SHORT_NAME] = [
     'invest', 'conversion_factor_el', 'conversion_factor_th',
     'full_condensation_factor_el'

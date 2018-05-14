@@ -168,7 +168,7 @@ class TechnologyView(TemplateView):
             for scenario in session.scenarios:
                 # Load default parameters:
                 parameters = OEPScenario.get_scenario_parameters(scenario.name)
-                parameter_form = ParameterForm(parameters)
+                parameter_form = ParameterForm([(scenario.name, parameters)])
                 scenario.parameter.update(parameter_form.prepared_data())
                 scenario.load_or_simulate()
             return redirect('stemp:result')
@@ -188,11 +188,15 @@ class ParameterView(TemplateView):
         if not scenarios:
             raise KeyError('No scenarios found')
 
-        scenario = scenarios[0]
-        # TODO: Mix multiple, overlapping scenario parameters!
-
         # Get data from OEP:
-        parameters = OEPScenario.get_scenario_parameters(scenario.name)
+        parameters = []
+        for scenario in scenarios:
+            parameters.append(
+                (
+                    scenario.name,
+                    OEPScenario.get_scenario_parameters(scenario.name)
+                )
+            )
         return ParameterForm(parameters, data)
 
     @check_session
@@ -207,9 +211,10 @@ class ParameterView(TemplateView):
         parameter_form = self.get_scenario_parameters(session, request.POST)
         if not parameter_form.is_valid():
             raise ValueError('Invalid scenario parameters')
-        # TODO: Multiple scenarios!
-        session.scenarios[0].parameter.update(parameter_form.prepared_data())
-        session.scenarios[0].load_or_simulate()
+        for scenario in session.scenarios:
+            scenario.parameter.update(
+                parameter_form.prepared_data(scenario.name))
+            scenario.load_or_simulate()
         return redirect('stemp:result')
 
 

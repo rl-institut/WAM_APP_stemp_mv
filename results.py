@@ -101,3 +101,8 @@ class ResultAnalysisVisualization(object):
         data = self.__prepare_result_data(visualization)
         return Highchart(
             data, visualization.style, **visualization.kwargs).render()
+
+    def rank(self, name):
+        """Function to rank results by different Rankings"""
+        # TODO: Write ranking function
+        pass

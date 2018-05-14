@@ -1,5 +1,6 @@
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
+from itertools import chain
 from django.forms import (
     Form, ChoiceField, IntegerField, Select, CharField, FloatField,
     BooleanField, MultipleChoiceField, CheckboxSelectMultiple, ModelForm,
@@ -34,13 +35,13 @@ class ParameterForm(Form):
     delimiter = '-'
 
     @staticmethod
-    def __init_field(parameter_data):
+    def __init_field(parameter_data, scenario):
         if parameter_data['value_type'] == 'boolean':
-            return BooleanField(initial=bool(parameter_data['value']))
+            field = BooleanField(initial=bool(parameter_data['value']))
         elif parameter_data['value_type'] == 'float':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
                 step_size = parameter_data.get('step_size', 0.1)
-                return FloatField(
+                field = FloatField(
                     widget=SliderInput(
                         step_size=step_size,
                     ),
@@ -49,22 +50,24 @@ class ParameterForm(Form):
                     max_value=float(parameter_data['max']),
                 )
             else:
-                return FloatField(initial=float(parameter_data['value']))
+                field = FloatField(initial=float(parameter_data['value']))
         elif parameter_data['value_type'] == 'integer':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
-                return IntegerField(
+                field = IntegerField(
                     widget=SliderInput,
                     initial=int(parameter_data['value']),
                     min_value=int(parameter_data['min']),
                     max_value=int(parameter_data['max']),
                 )
             else:
-                return IntegerField(initial=int(parameter_data['value']))
+                field = IntegerField(initial=int(parameter_data['value']))
         else:
             raise TypeError(
                 'Unknown value type "' + parameter_data['value_type'] +
                 '" - cannot convert into FormField'
             )
+        field.scenarios = [scenario]
+        return field
 
     def __init__(self, parameters, data=None, *args, **kwargs):
         if parameters is None:
@@ -72,34 +75,51 @@ class ParameterForm(Form):
 
         super(ParameterForm, self).__init__(*args, **kwargs)
 
-        field_order = []
-        for component, component_data in parameters.items():
-            param_order = []
-            for parameter, parameter_data in component_data.items():
-                field_name = self.delimiter.join((component, parameter))
-                field = self.__init_field(parameter_data)
-                field.type = parameter_data.get('parameter_type')
-                if field.type == 'cost':
-                    param_order.insert(0, field_name)
-                else:
-                    param_order.append(field_name)
-                field.group = component
-                self.fields[field_name] = field
-            field_order += param_order
-        self.order_fields(field_order)
+        field_order = OrderedDict()
+        for scenario, scenario_data in parameters:
+            for component, component_data in scenario_data.items():
+                if component not in field_order:
+                    field_order[component] = []
+                for parameter, parameter_data in component_data.items():
+                    field_name = self.delimiter.join((component, parameter))
+                    if field_name in self.fields:
+                        self.fields[field_name].scenarios.append(scenario)
+                        continue
+                    field = self.__init_field(parameter_data, scenario)
+                    field.type = parameter_data.get('parameter_type')
+                    if field.type == 'cost':
+                        field_order[component].insert(0, field_name)
+                    else:
+                        field_order[component].append(field_name)
+                    field.group = component
+                    self.fields[field_name] = field
+
+        self.order_fields(chain(*field_order.values()))
 
         self.is_bound = data is not None
         self.data = data or {}
 
-    def prepared_data(self):
+    def prepared_data(self, scenario=None):
+        def belongs_to_scenario():
+            if (
+                    scenario is not None and
+                    scenario not in self.fields[field_name].scenarios
+            ):
+                return False
+            return True
+
         data = defaultdict(dict)
         if not self.is_bound:
             for field_name, field in self.fields.items():
+                if not belongs_to_scenario():
+                    continue
                 component, parameter = field_name.split(self.delimiter)
                 data[component][parameter] = field.initial
             return data
-        for item, value in self.cleaned_data.items():
-            component, parameter = item.split(self.delimiter)
+        for field_name, value in self.cleaned_data.items():
+            if not belongs_to_scenario():
+                continue
+            component, parameter = field_name.split(self.delimiter)
             data[component][parameter] = value
         return data
 

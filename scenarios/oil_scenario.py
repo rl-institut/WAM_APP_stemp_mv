@@ -1,4 +1,6 @@
 
+from copy import deepcopy
+
 from oemof.solph import Flow, Transformer, Bus, Investment
 from oemof.tools.economics import annuity
 
@@ -8,7 +10,7 @@ from stemp.scenarios import basic_setup
 
 SCENARIO = 'oil_scenario'
 SHORT_NAME = 'Oil'
-NEEDED_PARAMETERS = basic_setup.NEEDED_PARAMETERS
+NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
 NEEDED_PARAMETERS[SHORT_NAME] = [
     'oil_lifetime', 'oil_capex', 'oil_efficiency'
 ]

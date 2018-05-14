@@ -1,6 +1,7 @@
 
 import os
 import pandas
+from copy import deepcopy
 
 from oemof.solph import Flow, Transformer, Investment, Source
 from oemof.tools.economics import annuity
@@ -10,7 +11,7 @@ from stemp.scenarios import basic_setup
 
 
 SCENARIO = 'pv_heatpump_scenario'
-NEEDED_PARAMETERS = basic_setup.NEEDED_PARAMETERS
+NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
 NEEDED_PARAMETERS['General'].append('pv_feedin_tariff')
 NEEDED_PARAMETERS['PV'] = ['pv_lifetime', 'pv_capex', 'pv_opex']
 NEEDED_PARAMETERS['HP'] = ['hp_lifetime', 'hp_capex', 'hp_opex']
