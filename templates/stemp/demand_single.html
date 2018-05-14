@@ -27,7 +27,11 @@ Get: {{get}}
       <table>
         {{specific_form}}
       </table>
-      <input type="submit" value="Weiter" name="questions">
+      {% if new_form %}
+        <input type="submit" value="Aktualisieren" name="questions">
+      {% else %}
+        <input type="submit" value="Weiter" name="questions">
+      {% endif %}
     </form>
     {% if new_form %}
       <form method="post">
