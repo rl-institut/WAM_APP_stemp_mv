@@ -9,7 +9,9 @@ from django.forms import (
 
 from stemp.fields import HouseholdField, SubmitField
 from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget, SliderInput
-from stemp.models import LoadProfile, Household, Simulation, District
+from stemp.models import (
+    LoadProfile, Household, Simulation, District, Question)
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 
 class ChoiceForm(Form):
@@ -138,7 +140,7 @@ class LoadProfileForm(Form):
 
 
 class HouseholdQuestionsForm(Form):
-    count = IntegerField(
+    number_of_persons = IntegerField(
         widget=SliderInput(attrs={'id': 'hh_question_count'}),
         label='Anzahl Personen im Haushalt',
         initial=2,
@@ -149,14 +151,26 @@ class HouseholdQuestionsForm(Form):
         label='Sind Personen tagsüber zu Hause?',
         required=False
     )
-    modernised = BooleanField(
+    modernized = BooleanField(
         label='Ist das Haus modernisiert?',
         required=False
     )
 
     def hh_proposal(self):
         if self.data is not None:
-            return HouseholdForm()
+            question = Question.objects.get(**self.cleaned_data)
+            qh = question.question_household.filter(default=True)
+            if len(qh) == 0:
+                raise ObjectDoesNotExist(
+                    'No household connected to current question with data:\n' +
+                    str(self.cleaned_data)
+                )
+            elif len(qh) > 1:
+                raise MultipleObjectsReturned(
+                    'Multiple default households connected to current '
+                    'question with data:\n' + str(self.cleaned_data)
+                )
+            return HouseholdForm(instance=qh.first().household)
 
 
 class HouseholdSelectForm(Form):

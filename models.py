@@ -114,7 +114,7 @@ class HeatProfile(models.Model, ProfileMixin):
 
 
 class Household(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     districts = models.ManyToManyField(District, through='DistrictHouseholds')
     load_demand = models.FloatField(verbose_name='Jährlicher Strombedarf')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
@@ -153,7 +153,12 @@ class Household(models.Model):
 
 
 class Question(models.Model):
-    number_of_person = models.IntegerField()
+    number_of_persons = models.IntegerField()
+    at_home = models.BooleanField()
+    modernized = models.BooleanField()
+
+    class Meta:
+        unique_together = ('number_of_persons', 'at_home', 'modernized')
 
 
 class QuestionHousehold(models.Model):
@@ -162,10 +167,10 @@ class QuestionHousehold(models.Model):
         on_delete=models.CASCADE,
         related_name='question_household'
     )
-    household = models.ForeignKey(
+    household = models.OneToOneField(
         Household,
         on_delete=models.CASCADE,
-        related_name='question_household'
+        related_name='question_household',
     )
     default = models.BooleanField(default=False)
 
