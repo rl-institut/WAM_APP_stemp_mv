@@ -11,6 +11,7 @@ from stemp.views_dynamic import HouseholdProfileView
 app_name = 'stemp'
 
 urlpatterns = [
+    path('', SelectView.as_view(), name='index'),
     path(
         'home/',
         TemplateView.as_view(template_name='stemp/homepage.html'),
