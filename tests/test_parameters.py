@@ -8,7 +8,7 @@ kopy_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 os.chdir(kopy_path)
 
 os.environ['DJANGO_DATABASE'] = 'default'
-os.environ['DJANGO_SETTINGS_MODULE'] = 'kopy.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 application = get_wsgi_application()
 
 

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from kopy import settings
+from wam import settings
 
 
 class StempConfig(AppConfig):
@@ -7,5 +7,5 @@ class StempConfig(AppConfig):
 
     def ready(self):
         # Do this right after settings are set:
-        from kopy.sessions import SessionData
+        from wam.sessions import SessionData
         settings.SESSION_DATA = SessionData()

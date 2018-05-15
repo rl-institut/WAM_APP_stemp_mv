@@ -1,6 +1,6 @@
 
 from os import path
-from kopy import settings
+from wam import settings
 import sqlalchemy
 from sqlalchemy import orm
 import sqlahelper

@@ -10,10 +10,10 @@ from oemof import outputlib
 from oemof.tools import helpers
 
 try:
-    from kopy.settings import BASE_DIR
+    from wam.settings import BASE_DIR
 except KeyError:
     logging.warning(
-        'Could not find kopy settings. '
+        'Could not find wam settings. '
         'Maybe you have to start django application first.'
     )
 

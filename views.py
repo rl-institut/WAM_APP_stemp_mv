@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 from django. forms import MultipleChoiceField
 from django.forms.widgets import CheckboxSelectMultiple
 
-from kopy.settings import SESSION_DATA
+from wam.settings import SESSION_DATA
 from stemp.tasks import add
 from stemp.oep_models import OEPScenario
 from stemp import results

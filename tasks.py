@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-from kopy.celery import app
+from wam.celery import app
 
 
 @app.task
