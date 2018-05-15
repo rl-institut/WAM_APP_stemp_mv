@@ -1,4 +1,8 @@
 
+{% extends "stemp/base.html" %}
+
+{% block content %}
 <h1>Welches Szenario möchten Sie erstellen?</h1>
 <a href="{% url 'stemp:demand_single' %}">Meinen Haushalt</a>
 <a href="{% url 'stemp:demand_district' %}">Mein Viertel</a>
+{% endblock %}
