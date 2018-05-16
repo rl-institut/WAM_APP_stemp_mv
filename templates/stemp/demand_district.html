@@ -40,13 +40,13 @@
           {{field}}
         {% endfor %}
 
-        <div class="cell large-8 u-text&#45;&#45;center scen-create__btn">
+        <div class="cell large-8 u-text--center scen-create__btn">
           <div class="grid-x">
             <div class="u-text--center btn-left">
               <a href="{% url 'stemp:demand_selection' %}" class="btn btn--hollow"><i class="icon ion-chevron-left icon--small"></i> Zurück</a>
             </div>
             <div class="u-text--center btn-right">
-              <button type="submit" class="btn btn-cta" name="done">Weiter <i class="icon ion-chevron-right icon--small"></i></button>
+              <button type="submit" class="btn btn-cta btn-submit" name="done">Weiter <i class="icon ion-chevron-right icon--small"></i></button>
             </div>
           </div>
           <a href="{% url 'stemp:index' %}"><span class="anchor-text"><i class="icon ion-close icon--small"></i>Abbrechen</span></a>
