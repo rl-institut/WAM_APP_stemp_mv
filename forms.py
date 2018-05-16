@@ -8,7 +8,8 @@ from django.forms import (
 )
 
 from stemp.fields import HouseholdField, SubmitField
-from stemp.widgets import DynamicSelectWidget, DynamicRadioWidget, SliderInput
+from stemp.widgets import (
+    DynamicSelectWidget, DynamicRadioWidget, SliderInput, DistrictSubmitWidget)
 from stemp.models import (
     LoadProfile, Household, Simulation, District, Question)
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -246,38 +247,12 @@ class DistrictListForm(Form):
         super(DistrictListForm, self).__init__()
         if hh_dict is not None:
             for household, count in hh_dict.items():
-                self.fields[household] = HouseholdField(
-                    household, count)
+                self.fields[household] = HouseholdField(household, count)
         self.fields['add_household'] = SubmitField(
+            widget=DistrictSubmitWidget,
             label="",
             initial='Haushalt hinzufügen'
         )
-
-    def as_table(self):
-        return self._html_output(
-            normal_row=(
-                '<tr%(html_class_attr)s>'
-                '%(errors)s%(field)s%(help_text)s'
-                '</tr>'
-            ),
-            error_row='<tr><td colspan="2">%s</td></tr>',
-            row_ender='</td></tr>',
-            help_text_html='<br /><span class="helptext">%s</span>',
-            errors_on_separate_row=False
-        )
-
-    def _html_output(self, normal_row, error_row, row_ender, help_text_html,
-                     errors_on_separate_row):
-        html_output = super(DistrictListForm, self)._html_output(
-                normal_row, error_row, row_ender, help_text_html,
-                errors_on_separate_row
-            )
-        if len(self.fields) <= 1:
-            html_output = (
-                '<tr><td>Noch keine Haushalte im Quartier</td></tr>' +
-                html_output
-            )
-        return html_output
 
 
 class HouseholdForm(ModelForm):

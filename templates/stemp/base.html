@@ -9,11 +9,12 @@
     <title>{% block title %}Foundation for Sites{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'ionicons-2.0.1/css/ionicons.css' %}">
-    <link rel="stylesheet" href="{% static 'stemp/foundation/css/app.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'foundation-icons.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'stemp/foundation/css/app.css' %}">
     {% block header %}{% endblock %}
   </head>
   <body>
-    <div class="l-bg-color u-vh--100">
+    <div class="{% block body-class %}l-bg-color u-vh--100{% endblock %}">
       {% include 'stemp/navigation.html' %}
 
       {% block content %}{% endblock %}

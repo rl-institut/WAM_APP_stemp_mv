@@ -1,13 +1,15 @@
 
-<td align="center">
-  Image
-</td>
-<td>
-  <input type="number" name="{{widget.attrs.hh_name}}" value="{{widget.attrs.count}}">
-</td>
-<td>
-  {{widget.attrs.hh_name}}
-</td>
-<td>
-  <button type="submit" name="trash" value="{{widget.attrs.hh_name}}"><i class="fi-trash"></i></button>
-</td>
+{% load staticfiles %}
+
+<div class="cell medium-6 card-thin">
+  <div class="grid-x">
+    <div class="cell small-1 card-thin__number">
+      <input class="cell small-1 card-thin__number" type="number" name="{{widget.attrs.hh_id}}" value="{{widget.attrs.count}}">
+    </div>
+    <div class="cell small-1"><img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Einzelhaus_b.svg' %}"></div>
+    <div class="cell small-9 small-offset-1 card-thin__text">
+      <div>{{widget.attrs.hh_name}}</div>
+      <button type="submit" name="trash" value="{{widget.attrs.hh_id}}"><i class="fi-trash"></i></button>
+    </div>
+  </div>
+</div>

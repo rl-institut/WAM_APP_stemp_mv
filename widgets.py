@@ -140,6 +140,10 @@ class HouseholdWidget(Widget):
     template_name = 'widgets/district_household.html'
 
 
+class DistrictSubmitWidget(Widget):
+    template_name = 'widgets/district_submit.html'
+
+
 class SubmitWidget(Widget):
     """From https://djangosnippets.org/snippets/2312/"""
     def render(self, name, value, attrs=None, renderer=None):

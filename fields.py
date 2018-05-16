@@ -1,13 +1,15 @@
 
 from django.forms import Field
+from stemp.models import Household
 from stemp.widgets import HouseholdWidget, SubmitWidget
 
 
 class HouseholdField(Field):
     widget = HouseholdWidget
 
-    def __init__(self, hh_name, count=1):
-        self.hh_name = hh_name
+    def __init__(self, hh_id, count=1):
+        self.hh_id = hh_id
+        self.hh_name = Household.objects.get(pk=hh_id).name
         self.count = count
         super(HouseholdField, self).__init__()
 
@@ -18,14 +20,12 @@ class HouseholdField(Field):
         Field.
         """
         return {
+            'hh_id': self.hh_id,
             'hh_name': self.hh_name,
             'count': self.count,
         }
 
 
 class SubmitField(Field):
-    """From https://djangosnippets.org/snippets/2312/"""
-    widget = SubmitWidget
-
-    # def clean(self, value):
-    #     return value
+    def __init__(self, widget=SubmitWidget, **kwargs):
+        super(SubmitField, self).__init__(widget=widget, **kwargs)

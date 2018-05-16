@@ -1,17 +1,61 @@
 {% extends "stemp/base.html" %}
 
-{% block submenu %}
-{% include "includes/submenu.html" with current_menu="demand"%}
-{% endblock %}
+{% load staticfiles %}
+
+{% block body-class %}u-vh--100{% endblock %}
 
 {% block content %}
 
-<form method="post">
-  {% csrf_token %}
-  <table>
-    {{district_form}}
-  </table>
-  <input type="submit" value="Weiter" name="done">
-</form>
+<div class="grid-container fluid u-no-padding">
+  <div class="grid-x">
+
+    <!-- STEPS INFO START (LEFT) -->
+    <div class="cell large-4 l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
+      <div class="cell"><h1>Viertel erstellen</h1></div>
+      <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
+        <li class="current"><span class="show-for-sr">Sie sind auf der Seite</span> 1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+      </ul>
+
+      <div class="scen-create__description">
+        <div class="scen-create__icon"><img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Viertel.svg' %}"></div>
+        <h2 class="scen-create__header">Viertelstruktur</h2>
+        <p class="scen-create__text show-for-large">Ein Viertel besteht aus mehreren Haushalten. Sie können Haushalte aus selbst definierten oder aus Standardwerten erstellen und sie dem Viertel hinzufügen.</p>
+      </div>
+    </div>
+    <!-- STEPS INFO END -->
+
+    <!-- STEPS TASKS START (RIGHT) -->
+    <div class="cell large-8 large-offset-4 l-bg-color-w scen-create__wrapper u-text--center">
+      <form class="grid-x scen-create__form grid-margin-x" method="post">
+        {% csrf_token %}
+
+        <div class="cell">
+          <h3>Groß Trebbow</h3>
+        </div>
+
+        {% for field in district_form %}
+          {{field}}
+        {% endfor %}
+
+        <div class="cell large-8 u-text&#45;&#45;center scen-create__btn">
+          <div class="grid-x">
+            <div class="u-text--center btn-left">
+              <a href="{% url 'stemp:demand_selection' %}" class="btn btn--hollow"><i class="icon ion-chevron-left icon--small"></i> Zurück</a>
+            </div>
+            <div class="u-text--center btn-right">
+              <button type="submit" class="btn btn-cta" name="done">Weiter <i class="icon ion-chevron-right icon--small"></i></button>
+            </div>
+          </div>
+          <a href="{% url 'stemp:index' %}"><span class="anchor-text"><i class="icon ion-close icon--small"></i>Abbrechen</span></a>
+        </div>
+      </form>
+    </div>
+    <!-- STEPS TASKS END -->
+
+  </div>
+</div>
 
 {% endblock %}

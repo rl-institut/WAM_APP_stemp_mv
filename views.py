@@ -94,7 +94,7 @@ class DemandDistrictView(TemplateView):
 
     def get_context_data(self, session):
         context = super(DemandDistrictView, self).get_context_data()
-        context['district_form'] = DistrictListForm(session.district)
+        context['district_form'] = DistrictListForm(session.demand)
         return context
 
     def get(self, request, *args, **kwargs):
