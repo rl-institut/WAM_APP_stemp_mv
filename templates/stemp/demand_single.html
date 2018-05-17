@@ -6,10 +6,6 @@
 <script src="{% static 'highcharts.js' %}"></script>
 {% endblock %}
 
-{% block submenu %}
-{% include "includes/submenu.html" with current_menu="demand"%}
-{% endblock %}
-
 {% block content %}
 
 Ready: {{ready}}
@@ -34,11 +30,12 @@ Get: {{get}}
       {% endif %}
     </form>
     {% if new_form %}
-      <form method="post">
+      <form id="household_form" method="post">
         {% csrf_token %}
         <table>
           {{new_form}}
         </table>
+        <input type="hidden" value={{new_form.question_id}} name="question_id">
         <input type="submit" value="Weiter" name="new">
       </form>
     {% endif %}
@@ -54,4 +51,39 @@ Get: {{get}}
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+  {% if new_form %}
+    <script src="{% static 'jquery.js' %}"></script>
+    <script language="JavaScript">
+      var changed = false;
+
+      $("#household_form :input").change(function() {
+        if (! changed) {
+          changed = true;
+          enable_saving_mode();
+        }
+      });
+
+      function enable_saving_mode() {
+        $("input[name=new]").attr("value", "Speichern & Weiter");
+        $("input[name=new]").attr("name", "new_save");
+        $("input[name=name]").prop("readonly", false);
+
+        $.ajax(
+          {
+            url: "{% url 'stemp:household_name' %}",
+            data: {
+              'hh_name': $("input[name=name]").attr("value")
+            },
+            dataType: 'json',
+            success: function (result) {
+              $("input[name=name]").attr("value", result.next)
+            }
+          }
+        );
+      };
+    </script>
+  {% endif %}
 {% endblock %}

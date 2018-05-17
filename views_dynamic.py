@@ -1,8 +1,22 @@
 
+from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import TemplateView
 
 from stemp.forms import HouseholdSelectForm
 from stemp.models import District, Household
+
+
+def get_next_household_name(request):
+    name = request.GET['hh_name']
+    i = 0
+    while True:
+        i += 1
+        new_name = f'{name}_new{i:03d}'
+        try:
+            Household.objects.get(name=new_name)
+        except ObjectDoesNotExist:
+            return JsonResponse({'next': new_name})
 
 
 class HouseholdProfileView(TemplateView):

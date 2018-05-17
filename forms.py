@@ -4,7 +4,7 @@ from itertools import chain
 from django.forms import (
     Form, ChoiceField, IntegerField, Select, CharField, FloatField,
     BooleanField, MultipleChoiceField, CheckboxSelectMultiple, ModelForm,
-    ModelChoiceField
+    ModelChoiceField, HiddenInput
 )
 
 from stemp.fields import HouseholdField, SubmitField
@@ -171,7 +171,7 @@ class HouseholdQuestionsForm(Form):
                     'Multiple default households connected to current '
                     'question with data:\n' + str(self.cleaned_data)
                 )
-            return HouseholdForm(instance=qh.first().household)
+            return HouseholdForm(question_id=question.id, instance=qh.first().household)
 
 
 class HouseholdSelectForm(Form):
@@ -256,6 +256,11 @@ class DistrictListForm(Form):
 
 
 class HouseholdForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.question_id = kwargs.pop('question_id', None)
+        super(HouseholdForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs['readonly'] = True
+
     class Meta:
         model = Household
         exclude = ['districts']

@@ -120,8 +120,6 @@ class Household(models.Model):
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
     load_profile = models.ForeignKey(LoadProfile, on_delete=models.CASCADE)
     heat_profile = models.ForeignKey(HeatProfile, on_delete=models.CASCADE)
-    predefined = models.BooleanField(
-        verbose_name='Vordefiniert', default=False)
 
     layout = {
         'x_title': 'Zeit [h]',
@@ -131,8 +129,6 @@ class Household(models.Model):
 
     def __str__(self):
         text = self.name
-        if self.predefined:
-            text += ', VORDEFINIERT'
         return text
 
     def annual_load_demand(self):

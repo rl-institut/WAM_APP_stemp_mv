@@ -8,6 +8,7 @@ from wam.settings import SESSION_DATA
 from stemp.tasks import add
 from stemp.oep_models import OEPScenario
 from stemp import results
+from stemp.models import Household, Question, QuestionHousehold
 from stemp.forms import (
     SaveSimulationForm, ChoiceForm, HouseholdForm,
     HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm,
@@ -69,9 +70,14 @@ class DemandSingleView(TemplateView):
                 context = self.get_context_data(proposal_form)
                 return self.render_to_response(context)
         elif 'new' in request.POST:
+            hh_id = Household.objects.get(name=request.POST['name']).id
+        elif 'new_save' in request.POST:
             hh_form = HouseholdForm(request.POST)
             if hh_form.is_valid():
                 hh = hh_form.save()
+                question = Question.objects.get(pk=request.POST['question_id'])
+                qh = QuestionHousehold(question=question, household=hh)
+                qh.save()
                 hh_id = hh.id
         elif 'list' in request.POST:
             hh = HouseholdSelectForm(request.POST)
@@ -101,6 +107,7 @@ class DemandDistrictView(TemplateView):
         # Start session (if no session yet):
         SESSION_DATA.start_session(request)
         session = SESSION_DATA.get_session(request)
+        session.demand = {}
 
         context = self.get_context_data(session)
         return self.render_to_response(context)
