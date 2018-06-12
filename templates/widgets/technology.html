@@ -1,0 +1,15 @@
+
+{% for group, options, index in widget.optgroups %}
+  {% for option in options %}
+    <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 u-text--left">
+      <label class="container" for="{{option.attrs.id}}">
+        {{option.label}}
+        <input type="checkbox" name="{{option.name}}" value="{{option.value}}" id="{{option.attrs.id}}">
+        <span class="checkmark"></span>
+      </label>
+      <span data-tooltip title="Informationen zur Technologie" class="has-tip--no-border">
+        <i class ="icon ion-information-circled icon--small info-box"></i>
+      </span>
+    </div>
+  {% endfor %}
+{% endfor %}

@@ -6,57 +6,72 @@
 <script src="{% static 'highcharts.js' %}"></script>
 {% endblock %}
 
+{% block body-class %}u-vh--100{% endblock %}
+
 {% block content %}
 
-Ready: {{ready}}
-Get: {{get}}
+<div class="grid-container fluid u-no-padding">
+  <div class="grid-x">
 
-<ul class="tabs" data-tabs id="demand_tabs">
-  <li class="tabs-title is-active"><a href="#questions">Benutzerdefiniert</a></li>
-  <li class="tabs-title"><a href="#list">Aus Liste</a></li>
-</ul>
+    <!-- STEPS INFO START (LEFT) -->
+    <div class="cell large-4 l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
+      <div class="cell"><h1>Haushalt erstellen</h1></div>
+      <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
+        <li class="current"><span class="show-for-sr">Sie sind auf der Seite Haushaltsstruktur</span> 1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+      </ul>
 
-<div class="tabs-content" data-tabs-content="demand_tabs">
-  <div class="tabs-panel is-active" id="questions">
-    <form method="post">
-      {% csrf_token %}
-      <table>
-        {{specific_form}}
-      </table>
-      {% if new_form %}
-        <input type="submit" value="Aktualisieren" name="questions">
-      {% else %}
-        <input type="submit" value="Weiter" name="questions">
-      {% endif %}
-    </form>
-    {% if new_form %}
-      <form id="household_form" method="post">
-        {% csrf_token %}
-        <table>
-          {{new_form}}
-        </table>
-        <input type="hidden" value={{new_form.question_id}} name="question_id">
-        <input type="submit" value="Weiter" name="new">
-      </form>
-    {% endif %}
-  </div>
-  <div class="tabs-panel" id="list">
-    <form method="post">
-      {% csrf_token %}
-      <table>
-        {{list_form}}
-      </table>
-      <input type="submit" value="Weiter" name="list">
-    </form>
+      <div class="scen-create__description">
+        <div class="scen-create__icon"><img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Einzelhaus.svg' %}" alt="Icon Einzelhaus"></div>
+        <h2 class="scen-create__header">Haushaltsstruktur</h2>
+        <p class="scen-create__text show-for-large">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Commodi magnam nihil quis doloribus, tempora fuga nesciunt error accusantium, ratione aliquid sed dolorem, minus aperiam consequuntur consectetur laboriosam enim eius id.</p>
+      </div>
+    </div>
+    <!-- STEPS INFO END -->
+
+    <!-- STEPS TASKS START (RIGHT) -->
+    <div class="cell large-8 large-offset-4 l-bg-color-w scen-create__wrapper u-text--center">
+
+      <div class="grid-x scen-create__form">
+        <div class="cell">
+          <h3>Haushalt 1</h3>
+        </div>
+
+        <!-- FORM START -->
+        <div class="cell u-text--left">
+          {% include 'includes/household_selection.html' %}
+        </div>
+        <!-- FORM END -->
+
+        {% url 'stemp:demand_selection' as back_url%}
+        {% include 'includes/button_section.html' with back_url=back_url %}
+
+      </div>
+    </div>
+    <!-- STEPS TASKS END -->
+
   </div>
 </div>
 
 {% endblock %}
 
 {% block scripts %}
-  {% if new_form %}
-    <script src="{% static 'jquery.js' %}"></script>
-    <script language="JavaScript">
+  <script src="{% static 'jquery.js' %}"></script>
+  <script language="JavaScript">
+  $(document).ready(function() {
+    // Allows one submit button for forms in both tabs:
+    $("#done").click(function() {
+      if ($("#tabs-1").attr("aria-hidden") == "true") {
+        $("#list").submit();
+      } else {
+        $("#household_form").submit();
+      }
+    });
+
+    // Changes question button text:
+    {% if new_form %}
       var changed = false;
 
       $("#household_form :input").change(function() {
@@ -84,6 +99,7 @@ Get: {{get}}
           }
         );
       };
-    </script>
-  {% endif %}
+    {% endif %}
+  });
+  </script>
 {% endblock %}

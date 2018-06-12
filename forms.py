@@ -39,6 +39,12 @@ class ParameterForm(Form):
 
     @staticmethod
     def __init_field(parameter_data, scenario):
+        attributes = ('label', 'parameter_type', 'unit')
+        attrs = {
+            attr_name: parameter_data[attr_name]
+            for attr_name in attributes
+            if attr_name in parameter_data
+        }
         if parameter_data['value_type'] == 'boolean':
             field = BooleanField(initial=bool(parameter_data['value']))
         elif parameter_data['value_type'] == 'float':
@@ -47,6 +53,7 @@ class ParameterForm(Form):
                 field = FloatField(
                     widget=SliderInput(
                         step_size=step_size,
+                        attrs=attrs
                     ),
                     initial=float(parameter_data['value']),
                     min_value=float(parameter_data['min']),
@@ -57,7 +64,7 @@ class ParameterForm(Form):
         elif parameter_data['value_type'] == 'integer':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
                 field = IntegerField(
-                    widget=SliderInput,
+                    widget=SliderInput(attrs=attrs),
                     initial=int(parameter_data['value']),
                     min_value=int(parameter_data['min']),
                     max_value=int(parameter_data['max']),
@@ -90,7 +97,7 @@ class ParameterForm(Form):
                         continue
                     field = self.__init_field(parameter_data, scenario)
                     field.type = parameter_data.get('parameter_type')
-                    if field.type == 'cost':
+                    if field.type == 'costs':
                         field_order[component].insert(0, field_name)
                     else:
                         field_order[component].append(field_name)
@@ -142,7 +149,12 @@ class LoadProfileForm(Form):
 
 class HouseholdQuestionsForm(Form):
     number_of_persons = IntegerField(
-        widget=SliderInput(attrs={'id': 'hh_question_count'}),
+        widget=SliderInput(
+            attrs={
+                'class': 'input input--s',
+                'id': 'hh_question_count'
+            }
+        ),
         label='Anzahl Personen im Haushalt',
         initial=2,
         max_value=10,
@@ -177,12 +189,8 @@ class HouseholdQuestionsForm(Form):
 class HouseholdSelectForm(Form):
     profile = ModelChoiceField(
         queryset=Household.objects.all(),
-        label='Haushalte',
+        label='Haushalt auswählen',
         initial=0,
-        widget=DynamicSelectWidget(
-            dynamic_url='household_profile/',
-            initial=1
-        )
     )
 
 
@@ -259,7 +267,13 @@ class HouseholdForm(ModelForm):
     def __init__(self, *args, **kwargs):
         self.question_id = kwargs.pop('question_id', None)
         super(HouseholdForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs['placeholder'] = "Name vom Haushalt"
         self.fields['name'].widget.attrs['readonly'] = True
+        self.fields['name'].widget.attrs['class'] = 'input - group - field'
+        self.fields['load_demand'].widget.attrs['class'] = 'input-group-field'
+        self.fields['heat_demand'].widget.attrs['class'] = 'input-group-field'
+        self.fields['load_profile'].widget.attrs['class'] = 'form__select'
+        self.fields['heat_profile'].widget.attrs['class'] = 'form__select'
 
     class Meta:
         model = Household

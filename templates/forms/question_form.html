@@ -1,0 +1,33 @@
+
+<div class="grid-x">
+  {% csrf_token %}
+  <div class="cell medium-10 medium-offset-1">
+    <label for="{{form.number_of_persons.id_for_label}}" class="form__label">{{form.number_of_persons.label}}</label>
+    {{form.number_of_persons.errors}}
+    {{form.number_of_persons}}
+  </div>
+  <div class="cell medium-10 medium-offset-1">
+    <label class="container" for="{{form.at_home.id_for_label}}">
+      {{form.at_home.label}}
+      {{form.at_home.errors}}
+      {{form.at_home}}
+      <span class="checkmark"></span>
+    </label>
+  </div>
+  <div class="cell medium-10 medium-offset-1">
+    <label class="container" for="{{form.modernized.id_for_label}}">
+      {{form.modernized.label}}
+      {{form.modernized.errors}}
+      {{form.modernized}}
+      <span class="checkmark"></span>
+    </label>
+  </div>
+
+  <div class="cell u-text--center u-padding--l">
+    {% if new_form %}
+    <input class="btn btn-calc" type="submit" value="Aktualisieren" name="questions">
+    {% else %}
+    <input class="btn btn-calc" type="submit" value="Weiter" name="questions">
+    {% endif %}
+  </div>
+</div>

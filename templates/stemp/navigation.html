@@ -1,88 +1,28 @@
-<!-- HP NAVIGATION START -->
-      <div class="multilevel-offcanvas off-canvas position-right" id="offCanvasRight" data-off-canvas>
+<div class="title-bar" id="nav-container" data-responsive-toggle="simple-menu" data-hide-for="medium">
+  <button class="menu-icon" type="button" data-toggle></button>
+  <div class="title-bar-title">Menu</div>
+</div>
 
-        <ul class="vertical menu">
-          <li>
-            <a href="index.html" class="anchor-text--light">
-              <span class="menu-li__icon">
-                <i class ="icon ion-android-home"></i>
-              </span>
-              <span class="menu-li__link">Startseite</span>
-            </a>
-          </li>
-          <li>
-            <a href="szenario.html" class="anchor-text--light">
-              <span class="menu-li__icon">
-                <i class ="icon ion-compose"></i>
-              </span>
-              <span class="menu-li__link">Neues Szenario</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="anchor-text--light">
-              <span class="menu-li__icon">
-                <i class ="icon ion-stats-bars"></i>
-              </span>
-              <span class="menu-li__link">Meine Szenarien</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="anchor-text--light">
-              <span class="menu-li__icon">
-                <i class ="icon ion-email"></i>
-              </span>
-              <span class="menu-li__link">Kontakt</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="anchor-text--light">
-              <span class="menu-li__icon">
-                <i class ="icon ion-information"></i>
-              </span>
-              <span class="menu-li__link">Impressum</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="anchor-text--light">
-              <span class="menu-li__icon">
-                <i class ="icon ion-code"></i>
-              </span>
-              <span class="menu-li__link">Quellen</span>
-            </a>
-          </li>
+<div class="top-bar" id="simple-menu">
+  <div class="top-bar-left show-for-large">
+    <ul class="menu">
+      <li><a class="anchor-text--light" href="{% url 'stemp:index' %}">Startseite</a></li>
+    </ul>
+  </div>
+  <div class="top-bar-right">
+    <ul class="dropdown menu" id="nav-list-vertical" data-dropdown-menu>
+      <!-- <li class="menu-text">Startseite</li> -->
+      <li><a class="anchor-text--light" href="{% url 'stemp:demand_selection' %}">Neues Szenario</a></li>
+      <li><a class="anchor-text--light" href="#">Meine Szenarien</a></li>
+      <li>
+        <a class="anchor-text--light" href="#">Über uns</a>
+        <ul class="menu vertical">
+          <li><a class="anchor-text--light" href="#">Kontakt</a></li>
+          <li><a class="anchor-text--light" href="#">Impressum</a></li>
+          <li><a class="anchor-text--light" href="#">Datenschutz</a></li>
+          <li><a class="anchor-text--light" href="#">Quellen</a></li>
         </ul>
-        <ul class="vertical menu">
-          <li>
-            <a href="#" class="btn btn--hollow">
-              <i class ="icon ion-log-in"></i>
-              <span class="menu-li__btn">Einloggen</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div class="off-canvas-content" data-off-canvas-content>
-        <div class="nav-bar nav-bar-hp">
-          <div class="nav-bar-left">
-            <!--
-            <a class="nav-bar__logo"><img class="logo" src="https://placehold.it/150x30"></a>
-            -->
-          </div>
-          <div class="nav-bar-right">
-            <ul class="menu menu-hp">
-              <li>
-              <li>
-                <button class="offcanvas-trigger offcanvas-trigger-hp" type="button" data-open="offCanvasRight">
-                  <span class="offcanvas-trigger__text hide-for-small-only">Menu</span>
-                  <div class="hamburger">
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                  </div>
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <!-- HP NAVIGATION END -->
+      </li>
+    </ul>
+  </div>
+</div>

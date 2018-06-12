@@ -1,15 +1,18 @@
 
 {% load staticfiles %}
 
-<div class="cell medium-6 card-thin">
+<div class="cell medium-10 medium-offset-1 large-8 large-offset-2 card-thin">
   <div class="grid-x">
-    <div class="cell small-1 card-thin__number">
-      <input class="cell small-1 card-thin__number" type="number" name="{{widget.attrs.hh_id}}" value="{{widget.attrs.count}}">
+    <input type="hidden" name="{{widget.attrs.hh_id}}" value="{{widget.attrs.count}}">
+    <div class="cell small-1 card-thin__number">{{widget.attrs.count}}</div>
+    <div class="cell small-1">
+      <img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Einzelhaus_b.svg' %}" alt="Haushalt">
     </div>
-    <div class="cell small-1"><img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Einzelhaus_b.svg' %}"></div>
-    <div class="cell small-9 small-offset-1 card-thin__text">
-      <div>{{widget.attrs.hh_name}}</div>
-      <button type="submit" name="trash" value="{{widget.attrs.hh_id}}"><i class="fi-trash"></i></button>
+    <div class="cell small-8 small-offset-1 card-thin__text">
+      {{widget.attrs.hh_name}}
+      <button type="submit" name="trash" value="{{widget.attrs.hh_id}}">
+        <i class ="icon ion-android-delete icon--medium"></i>
+      </button>
     </div>
   </div>
 </div>

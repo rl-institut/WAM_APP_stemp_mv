@@ -2,21 +2,53 @@
 
 {% load staticfiles %}
 
-{% block header %}
-<script src="{% static 'highcharts.js' %}"></script>
-{% endblock %}
-
-{% block submenu %}
-{% include "includes/submenu.html" with current_menu="technology"%}
-{% endblock %}
+{% block body-class %}u-vh--100{% endblock %}
 
 {% block content %}
 
-<form action="{% url 'stemp:technology' %}" method="post">
-  {% csrf_token %}
-  {{technology.as_p}}
-  <input class="btn btn-default" type="submit" value="Weiter" name="continue">
-  <input class="btn btn-default" type="submit" value="Weiter + Parameter" name="parameter">
-</form>
+<div class="grid-container fluid u-no-padding">
+  <div class="grid-x">
+
+    <!-- STEPS INFO START (LEFT) -->
+    <div class="cell large-4 l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
+      <div class="cell"><h1>Haushalt erstellen</h1></div>
+      <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
+        <li>1</li>
+        <li class="current"><span class="show-for-sr">Sie sind auf der Seite Heizungsoptionen des Haushalts</span> 2</li>
+        <li>3</li>
+        <li>4</li>
+      </ul>
+
+      <div class="scen-create__description">
+        <div class="scen-create__icon"><img src="{% static 'stemp/foundation/img/icons_custom/Heizung.svg' %}" alt="Icon Heizung"></div>
+        <h2 class="scen-create__header">Heizungsoptionen</h2>
+        <p class="scen-create__text show-for-large">Wählen Sie eine Heizung aus, mit der Sie das Viertelszenario berechnen können.</p>
+      </div>
+    </div>
+    <!-- STEPS INFO END -->
+
+    <!-- STEPS TASKS START (RIGHT) -->
+    <div class="cell large-8 large-offset-4 l-bg-color-w scen-create__wrapper u-text--center">
+
+      <form class="grid-x scen-create__form" action="{% url 'stemp:technology' %}" method="post">
+        {% csrf_token %}
+
+        <div class="cell">
+          <h3>Schmidt Haus</h3>
+        </div>
+
+        {% for field in technology %}
+          {{field}}
+        {% endfor %}
+
+        {% url 'stemp:demand_single' as back_url%}
+        {% include 'includes/button_section.html' with back_url=back_url %}
+
+      </form>
+    </div>
+    <!-- STEPS TASKS END -->
+
+  </div>
+</div>
 
 {% endblock %}

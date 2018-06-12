@@ -1,0 +1,24 @@
+<!-- BUTTONS SECTION START -->
+<div class="cell large-8 u-text--center scen-create__btn scen-create__btn--fixed">
+  <div class="grid-x">
+    <div class="u-text--center btn-left">
+      <a href={{back_url}} class="btn btn--hollow">
+        <i class ="icon ion-chevron-left icon--small"></i>
+        Zurück
+      </a>
+    </div>
+    <div class="u-text--center btn-right">
+      <button type="submit" class="btn btn-cta btn-submit" name="done" id="done">
+        Weiter
+        <i class ="icon ion-chevron-right icon--small"></i>
+      </button>
+    </div>
+  </div>
+  <a href="{% url 'stemp:index' %}">
+    <span class="anchor-text">
+    <i class ="icon ion-close icon--small"></i>
+    Abbrechen
+    </span>
+  </a>
+</div>
+<!-- BUTTONS SECTION END -->

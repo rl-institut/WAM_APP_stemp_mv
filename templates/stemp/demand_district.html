@@ -29,28 +29,30 @@
 
     <!-- STEPS TASKS START (RIGHT) -->
     <div class="cell large-8 large-offset-4 l-bg-color-w scen-create__wrapper u-text--center">
-      <form class="grid-x scen-create__form grid-margin-x" method="post">
+      <form class="grid-x scen-create__form" method="post">
         {% csrf_token %}
 
-        <div class="cell">
-          <h3>Groß Trebbow</h3>
+        <div class="cell medium-10 medium-offset-1 large-8 large-offset-2">
+          <h3>Lützow</h3>
+          <div class="icon-save">
+            <a href="#">
+              <img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Save_1.svg' %}" alt="Als Szenario speichern" title="Als Szenario speichern">
+            </a>
+          </div>
+          <div class="icon-load">
+            <a>
+              <img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Upload.svg' %}" alt="Gespeichertes Szenario laden" title="Gespeichertes Szenario laden">
+            </a>
+          </div>
         </div>
 
         {% for field in district_form %}
           {{field}}
         {% endfor %}
 
-        <div class="cell large-8 u-text--center scen-create__btn">
-          <div class="grid-x">
-            <div class="u-text--center btn-left">
-              <a href="{% url 'stemp:demand_selection' %}" class="btn btn--hollow"><i class="icon ion-chevron-left icon--small"></i> Zurück</a>
-            </div>
-            <div class="u-text--center btn-right">
-              <button type="submit" class="btn btn-cta btn-submit" name="done">Weiter <i class="icon ion-chevron-right icon--small"></i></button>
-            </div>
-          </div>
-          <a href="{% url 'stemp:index' %}"><span class="anchor-text"><i class="icon ion-close icon--small"></i>Abbrechen</span></a>
-        </div>
+        {% url 'stemp:demand_selection' as back_url%}
+        {% include 'includes/button_section.html' with back_url=back_url %}
+
       </form>
     </div>
     <!-- STEPS TASKS END -->

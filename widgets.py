@@ -1,6 +1,7 @@
 
 import warnings
 from django.forms import Select, RadioSelect, Widget, NumberInput
+from django.forms.widgets import CheckboxSelectMultiple
 from django.utils import html
 
 
@@ -142,6 +143,10 @@ class HouseholdWidget(Widget):
 
 class DistrictSubmitWidget(Widget):
     template_name = 'widgets/district_submit.html'
+
+
+class TechnologyWidget(CheckboxSelectMultiple):
+    template_name = 'widgets/technology.html'
 
 
 class SubmitWidget(Widget):

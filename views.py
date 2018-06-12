@@ -2,10 +2,8 @@
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 from django. forms import MultipleChoiceField
-from django.forms.widgets import CheckboxSelectMultiple
 
 from wam.settings import SESSION_DATA
-from stemp.tasks import add
 from stemp.oep_models import OEPScenario
 from stemp import results
 from stemp.models import Household, Question, QuestionHousehold
@@ -14,6 +12,7 @@ from stemp.forms import (
     HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm,
     ParameterForm
 )
+from stemp.widgets import TechnologyWidget
 
 
 def check_session(func):
@@ -26,8 +25,8 @@ def check_session(func):
     return func_wrapper
 
 
-class SelectView(TemplateView):
-    template_name = 'stemp/select.html'
+class IndexView(TemplateView):
+    template_name = 'stemp/index.html'
 
 
 class DemandSelectionView(TemplateView):
@@ -54,10 +53,6 @@ class DemandSingleView(TemplateView):
         request.session.modified = True
 
         context = self.get_context_data()
-        # Test celery:
-        result = add.delay(4, 4)
-        context['ready'] = result.ready()
-        context['get'] = result.get(timeout=1)
         return self.render_to_response(context)
 
     @check_session
@@ -86,7 +81,7 @@ class DemandSingleView(TemplateView):
 
         if self.is_district_hh:
             session.demand[str(hh_id)] = 1
-            return redirect('stemp:demand_district')
+            return redirect('stemp:demand_district_added')
         else:
             session.demand = {
                 'index': hh_id,
@@ -97,6 +92,7 @@ class DemandSingleView(TemplateView):
 
 class DemandDistrictView(TemplateView):
     template_name = 'stemp/demand_district.html'
+    new_district = True
 
     def get_context_data(self, session):
         context = super(DemandDistrictView, self).get_context_data()
@@ -107,7 +103,8 @@ class DemandDistrictView(TemplateView):
         # Start session (if no session yet):
         SESSION_DATA.start_session(request)
         session = SESSION_DATA.get_session(request)
-        session.demand = {}
+        if self.new_district:
+            session.demand = {}
 
         context = self.get_context_data(session)
         return self.render_to_response(context)
@@ -157,7 +154,7 @@ class TechnologyView(TemplateView):
             'Technology',
             choices=choices,
             field=MultipleChoiceField,
-            widget=CheckboxSelectMultiple,
+            widget=TechnologyWidget,
             submit_on_change=False
         )
         return context
@@ -197,13 +194,112 @@ class ParameterView(TemplateView):
 
         # Get data from OEP:
         parameters = []
-        for scenario in scenarios:
-            parameters.append(
-                (
-                    scenario.name,
-                    OEPScenario.get_scenario_parameters(scenario.name)
-                )
+        # TODO: Hard-coded to avoid OEP-Error 500
+        parameters = [
+            (
+                'oil',
+                {
+                    'General': {
+                        'WACC': {
+                            'label': 'WACC',
+                            'parameter_type': 'costs',
+                            'value_type': 'float',
+                            'value': 7.1,
+                            'unit': '%',
+                            'step_size': 0.1,
+                            'min': 0,
+                            'max': 20
+                        },
+                        'Ölpreis': {
+                            'label': 'Ölpreis',
+                            'parameter_type': 'costs',
+                            'value_type': 'float',
+                            'value': 1.3,
+                            'unit': '€/liter',
+                            'step_size': 0.1,
+                            'min': 0,
+                            'max': 10
+                        }
+                    },
+                    'Ölheizung': {
+                        'Effizienz': {
+                            'label': 'Effizienz',
+                            'parameter_type': 'technologies',
+                            'value_type': 'float',
+                            'value': 0.7,
+                            'unit': 'kW_e/kW_th',
+                            'step_size': 0.1,
+                            'min': 0,
+                            'max': 1
+                        },
+                        'Investment': {
+                            'label': 'Investmentkosten',
+                            'parameter_type': 'costs',
+                            'value_type': 'integer',
+                            'value': 200,
+                            'unit': '€/kW',
+                            'min': 0,
+                            'max': 1000
+                        }
+                    }
+                }
+            ),
+            (
+                'bhkw',
+                {
+                    'General': {
+                        'WACC': {
+                            'label': 'WACC',
+                            'parameter_type': 'costs',
+                            'value_type': 'float',
+                            'value': 7.1,
+                            'unit': '%',
+                            'step_size': 0.1,
+                            'min': 0,
+                            'max': 20
+                        }
+                    },
+                    'BHKW': {
+                        'WärmeEffizienz': {
+                            'label': 'Wärme-Effizienz',
+                            'parameter_type': 'technologies',
+                            'value_type': 'float',
+                            'value': 0.3,
+                            'unit': 'kW_e/kW_th',
+                            'step_size': 0.1,
+                            'min': 0,
+                            'max': 1
+                        },
+                        'StromEffizienz': {
+                            'label': 'Strom-Effizienz',
+                            'parameter_type': 'technologies',
+                            'value_type': 'float',
+                            'value': 0.6,
+                            'unit': 'kW_e/kW_th',
+                            'step_size': 0.1,
+                            'min': 0,
+                            'max': 1
+                        },
+                        'Investment': {
+                            'label': 'Investment',
+                            'parameter_type': 'costs',
+                            'value_type': 'integer',
+                            'value': 200,
+                            'unit': '€/kW',
+                            'min': 0,
+                            'max': 1000
+                        }
+                    }
+                }
             )
+        ]
+        # for scenario in scenarios:
+        #     parameters.append(
+        #         (
+        #             scenario.name,
+        #             OEPScenario.get_scenario_parameters(scenario.name)
+        #         )
+        #     )
         return ParameterForm(parameters, data)
 
     @check_session

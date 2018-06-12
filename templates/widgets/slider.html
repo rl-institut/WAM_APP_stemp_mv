@@ -1,11 +1,13 @@
-<div class="row">
-  <div class="small-10 columns">
-    <div class="slider" data-slider data-start="{{widget.attrs.min}}" data-initial-start="{{widget.value}}" data-end="{{widget.attrs.max}}" data-step="{{widget.step_size}}">
-      <span class="slider-handle"  data-slider-handle role="slider" tabindex="1" aria-controls="id_{{widget.name}}"></span>
-      <span class="slider-fill" data-slider-fill></span>
-    </div>
+<div class="cell medium-8">
+  <label for="{{widget.attrs.id}}" class="accordion-label">{{widget.attrs.label}}</label>
+  <div class="slider slider--{{widget.attrs.parameter_type}} accordion-slider" data-slider data-start="{{widget.attrs.min}}" data-initial-start="{{widget.value}}" data-end="{{widget.attrs.max}}" data-step="{{widget.step_size}}">
+    <span class="slider-handle"  data-slider-handle role="slider" tabindex="1" aria-controls="{{widget.attrs.id}}"></span>
+    <span class="slider-fill" data-slider-fill></span>
   </div>
-  <div class="small-2 columns">
-    <input type="{{widget.type}}" name="{{widget.name}}" id="id_{{widget.name}}">
+</div>
+<div class="cell medium-4 accordion-input">
+  <div class="input-group accordion-input-box">
+    <input class="input input-group-field" type="{{widget.type}}" name="{{widget.name}}" id="{{widget.attrs.id}}">
+    <span class="input-group-label">{{widget.attrs.unit}}</span>
   </div>
 </div>
