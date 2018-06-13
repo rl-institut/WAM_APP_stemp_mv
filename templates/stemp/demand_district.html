@@ -41,7 +41,7 @@
             </a>
           </div>
           <div class="icon-load">
-            <a>
+            <a data-open="load_modal">
               <img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Upload.svg' %}" alt="Gespeichertes Szenario laden" title="Gespeichertes Szenario laden">
             </a>
           </div>
@@ -63,6 +63,16 @@
       </form>
     </div>
     <!-- STEPS TASKS END -->
+
+    <!-- LOAD MODAL START -->
+    <div class="reveal" id="load_modal" data-reveal>
+      <form method="post">
+        {% csrf_token %}
+        {{district_load_form}}
+        <input type="submit" name="load_district" value="Laden">
+      </form>
+    </div>
+    <!-- LOAD MODAL END -->
 
   </div>
 </div>

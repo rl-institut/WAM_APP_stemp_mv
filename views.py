@@ -7,13 +7,8 @@ from wam.settings import SESSION_DATA
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
 from stemp import results
-from stemp.models import (
-    Household, Question, QuestionHousehold, District, DistrictHouseholds)
-from stemp.forms import (
-    SaveSimulationForm, ChoiceForm, HouseholdForm,
-    HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm,
-    ParameterForm
-)
+from stemp import models
+from stemp import forms
 from stemp.widgets import TechnologyWidget
 
 
@@ -44,8 +39,8 @@ class DemandSingleView(TemplateView):
 
     def get_context_data(self, hh_proposal=None):
         context = super(DemandSingleView, self).get_context_data()
-        context['specific_form'] = HouseholdQuestionsForm()
-        context['list_form'] = HouseholdSelectForm()
+        context['specific_form'] = forms.HouseholdQuestionsForm()
+        context['list_form'] = forms.HouseholdSelectForm()
         context['new_form'] = hh_proposal
         return context
 
@@ -64,23 +59,24 @@ class DemandSingleView(TemplateView):
     def post(self, request, session):
         hh_id = None
         if 'questions' in request.POST:
-            hh_questions = HouseholdQuestionsForm(request.POST)
+            hh_questions = forms.HouseholdQuestionsForm(request.POST)
             if hh_questions.is_valid():
                 proposal_form = hh_questions.hh_proposal()
                 context = self.get_context_data(proposal_form)
                 return self.render_to_response(context)
         elif 'new' in request.POST:
-            hh_id = Household.objects.get(name=request.POST['name']).id
+            hh_id = models.Household.objects.get(name=request.POST['name']).id
         elif 'new_save' in request.POST:
-            hh_form = HouseholdForm(request.POST)
+            hh_form = forms.HouseholdForm(request.POST)
             if hh_form.is_valid():
                 hh = hh_form.save()
-                question = Question.objects.get(pk=request.POST['question_id'])
-                qh = QuestionHousehold(question=question, household=hh)
+                question = models.Question.objects.get(
+                    pk=request.POST['question_id'])
+                qh = models.QuestionHousehold(question=question, household=hh)
                 qh.save()
                 hh_id = hh.id
         elif 'list' in request.POST:
-            hh = HouseholdSelectForm(request.POST)
+            hh = forms.HouseholdSelectForm(request.POST)
             if hh.is_valid():
                 hh_id = hh.cleaned_data['profile'].id
 
@@ -98,7 +94,12 @@ class DemandDistrictView(TemplateView):
 
     def get_context_data(self, session):
         context = super(DemandDistrictView, self).get_context_data()
-        context['district_form'] = DistrictListForm(session.current_district)
+        if session.demand_id is not None:
+            context['demand_name'] = models.District.objects.get(
+                pk=session.demand_id).name
+        context['district_load_form'] = forms.DistrictSelectForm()
+        context['district_form'] = forms.DistrictListForm(
+            session.current_district)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -136,13 +137,22 @@ class DemandDistrictView(TemplateView):
     def post(self, request, session):
         if 'add_household' in request.POST:
             return self.__change_district_list(request, session)
+        elif 'load_district' in request.POST:
+            session.demand_id = request.POST['district']
+            district = models.District.objects.get(pk=request.POST['district'])
+            session.current_district = {
+                str(dh.household.id): dh.amount
+                for dh in district.districthouseholds_set.all()
+            }
+            context = self.get_context_data(session)
+            return self.render_to_response(context)
         else:
             if 'district_name' in request.POST:
-                district = District(name=request.POST['district_name'])
+                district = models.District(name=request.POST['district_name'])
                 district.save()
                 for hh_id, amount in session.current_district.items():
-                    hh = Household.objects.get(pk=hh_id)
-                    district_hh = DistrictHouseholds(
+                    hh = models.Household.objects.get(pk=hh_id)
+                    district_hh = models.DistrictHouseholds(
                         district=district, household=hh, amount=amount)
                     district_hh.save()
                 session.demand_id = district.id
@@ -162,7 +172,7 @@ class TechnologyView(TemplateView):
             ('pv_heatpump_scenario', 'PV + Wärmepumpe'),
             ('oil_scenario', 'Ölheizung')
         )
-        context['technology'] = ChoiceForm(
+        context['technology'] = forms.ChoiceForm(
             'technology',
             'Technology',
             choices=choices,
@@ -188,7 +198,8 @@ class TechnologyView(TemplateView):
             for scenario in session.scenarios:
                 # Load default parameters:
                 parameters = OEPScenario.get_scenario_parameters(scenario.name)
-                parameter_form = ParameterForm([(scenario.name, parameters)])
+                parameter_form = forms.ParameterForm(
+                    [(scenario.name, parameters)])
                 scenario.parameter.update(parameter_form.prepared_data())
                 scenario.load_or_simulate()
             return redirect('stemp:result')
@@ -316,7 +327,7 @@ class ParameterView(TemplateView):
         #             OEPScenario.get_scenario_parameters(scenario.name)
         #         )
         #     )
-        return ParameterForm(parameters, data)
+        return forms.ParameterForm(parameters, data)
 
     def get_context_data(self, session, **kwargs):
         context = super(ParameterView, self).get_context_data(**kwargs)
@@ -350,7 +361,7 @@ class ResultView(TemplateView):
 
     def get_context_data(self, session, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
-        context['save'] = SaveSimulationForm()
+        context['save'] = forms.SaveSimulationForm()
         visualization = results.ResultAnalysisVisualization(session.scenarios)
         context['visualizations'] = [
             visualization.visualize('invest'),
