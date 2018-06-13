@@ -26,12 +26,12 @@ urlpatterns = [
     path(
         'demand/district/empty',
         DemandDistrictView.as_view(),
-        name='demand_district',
+        name='demand_district_empty',
     ),
     path(
         'demand/district/',
         DemandDistrictView.as_view(new_district=False),
-        name='demand_district_added',
+        name='demand_district',
     ),
     path('technology/', TechnologyView.as_view(), name='technology'),
     path('parameter/', ParameterView.as_view(), name='parameter'),

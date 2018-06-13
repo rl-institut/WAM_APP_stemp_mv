@@ -12,7 +12,7 @@
 
     <!-- STEPS INFO START (LEFT) -->
     <div class="cell large-4 l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
-      <div class="cell"><h1>Viertel erstellen</h1></div>
+      <div class="cell"><h1>{{demand_label}}</h1></div>
       <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
         <li>1</li>
         <li>2</li>
@@ -33,7 +33,7 @@
 
       <div class="grid-x scen-create__form">
         <div class="cell">
-          <h3>Lützow</h3>
+          <h3>{{demand_name}}</h3>
         </div>
 
         <form class="cell medium-10 medium-offset-1 large-8 large-offset-2" action="{% url 'stemp:parameter' %}" method="post">

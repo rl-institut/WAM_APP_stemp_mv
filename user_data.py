@@ -1,10 +1,22 @@
 
 from os import path
+from enum import Enum
 from stemp.settings import SqlAlchemySession, SCENARIO_PATH
 from stemp.scenarios import import_scenario, create_energysystem
 from stemp.bookkeeping import simulate_energysystem
-from stemp.models import Scenario, Parameter, Simulation
+from stemp.models import Scenario, Parameter, Simulation, Household, District
 from db_apps.oemof_results import store_results
+
+
+class DemandType(Enum):
+    Single = 'single'
+    District = 'district'
+
+    def label(self):
+        if self.value == 'single':
+            return 'Haushalt erstellen'
+        else:
+            return 'Viertel erstellen'
 
 
 class SessionSimulation(object):
@@ -94,8 +106,21 @@ class SessionSimulation(object):
 class UserSession(object):
     def __init__(self):
         self.scenarios = []
-        self.demand = {}
+        self.demand_type = None
+        self.demand_id = None
+        self.current_district = {}
 
     def init_scenarios(self, scenario_names):
         for scenario in scenario_names:
             self.scenarios.append(SessionSimulation(scenario, self))
+
+    def reset_demand(self):
+        self.demand_type = None
+        self.demand_id = None
+        self.current_district = {}
+
+    def get_demand_name(self):
+        if self.demand_type == DemandType.Single:
+            return Household.objects.get(pk=self.demand_id).name
+        elif self.demand_type == DemandType.District:
+            return District.objects.get(pk=self.demand_id).name

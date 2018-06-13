@@ -11,7 +11,7 @@
 
     <!-- STEPS INFO START (LEFT) -->
     <div class="cell large-4 l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
-      <div class="cell"><h1>Haushalt erstellen</h1></div>
+      <div class="cell"><h1>{{demand_label}}</h1></div>
       <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
         <li>1</li>
         <li class="current"><span class="show-for-sr">Sie sind auf der Seite Heizungsoptionen des Haushalts</span> 2</li>
@@ -32,16 +32,19 @@
 
       <form class="grid-x scen-create__form" action="{% url 'stemp:technology' %}" method="post">
         {% csrf_token %}
-
         <div class="cell">
-          <h3>Schmidt Haus</h3>
+          <h3>{{demand_name}}</h3>
         </div>
 
         {% for field in technology %}
           {{field}}
         {% endfor %}
 
-        {% url 'stemp:demand_single' as back_url%}
+        {% if demand_type == 'single' %}
+          {% url 'stemp:demand_single' as back_url %}
+        {% else %}
+          {% url 'stemp:demand_district' as back_url %}
+        {% endif %}
         {% include 'includes/button_section.html' with back_url=back_url %}
 
       </form>

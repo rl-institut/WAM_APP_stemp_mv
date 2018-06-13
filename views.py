@@ -4,9 +4,11 @@ from django.views.generic import TemplateView
 from django. forms import MultipleChoiceField
 
 from wam.settings import SESSION_DATA
+from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
 from stemp import results
-from stemp.models import Household, Question, QuestionHousehold
+from stemp.models import (
+    Household, Question, QuestionHousehold, District, DistrictHouseholds)
 from stemp.forms import (
     SaveSimulationForm, ChoiceForm, HouseholdForm,
     HouseholdSelectForm, DistrictListForm, HouseholdQuestionsForm,
@@ -51,6 +53,9 @@ class DemandSingleView(TemplateView):
         # Start session (if no session yet):
         SESSION_DATA.start_session(request)
         request.session.modified = True
+        session = SESSION_DATA.get_session(request)
+        session.demand_type = (
+            DemandType.District if self.is_district_hh else DemandType.Single)
 
         context = self.get_context_data()
         return self.render_to_response(context)
@@ -80,13 +85,10 @@ class DemandSingleView(TemplateView):
                 hh_id = hh.cleaned_data['profile'].id
 
         if self.is_district_hh:
-            session.demand[str(hh_id)] = 1
-            return redirect('stemp:demand_district_added')
+            session.current_district[str(hh_id)] = 1
+            return redirect('stemp:demand_district')
         else:
-            session.demand = {
-                'index': hh_id,
-                'type': 'single'
-            }
+            session.demand_id = hh_id
             return redirect('stemp:technology')
 
 
@@ -96,7 +98,7 @@ class DemandDistrictView(TemplateView):
 
     def get_context_data(self, session):
         context = super(DemandDistrictView, self).get_context_data()
-        context['district_form'] = DistrictListForm(session.demand)
+        context['district_form'] = DistrictListForm(session.current_district)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -104,25 +106,27 @@ class DemandDistrictView(TemplateView):
         SESSION_DATA.start_session(request)
         session = SESSION_DATA.get_session(request)
         if self.new_district:
-            session.demand = {}
+            session.reset_demand()
+        session.demand_type = DemandType.District
 
         context = self.get_context_data(session)
         return self.render_to_response(context)
 
     def __change_district_list(self, request, session):
-        session.demand = {
+        session.current_district = {
             hh: count
             for hh, count in request.POST.items()
             if hh not in (
                 'csrfmiddlewaretoken',
                 'trash',
                 'add_household',
-                'demand_submit'
+                'demand_submit',
+                'district_name'
             )
         }
         if 'trash' in request.POST:
             trash = request.POST['trash']
-            del session.demand[trash]
+            del session.current_district[trash]
             context = self.get_context_data(session)
             return self.render_to_response(context)
         elif 'add_household' in request.POST:
@@ -130,10 +134,19 @@ class DemandDistrictView(TemplateView):
 
     @check_session
     def post(self, request, session):
-        if 'done' in request.POST:
-            return redirect('stemp:technology')
-        else:
+        if 'add_household' in request.POST:
             return self.__change_district_list(request, session)
+        else:
+            if 'district_name' in request.POST:
+                district = District(name=request.POST['district_name'])
+                district.save()
+                for hh_id, amount in session.current_district.items():
+                    hh = Household.objects.get(pk=hh_id)
+                    district_hh = DistrictHouseholds(
+                        district=district, household=hh, amount=amount)
+                    district_hh.save()
+                session.demand_id = district.id
+            return redirect('stemp:technology')
 
 
 class TechnologyView(TemplateView):
@@ -142,7 +155,7 @@ class TechnologyView(TemplateView):
     def __init__(self, **kwargs):
         super(TechnologyView, self).__init__(**kwargs)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, session, **kwargs):
         context = super(TechnologyView, self).get_context_data(**kwargs)
         choices = (
             ('bhkw_scenario', 'BHKW'),
@@ -157,11 +170,14 @@ class TechnologyView(TemplateView):
             widget=TechnologyWidget,
             submit_on_change=False
         )
+        context['demand_type'] = str(session.demand_type.value)
+        context['demand_label'] = session.demand_type.label()
+        context['demand_name'] = session.get_demand_name()
         return context
 
     @check_session
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
+        context = self.get_context_data(kwargs['session'])
         return self.render_to_response(context)
 
     @check_session
@@ -302,11 +318,16 @@ class ParameterView(TemplateView):
         #     )
         return ParameterForm(parameters, data)
 
+    def get_context_data(self, session, **kwargs):
+        context = super(ParameterView, self).get_context_data(**kwargs)
+        context['parameter_form'] = self.get_scenario_parameters(session)
+        context['demand_label'] = session.demand_type.label()
+        context['demand_name'] = session.get_demand_name()
+        return context
+
     @check_session
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        context['parameter_form'] = self.get_scenario_parameters(
-            kwargs['session'])
+        context = self.get_context_data(kwargs['session'])
         return self.render_to_response(context)
 
     @check_session

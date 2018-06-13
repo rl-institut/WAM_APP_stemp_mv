@@ -29,11 +29,12 @@
 
     <!-- STEPS TASKS START (RIGHT) -->
     <div class="cell large-8 large-offset-4 l-bg-color-w scen-create__wrapper u-text--center">
-      <form class="grid-x scen-create__form" method="post">
+      <form class="grid-x scen-create__form" method="post" id="district">
         {% csrf_token %}
+        <input type="hidden" name="district_name" id="district_name">
 
         <div class="cell medium-10 medium-offset-1 large-8 large-offset-2">
-          <h3>Lützow</h3>
+          <h3>{{demand_name|default:"Neues Viertel"}}</h3>
           <div class="icon-save">
             <a href="#">
               <img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Save_1.svg' %}" alt="Als Szenario speichern" title="Als Szenario speichern">
@@ -51,7 +52,13 @@
         {% endfor %}
 
         {% url 'stemp:demand_selection' as back_url%}
-        {% include 'includes/button_section.html' with back_url=back_url %}
+        {% include 'includes/button_section.html' with back_url=back_url modal="true" done_id="district_modal"%}
+
+        <div class="reveal" id="district_modal" data-reveal>
+          Wie soll das neue Viertel heißen?
+          <input type="text" name="district_name" id="district_name_modal">
+          <input type="button" onclick="district_submit()" class="btn btn-cta btn-submit" name="done" value="Weiter" id="done">
+        </div>
 
       </form>
     </div>
@@ -60,4 +67,14 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'jquery.js' %}"></script>
+<script language="JavaScript">
+  function district_submit() {
+    $("#district_name").val($("#district_name_modal").val());
+    $("#district").submit();
+  }
+</script>
 {% endblock %}
