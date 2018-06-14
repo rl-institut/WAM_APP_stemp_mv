@@ -19,6 +19,12 @@ class DemandType(Enum):
             return 'Viertel erstellen'
 
 
+class DistrictStatus(Enum):
+    New = 'new'
+    Changed = 'changed'
+    Unchanged = 'unchanged'
+
+
 class SessionSimulation(object):
     def __init__(self, name, session):
         self.session = session
@@ -124,3 +130,15 @@ class UserSession(object):
             return Household.objects.get(pk=self.demand_id).name
         elif self.demand_type == DemandType.District:
             return District.objects.get(pk=self.demand_id).name
+
+    def get_district_status(self):
+        if self.demand_id is None:
+            return DistrictStatus.New
+        district = District.objects.get(pk=self.demand_id)
+        if self.current_district == {
+            str(dh.household.id): dh.amount
+            for dh in district.districthouseholds_set.all()
+        }:
+            return DistrictStatus.Unchanged
+        else:
+            return DistrictStatus.Changed

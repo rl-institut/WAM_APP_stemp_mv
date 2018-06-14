@@ -37,39 +37,6 @@ class Simulation(models.Model):
         return '(' + ','.join(ids) + ')'
 
 
-class District(models.Model):
-    name = models.CharField(max_length=255)
-
-    layout = {
-        'x_title': 'Zeit [h]',
-        'y_title': 'Verbrauch [kWh]',
-        'title': 'Strom- und Wärmeverbrauch'
-    }
-
-    def __str__(self):
-        return self.name
-
-    def annual_load_demand(self):
-        return sum(
-            [hh.annual_load_demand() for hh in self.household_set.all()]
-        )
-
-    def annual_heat_demand(self):
-        return sum(
-            [hh.annual_heat_demand() for hh in self.household_set.all()]
-        )
-
-    def as_highchart(self, style='line'):
-        layout = self.layout.copy()
-        df = pandas.DataFrame(
-            {
-                'Stromverbrauch': self.annual_load_demand(),
-                'Wärmebedarf': self.annual_heat_demand()
-            }
-        )
-        return Highchart(df, style, **layout)
-
-
 class ProfileMixin(object):
     def as_series(self):
         return pandas.Series(self.profile)
@@ -113,13 +80,19 @@ class HeatProfile(models.Model, ProfileMixin):
         return self.name
 
 
+class DistrictHouseholds(models.Model):
+    district = models.ForeignKey('District', on_delete=models.CASCADE)
+    household = models.ForeignKey('Household', on_delete=models.CASCADE)
+    amount = models.IntegerField()
+
+
 class Household(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    districts = models.ManyToManyField(District, through='DistrictHouseholds')
+    districts = models.ManyToManyField('District', through='DistrictHouseholds')
     load_demand = models.FloatField(verbose_name='Jährlicher Strombedarf')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
-    load_profile = models.ForeignKey(LoadProfile, on_delete=models.CASCADE)
-    heat_profile = models.ForeignKey(HeatProfile, on_delete=models.CASCADE)
+    load_profile = models.ForeignKey('LoadProfile', on_delete=models.CASCADE)
+    heat_profile = models.ForeignKey('HeatProfile', on_delete=models.CASCADE)
 
     layout = {
         'x_title': 'Zeit [h]',
@@ -136,6 +109,46 @@ class Household(models.Model):
 
     def annual_heat_demand(self):
         return self.heat_demand * self.heat_profile.as_series()
+
+    def as_highchart(self, style='line'):
+        layout = self.layout.copy()
+        df = pandas.DataFrame(
+            {
+                'Stromverbrauch': self.annual_load_demand(),
+                'Wärmebedarf': self.annual_heat_demand()
+            }
+        )
+        return Highchart(df, style, **layout)
+
+
+class District(models.Model):
+    name = models.CharField(max_length=255)
+
+    layout = {
+        'x_title': 'Zeit [h]',
+        'y_title': 'Verbrauch [kWh]',
+        'title': 'Strom- und Wärmeverbrauch'
+    }
+
+    def __str__(self):
+        return self.name
+
+    def add_households(self, households):
+        for hh_id, amount in households.items():
+            hh = Household.objects.get(pk=hh_id)
+            district_hh = DistrictHouseholds(
+                district=self, household=hh, amount=amount)
+            district_hh.save()
+
+    def annual_load_demand(self):
+        return sum(
+            [hh.annual_load_demand() for hh in self.household_set.all()]
+        )
+
+    def annual_heat_demand(self):
+        return sum(
+            [hh.annual_heat_demand() for hh in self.household_set.all()]
+        )
 
     def as_highchart(self, style='line'):
         layout = self.layout.copy()
@@ -169,9 +182,3 @@ class QuestionHousehold(models.Model):
         related_name='question_household',
     )
     default = models.BooleanField(default=False)
-
-
-class DistrictHouseholds(models.Model):
-    district = models.ForeignKey(District, on_delete=models.CASCADE)
-    household = models.ForeignKey(Household, on_delete=models.CASCADE)
-    amount = models.IntegerField()

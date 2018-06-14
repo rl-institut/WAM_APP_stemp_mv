@@ -31,7 +31,8 @@
     <div class="cell large-8 large-offset-4 l-bg-color-w scen-create__wrapper u-text--center">
       <form class="grid-x scen-create__form" method="post" id="district">
         {% csrf_token %}
-        <input type="hidden" name="district_name" id="district_name">
+        <input type="hidden" name="district_name" id="district_name" value="">
+        <input type="hidden" name="district_status" value={{district_status}}>
 
         <div class="cell medium-10 medium-offset-1 large-8 large-offset-2">
           <h3>{{demand_name|default:"Neues Viertel"}}</h3>
@@ -52,12 +53,23 @@
         {% endfor %}
 
         {% url 'stemp:demand_selection' as back_url%}
-        {% include 'includes/button_section.html' with back_url=back_url modal="true" done_id="district_modal"%}
+
+        {% if district_status == 'unchanged' %}
+          {% include 'includes/button_section.html' with back_url=back_url %}
+        {% else %}
+          {% include 'includes/button_section.html' with back_url=back_url modal="true" done_id="district_modal"%}
+        {% endif %}
 
         <div class="reveal" id="district_modal" data-reveal>
-          Wie soll das neue Viertel heißen?
+          {% if district_status == 'changed' %}
+            Das Viertel wurde geändert - was soll passieren?<br>
+            <input type="button" onclick="district_save()" class="btn btn-cta btn-submit" value="Änderungen speichern"><br>
+            Viertel unter neuem Namen speichern:
+          {% else %}
+            Wie soll das neue Viertel heißen?
+          {% endif %}
           <input type="text" name="district_name" id="district_name_modal">
-          <input type="button" onclick="district_submit()" class="btn btn-cta btn-submit" name="done" value="Weiter" id="done">
+          <input type="button" onclick="district_submit()" class="btn btn-cta btn-submit" value="Neues Viertel anlegen">
         </div>
 
       </form>
@@ -84,6 +96,9 @@
 <script language="JavaScript">
   function district_submit() {
     $("#district_name").val($("#district_name_modal").val());
+    $("#district").submit();
+  }
+  function district_save() {
     $("#district").submit();
   }
 </script>

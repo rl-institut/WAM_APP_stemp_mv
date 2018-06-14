@@ -97,6 +97,7 @@ class DemandDistrictView(TemplateView):
         if session.demand_id is not None:
             context['demand_name'] = models.District.objects.get(
                 pk=session.demand_id).name
+        context['district_status'] = session.get_district_status().value
         context['district_load_form'] = forms.DistrictSelectForm()
         context['district_form'] = forms.DistrictListForm(
             session.current_district)
@@ -122,7 +123,8 @@ class DemandDistrictView(TemplateView):
                 'trash',
                 'add_household',
                 'demand_submit',
-                'district_name'
+                'district_name',
+                'district_status'
             )
         }
         if 'trash' in request.POST:
@@ -147,15 +149,21 @@ class DemandDistrictView(TemplateView):
             context = self.get_context_data(session)
             return self.render_to_response(context)
         else:
-            if 'district_name' in request.POST:
-                district = models.District(name=request.POST['district_name'])
-                district.save()
-                for hh_id, amount in session.current_district.items():
-                    hh = models.Household.objects.get(pk=hh_id)
-                    district_hh = models.DistrictHouseholds(
-                        district=district, household=hh, amount=amount)
-                    district_hh.save()
-                session.demand_id = district.id
+            if request.POST['district_status'] in ('new', 'changed'):
+                if request.POST['district_name'] == '':
+                    # Save changes to district:
+                    district = models.District.objects.get(
+                        pk=session.demand_id)
+                    district.districthouseholds_set.all().delete()
+                    district.add_households(session.current_district)
+                else:
+                    # Save district as new district:
+                    district = models.District(
+                        name=request.POST['district_name'])
+                    district.save()
+                    district.add_households(session.current_district)
+                    session.demand_id = district.id
+
             return redirect('stemp:technology')
 
 
