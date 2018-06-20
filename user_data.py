@@ -1,7 +1,7 @@
 
 from os import path
 from enum import Enum
-from stemp.settings import SqlAlchemySession, SCENARIO_PATH
+from stemp.app_settings import SqlAlchemySession, SCENARIO_PATH
 from stemp.scenarios import import_scenario, create_energysystem
 from stemp.bookkeeping import simulate_energysystem
 from stemp.models import Scenario, Parameter, Simulation, Household, District

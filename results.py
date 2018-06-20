@@ -2,7 +2,7 @@
 import pandas
 from collections import namedtuple
 from oemof.solph import analyzer as an
-from stemp.settings import SqlAlchemySession
+from stemp.app_settings import SqlAlchemySession
 from utils.highcharts import Highchart
 from db_apps.oemof_results import restore_results
 

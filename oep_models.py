@@ -2,7 +2,7 @@ import os
 from collections import defaultdict, OrderedDict, ChainMap
 from configobj import ConfigObj
 from wam.settings import BASE_DIR
-from stemp.settings import PARAMETER_CONFIG
+from stemp.app_settings import PARAMETER_CONFIG
 from db_apps.oep import OEPTable
 
 

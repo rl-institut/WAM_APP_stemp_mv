@@ -328,13 +328,13 @@ class ParameterView(TemplateView):
                 }
             )
         ]
-        # for scenario in scenarios:
-        #     parameters.append(
-        #         (
-        #             scenario.name,
-        #             OEPScenario.get_scenario_parameters(scenario.name)
-        #         )
-        #     )
+        for scenario in scenarios:
+            parameters.append(
+                (
+                    scenario.name,
+                    OEPScenario.get_scenario_parameters(scenario.name)
+                )
+            )
         return forms.ParameterForm(parameters, data)
 
     def get_context_data(self, session, **kwargs):
