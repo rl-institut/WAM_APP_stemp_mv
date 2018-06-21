@@ -20,7 +20,7 @@
       </ul>
 
       <div class="scen-create__description">
-        <div class="scen-create__icon"><img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Viertel.svg' %}"></div>
+        <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Enavi_Viertel.svg' %}"></div>
         <h2 class="scen-create__header">Viertelstruktur</h2>
         <p class="scen-create__text show-for-large">Ein Viertel besteht aus mehreren Haushalten. Sie können Haushalte aus selbst definierten oder aus Standardwerten erstellen und sie dem Viertel hinzufügen.</p>
       </div>
@@ -38,12 +38,12 @@
           <h3>{{demand_name|default:"Neues Viertel"}}</h3>
           <div class="icon-save">
             <a href="#">
-              <img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Save_1.svg' %}" alt="Als Szenario speichern" title="Als Szenario speichern">
+              <img src="{% static 'stemp/img/icons_custom/Enavi_Save_1.svg' %}" alt="Als Szenario speichern" title="Als Szenario speichern">
             </a>
           </div>
           <div class="icon-load">
             <a data-open="load_modal">
-              <img src="{% static 'stemp/foundation/img/icons_custom/Enavi_Upload.svg' %}" alt="Gespeichertes Szenario laden" title="Gespeichertes Szenario laden">
+              <img src="{% static 'stemp/img/icons_custom/Enavi_Upload.svg' %}" alt="Gespeichertes Szenario laden" title="Gespeichertes Szenario laden">
             </a>
           </div>
         </div>
@@ -92,7 +92,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'jquery.js' %}"></script>
+<!--<script src="{% static 'jquery.js' %}"></script>-->
 <script language="JavaScript">
   function district_submit() {
     $("#district_name").val($("#district_name_modal").val());

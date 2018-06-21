@@ -1,5 +1,5 @@
 
-{% load staticfiles %}
+{% load static %}
 
 <html class="no-js" lang="en">
   <head>
@@ -7,9 +7,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Foundation for Sites{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'ionicons-2.0.1/css/ionicons.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'foundation-icons.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'stemp/img/ionicons-2.0.1/css/ionicons.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'stemp/foundation/css/app.css' %}">
     {% block header %}{% endblock %}
   </head>
