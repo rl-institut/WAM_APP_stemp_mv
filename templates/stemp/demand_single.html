@@ -62,12 +62,14 @@
   <script language="JavaScript">
   $(document).ready(function() {
     // Scrolls to household-form after question was submitted:
-    $('html, body').animate(
-      {
-        scrollTop: ($('#household-name').offset().top)
-      },
-      500
-    );
+    if ( $( "#household-name" ).length ) {
+      $('html, body').animate(
+        {
+          scrollTop: ($('#household-name').offset().top)
+        },
+        500
+      );
+    }
 
     // Allows one submit button for forms in both tabs:
     $("#done").click(function() {
