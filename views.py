@@ -51,6 +51,7 @@ class DemandSingleView(TemplateView):
         context['list_form'] = forms.HouseholdSelectForm()
         context['new_form'] = hh_proposal
         context['labels'] = self.get_labels()
+        context['is_district_hh'] = self.is_district_hh
         return context
 
     def get(self, request, *args, **kwargs):
