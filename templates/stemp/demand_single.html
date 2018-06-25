@@ -80,6 +80,18 @@
       }
     });
 
+    // Disables "done" button if no question was submitted
+    {% if not new_form %}
+    $("#quarterListBtn").click(function() {
+      alert('Liste');
+      $("#done").attr("disable", false);
+    });
+    $("#quarterCustomBtn").click(function() {
+      alert('Frage');
+      $("#done").attr("disable", true);
+    });
+    {% endif %}
+
     // Changes question button text:
     {% if new_form %}
       var changed = false;
