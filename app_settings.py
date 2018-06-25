@@ -4,6 +4,7 @@ from wam import settings
 import sqlalchemy
 from sqlalchemy import orm
 import sqlahelper
+from configobj import ConfigObj
 
 # Add sqlalchemy:
 db_url = '{engine}://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}'.format(
@@ -20,3 +21,5 @@ Base.metadata.create_all()
 SCENARIO_PATH = path.join('stemp', 'scenarios')
 
 PARAMETER_CONFIG = 'stemp/attributes.cfg'
+
+LABELS = ConfigObj(path.join(settings.BASE_DIR, 'stemp', 'labels.cfg'))

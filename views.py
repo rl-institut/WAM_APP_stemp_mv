@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from django. forms import MultipleChoiceField
 
 from wam.settings import SESSION_DATA
+from stemp.app_settings import LABELS
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
 from stemp import results
@@ -37,11 +38,19 @@ class DemandSingleView(TemplateView):
     def __init__(self, **kwargs):
         super(DemandSingleView, self).__init__(**kwargs)
 
+    def get_labels(self):
+        if self.is_district_hh:
+            labels = LABELS['demand_single']['District']
+        else:
+            labels = LABELS['demand_single']['Single']
+        return labels
+
     def get_context_data(self, hh_proposal=None):
         context = super(DemandSingleView, self).get_context_data()
         context['specific_form'] = forms.HouseholdQuestionsForm()
         context['list_form'] = forms.HouseholdSelectForm()
         context['new_form'] = hh_proposal
+        context['labels'] = self.get_labels()
         return context
 
     def get(self, request, *args, **kwargs):
@@ -101,6 +110,7 @@ class DemandDistrictView(TemplateView):
         context['district_load_form'] = forms.DistrictSelectForm()
         context['district_form'] = forms.DistrictListForm(
             session.current_district)
+        context['labels'] = LABELS['demand_district']
         return context
 
     def get(self, request, *args, **kwargs):

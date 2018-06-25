@@ -11,9 +11,9 @@
 
     <!-- STEPS INFO START (LEFT) -->
     <div class="cell large-4 l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
-      <div class="cell"><h1>Viertel erstellen</h1></div>
+      <div class="cell"><h1>{{labels.index}}</h1></div>
       <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
-        <li class="current"><span class="show-for-sr">Sie sind auf der Seite</span> 1</li>
+        <li class="current"><span class="show-for-sr">{{labels.index_tip}}</span> 1</li>
         <li>2</li>
         <li>3</li>
         <li>4</li>
@@ -21,8 +21,8 @@
 
       <div class="scen-create__description">
         <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Enavi_Viertel.svg' %}"></div>
-        <h2 class="scen-create__header">Viertelstruktur</h2>
-        <p class="scen-create__text show-for-large">Ein Viertel besteht aus mehreren Haushalten. Sie können Haushalte aus selbst definierten oder aus Standardwerten erstellen und sie dem Viertel hinzufügen.</p>
+        <h2 class="scen-create__header">{{labels.title}}</h2>
+        <p class="scen-create__text show-for-large">{{labels.text}}</p>
       </div>
     </div>
     <!-- STEPS INFO END -->
