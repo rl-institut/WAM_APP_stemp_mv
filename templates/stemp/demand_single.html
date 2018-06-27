@@ -95,8 +95,7 @@
     // Changes question button text:
     {% if new_form %}
       var changed = false;
-
-      $("#household_form :input").change(function() {
+      $("#household_form :input").on('input', function() {
         if (! changed) {
           changed = true;
           enable_saving_mode();
