@@ -23,42 +23,47 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'parameter_type': 'cost',
+                    'parameter_type': 'costs',
                     'parameter': 'wacc',
                     'value_type': 'float',
-                    'value': '0.05'
+                    'value': '0.05',
+                    'unit': '%'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'parameter_type': 'cost',
+                    'parameter_type': 'costs',
                     'parameter': 'net_costs',
                     'value_type': 'float',
-                    'value': '0.27'
+                    'value': '0.27',
+                    'unit': '€'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': SHORT_NAME,
-                    'parameter_type': 'cost',
-                    'parameter': 'oil_capex',
+                    'parameter_type': 'costs',
+                    'parameter': 'capex',
                     'value_type': 'float',
-                    'value': '1200'
+                    'value': '1200',
+                    'unit': '€'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': SHORT_NAME,
-                    'parameter_type': 'cost',
-                    'parameter': 'oil_lifetime',
+                    'parameter_type': 'costs',
+                    'parameter': 'lifetime',
                     'value_type': 'integer',
-                    'value': '20'
+                    'value': '20',
+                    'unit': 'Jahre'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': SHORT_NAME,
-                    'parameter_type': 'tech',
-                    'parameter': 'oil_efficiency',
+                    'parameter_type': 'technologies',
+                    'parameter': 'efficiency',
                     'value_type': 'float',
-                    'value': '0.6'
+                    'value': '0.6',
+                    'unit': '%'
                 }
             ]
         }

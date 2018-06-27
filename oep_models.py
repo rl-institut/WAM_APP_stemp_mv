@@ -1,8 +1,7 @@
-import os
+
 from collections import defaultdict, OrderedDict, ChainMap
 from configobj import ConfigObj
-from wam.settings import BASE_DIR
-from stemp.app_settings import PARAMETER_CONFIG
+from stemp.app_settings import ADDITIONAL_PARAMETERS
 from db_apps.oep import OEPTable
 
 
@@ -20,32 +19,37 @@ class OEPScenario(OEPTable):
                 {
                     "name": "scenario",
                     "data_type": "varchar",
-                    "character_maximum_length": "50"
+                    "character_maximum_length": 50
                 },
                 {
                     "name": "component",
                     "data_type": "varchar",
-                    "character_maximum_length": "50"
+                    "character_maximum_length": 50
+                },
+                {
+                    "name": "unit",
+                    "data_type": "varchar",
+                    "character_maximum_length": 50
                 },
                 {
                     "name": "parameter_type",
                     "data_type": "varchar",
-                    "character_maximum_length": "50"
+                    "character_maximum_length": 50
                 },
                 {
                     "name": "parameter",
                     "data_type": "varchar",
-                    "character_maximum_length": "50"
+                    "character_maximum_length": 50
                 },
                 {
                     "name": "value_type",
                     "data_type": "varchar",
-                    "character_maximum_length": "50"
+                    "character_maximum_length": 50
                 },
                 {
                     "name": "value",
                     "data_type": "varchar",
-                    "character_maximum_length": "50"
+                    "character_maximum_length": 50
                 }
             ],
             "constraints": [
@@ -64,21 +68,19 @@ class OEPScenario(OEPTable):
         if not scenario:
             return None
 
-        # Get default descriptions:
-        attr_cfg_path = os.path.join(BASE_DIR, PARAMETER_CONFIG)
-        description = ConfigObj(attr_cfg_path)
+        # Get secondary attributes:
+        description = ConfigObj(ADDITIONAL_PARAMETERS)
 
         parameters = defaultdict(OrderedDict)
         for item in scenario:
-            comp = item['component']
-            parameter = item['parameter']
+            item.pop('id')
+            item.pop('scenario')
+            comp = item.pop('component')
+            parameter = item.pop('parameter')
             param_dict = ChainMap(
-                {
-                    'value': item['value'],
-                    'value_type': item['value_type'],
-                    'parameter_type': item['parameter_type']
-                },
-                description.get(comp, {}).get(parameter, {})
+                item,
+                description.get(
+                    comp, {}).get(parameter, description.get(parameter, {}))
             )
             parameters[comp][parameter] = param_dict
 

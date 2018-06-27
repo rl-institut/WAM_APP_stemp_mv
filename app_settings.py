@@ -20,6 +20,7 @@ Base.metadata.create_all()
 
 SCENARIO_PATH = path.join('stemp', 'scenarios')
 
-PARAMETER_CONFIG = 'stemp/attributes.cfg'
+ADDITIONAL_PARAMETERS = ConfigObj(
+    path.join(settings.BASE_DIR, 'stemp', 'attributes.cfg'))
 
 LABELS = ConfigObj(path.join(settings.BASE_DIR, 'stemp', 'labels.cfg'))

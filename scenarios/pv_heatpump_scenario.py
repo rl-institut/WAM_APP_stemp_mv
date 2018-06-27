@@ -24,7 +24,7 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'parameter_type': 'cost',
+                    'parameter_type': 'costs',
                     'parameter': 'wacc',
                     'value_type': 'float',
                     'value': '0.05'
@@ -32,66 +32,76 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'parameter_type': 'cost',
+                    'parameter_type': 'costs',
                     'parameter': 'net_costs',
                     'value_type': 'float',
-                    'value': '0.27'
+                    'value': '0.27',
+                    'unit': '€'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'parameter_type': 'cost',
+                    'parameter_type': 'costs',
                     'parameter': 'pv_feedin_tariff',
                     'value_type': 'float',
-                    'value': '-0.08'
+                    'value': '-0.08',
+                    'unit': '€'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'PV',
-                    'parameter_type': 'cost',
-                    'parameter': 'pv_lifetime',
+                    'parameter_type': 'costs',
+                    'parameter': 'lifetime',
                     'value_type': 'float',
-                    'value': '1200'
+                    'value': '20',
+                    'unit': 'Jahre'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'PV',
-                    'parameter_type': 'cost',
-                    'parameter': 'pv_capex',
+                    'parameter_type': 'costs',
+                    'parameter': 'capex',
                     'value_type': 'float',
-                    'value': '1200'
+                    'value': '1200',
+                    'unit': '€'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'PV',
-                    'parameter_type': 'cost',
-                    'parameter': 'pv_opex',
+                    'parameter_type': 'costs',
+                    'parameter': 'opex',
                     'value_type': 'float',
-                    'value': '0.6'
+                    'value': '0.6',
+                    'unit': '€'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'HP',
-                    'parameter_type': 'cost',
-                    'parameter': 'hp_lifetime',
+                    'parameter_type': 'costs',
+                    'parameter': 'lifetime',
+                    'label': 'Nutzungsdauer',
                     'value_type': 'float',
-                    'value': '1200'
+                    'value': '20',
+                    'unit': 'Jahre'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'HP',
-                    'parameter_type': 'cost',
-                    'parameter': 'hp_capex',
+                    'parameter_type': 'costs',
+                    'parameter': 'capex',
                     'value_type': 'float',
-                    'value': '1200'
+                    'value': '1200',
+                    'unit': '€'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'HP',
-                    'parameter_type': 'cost',
-                    'parameter': 'hp_opex',
+                    'parameter_type': 'costs',
+                    'parameter': 'opex',
+                    'label': 'OPEX',
                     'value_type': 'float',
-                    'value': '0.6'
+                    'value': '0.6',
+                    'unit': '€'
                 }
             ]
         }

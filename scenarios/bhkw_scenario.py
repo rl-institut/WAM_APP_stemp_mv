@@ -25,58 +25,65 @@ def upload_scenario_parameters():
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'parameter_type': 'cost',
+                    'parameter_type': 'costs',
                     'parameter': 'net_costs',
                     'value_type': 'float',
-                    'value': '0.27'
+                    'value': '0.27',
+                    'unit': '€'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': 'General',
-                    'parameter_type': 'cost',
+                    'parameter_type': 'costs',
                     'parameter': 'wacc',
                     'value_type': 'float',
-                    'value': '0.05'
+                    'value': '0.05',
+                    'unit': '%'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': SHORT_NAME,
-                    'parameter_type': 'cost',
-                    'parameter': 'invest',
+                    'parameter_type': 'costs',
+                    'parameter': 'capex',
                     'value_type': 'float',
-                    'value': '1200'
+                    'value': '1200',
+                    'unit': '€'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': SHORT_NAME,
-                    'parameter_type': 'cost',
+                    'parameter_type': 'costs',
                     'parameter': 'lifetime',
                     'value_type': 'integer',
-                    'value': '20'
+                    'value': '20',
+                    'unit': 'Jahre'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': SHORT_NAME,
-                    'parameter_type': 'tech',
+                    'parameter_type': 'technologies',
                     'parameter': 'conversion_factor_el',
                     'value_type': 'float',
-                    'value': '0.5'
+                    'value': '0.5',
+                    'unit': '%'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': SHORT_NAME,
-                    'parameter_type': 'tech',
+                    'parameter_type': 'technologies',
                     'parameter': 'conversion_factor_th',
                     'value_type': 'float',
-                    'value': '0.3'
+                    'value': '0.3',
+                    'unit': '%'
                 },
                 {
                     'scenario': SCENARIO,
                     'component': SHORT_NAME,
-                    'parameter_type': 'tech',
+                    'parameter_type': 'technologies',
                     'parameter': 'full_condensation_factor_el',
                     'value_type': 'float',
-                    'value': '0.5'
+                    'value': '0.5',
+                    'unit': '%'
                 }
             ]
         }
