@@ -1,8 +1,9 @@
 
 import pandas
 from collections import namedtuple
+import sqlahelper
+
 from oemof.solph import analyzer as an
-from stemp.app_settings import SqlAlchemySession
 from utils.highcharts import Highchart
 from db_apps.oemof_results import restore_results
 
@@ -57,7 +58,7 @@ class ResultAnalysisVisualization(object):
         self.analyze()
 
     def init_scenarios(self):
-        sa_session = SqlAlchemySession()
+        sa_session = sqlahelper.get_engine('oemof_results').session()
         for result in self.results:
             result.data = restore_results(
                 sa_session, result.scenario.result_id)

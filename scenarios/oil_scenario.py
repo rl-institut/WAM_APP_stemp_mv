@@ -1,5 +1,7 @@
 
 from copy import deepcopy
+import sqlahelper
+import transaction
 
 from oemof.solph import Flow, Transformer, Bus, Investment
 from oemof.tools.economics import annuity
@@ -17,57 +19,58 @@ NEEDED_PARAMETERS[SHORT_NAME] = [
 
 
 def upload_scenario_parameters():
-    if len(OEPScenario.select(where='scenario=' + SCENARIO)) == 0:
-        parameters = {
-            'query': [
-                {
-                    'scenario': SCENARIO,
-                    'component': 'General',
-                    'parameter_type': 'costs',
-                    'parameter': 'wacc',
-                    'value_type': 'float',
-                    'value': '0.05',
-                    'unit': '%'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'General',
-                    'parameter_type': 'costs',
-                    'parameter': 'net_costs',
-                    'value_type': 'float',
-                    'value': '0.27',
-                    'unit': '€'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': SHORT_NAME,
-                    'parameter_type': 'costs',
-                    'parameter': 'capex',
-                    'value_type': 'float',
-                    'value': '1200',
-                    'unit': '€'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': SHORT_NAME,
-                    'parameter_type': 'costs',
-                    'parameter': 'lifetime',
-                    'value_type': 'integer',
-                    'value': '20',
-                    'unit': 'Jahre'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': SHORT_NAME,
-                    'parameter_type': 'technologies',
-                    'parameter': 'efficiency',
-                    'value_type': 'float',
-                    'value': '0.6',
-                    'unit': '%'
-                }
-            ]
-        }
-        OEPScenario.insert(parameters)
+    session = sqlahelper.get_session()
+    if session.query(OEPScenario).filter_by(scenario=SCENARIO).first() is None:
+        parameters = [
+            {
+                'scenario': SCENARIO,
+                'component': 'General',
+                'parameter_type': 'costs',
+                'parameter': 'wacc',
+                'value_type': 'float',
+                'value': '0.05',
+                'unit': '%'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'General',
+                'parameter_type': 'costs',
+                'parameter': 'net_costs',
+                'value_type': 'float',
+                'value': '0.27',
+                'unit': '€'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': SHORT_NAME,
+                'parameter_type': 'costs',
+                'parameter': 'capex',
+                'value_type': 'float',
+                'value': '1200',
+                'unit': '€'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': SHORT_NAME,
+                'parameter_type': 'costs',
+                'parameter': 'lifetime',
+                'value_type': 'integer',
+                'value': '20',
+                'unit': 'Jahre'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': SHORT_NAME,
+                'parameter_type': 'technologies',
+                'parameter': 'efficiency',
+                'value_type': 'float',
+                'value': '0.6',
+                'unit': '%'
+            }
+        ]
+        scenarios = [OEPScenario(**param) for param in parameters]
+        session.add_all(scenarios)
+        transaction.commit()
 
 
 def create_energysystem(periods=2, **parameters):

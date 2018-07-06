@@ -1,26 +1,40 @@
 
-from os import path
-from wam import settings
+import os
 import sqlalchemy
-from sqlalchemy import orm
 import sqlahelper
 from configobj import ConfigObj
 
-# Add sqlalchemy:
-db_url = '{engine}://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}'.format(
-    engine=settings.config['DEFAULT']['ENGINE'].split('.')[-1],
-    **settings.config['DEFAULT']
-)
-engine = sqlalchemy.create_engine(db_url)
-sqlahelper.add_engine(engine)
-SqlAlchemySession = orm.sessionmaker(bind=engine)
-from db_apps.oemof_results import Base
-Base.metadata.bind = engine
-Base.metadata.create_all()
+import oedialect as _
 
-SCENARIO_PATH = path.join('stemp', 'scenarios')
+from wam import settings
+from db_apps import oemof_results
+
+SCENARIO_PATH = os.path.join('stemp', 'scenarios')
 
 ADDITIONAL_PARAMETERS = ConfigObj(
-    path.join(settings.BASE_DIR, 'stemp', 'attributes.cfg'))
+    os.path.join(settings.BASE_DIR, 'stemp', 'attributes.cfg'))
 
-LABELS = ConfigObj(path.join(settings.BASE_DIR, 'stemp', 'labels.cfg'))
+LABELS = ConfigObj(os.path.join(settings.BASE_DIR, 'stemp', 'labels.cfg'))
+
+DB_URL = '{ENGINE}://{USER}:{PASSWORD}@{HOST}:{PORT}'
+
+
+def build_db_url(db_name):
+    conf = settings.config['DATABASES'][db_name]
+    db_url = DB_URL + '/{NAME}' if 'NAME' in conf else DB_URL
+    return db_url.format(**conf)
+
+
+# Add sqlalchemy for oemof_results:
+engine = sqlalchemy.create_engine(build_db_url('DEFAULT'))
+sqlahelper.add_engine(engine, 'oemof_results')
+oemof_results.Base.metadata.bind = engine
+oemof_results.Base.metadata.create_all()
+
+# Add OEP:
+engine = sqlalchemy.create_engine(build_db_url('DEFAULT'))
+sqlahelper.add_engine(engine, 'oep')
+
+# Add reiner:
+engine = sqlalchemy.create_engine(build_db_url('reiners_db'))
+sqlahelper.add_engine(engine, 'reiners_db')

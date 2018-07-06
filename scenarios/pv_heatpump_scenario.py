@@ -2,6 +2,8 @@
 import os
 import pandas
 from copy import deepcopy
+import sqlahelper
+import transaction
 
 from oemof.solph import Flow, Transformer, Investment, Source
 from oemof.tools.economics import annuity
@@ -18,94 +20,93 @@ NEEDED_PARAMETERS['HP'] = ['hp_lifetime', 'hp_capex', 'hp_opex']
 
 
 def upload_scenario_parameters():
-    if len(OEPScenario.select(where='scenario=' + SCENARIO)) == 0:
-        parameters = {
-            'query': [
-                {
-                    'scenario': SCENARIO,
-                    'component': 'General',
-                    'parameter_type': 'costs',
-                    'parameter': 'wacc',
-                    'value_type': 'float',
-                    'value': '0.05'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'General',
-                    'parameter_type': 'costs',
-                    'parameter': 'net_costs',
-                    'value_type': 'float',
-                    'value': '0.27',
-                    'unit': '€'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'General',
-                    'parameter_type': 'costs',
-                    'parameter': 'pv_feedin_tariff',
-                    'value_type': 'float',
-                    'value': '-0.08',
-                    'unit': '€'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'PV',
-                    'parameter_type': 'costs',
-                    'parameter': 'lifetime',
-                    'value_type': 'float',
-                    'value': '20',
-                    'unit': 'Jahre'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'PV',
-                    'parameter_type': 'costs',
-                    'parameter': 'capex',
-                    'value_type': 'float',
-                    'value': '1200',
-                    'unit': '€'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'PV',
-                    'parameter_type': 'costs',
-                    'parameter': 'opex',
-                    'value_type': 'float',
-                    'value': '0.6',
-                    'unit': '€'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'HP',
-                    'parameter_type': 'costs',
-                    'parameter': 'lifetime',
-                    'label': 'Nutzungsdauer',
-                    'value_type': 'float',
-                    'value': '20',
-                    'unit': 'Jahre'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'HP',
-                    'parameter_type': 'costs',
-                    'parameter': 'capex',
-                    'value_type': 'float',
-                    'value': '1200',
-                    'unit': '€'
-                },
-                {
-                    'scenario': SCENARIO,
-                    'component': 'HP',
-                    'parameter_type': 'costs',
-                    'parameter': 'opex',
-                    'label': 'OPEX',
-                    'value_type': 'float',
-                    'value': '0.6',
-                    'unit': '€'
-                }
-            ]
-        }
-        OEPScenario.insert(parameters)
+    session = sqlahelper.get_session()
+    if session.query(OEPScenario).filter_by(scenario=SCENARIO).first() is None:
+        parameters = [
+            {
+                'scenario': SCENARIO,
+                'component': 'General',
+                'parameter_type': 'costs',
+                'parameter': 'wacc',
+                'value_type': 'float',
+                'value': '0.05'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'General',
+                'parameter_type': 'costs',
+                'parameter': 'net_costs',
+                'value_type': 'float',
+                'value': '0.27',
+                'unit': '€'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'General',
+                'parameter_type': 'costs',
+                'parameter': 'pv_feedin_tariff',
+                'value_type': 'float',
+                'value': '-0.08',
+                'unit': '€'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'PV',
+                'parameter_type': 'costs',
+                'parameter': 'lifetime',
+                'value_type': 'float',
+                'value': '20',
+                'unit': 'Jahre'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'PV',
+                'parameter_type': 'costs',
+                'parameter': 'capex',
+                'value_type': 'float',
+                'value': '1200',
+                'unit': '€'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'PV',
+                'parameter_type': 'costs',
+                'parameter': 'opex',
+                'value_type': 'float',
+                'value': '0.6',
+                'unit': '€'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'HP',
+                'parameter_type': 'costs',
+                'parameter': 'lifetime',
+                'value_type': 'float',
+                'value': '20',
+                'unit': 'Jahre'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'HP',
+                'parameter_type': 'costs',
+                'parameter': 'capex',
+                'value_type': 'float',
+                'value': '1200',
+                'unit': '€'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'HP',
+                'parameter_type': 'costs',
+                'parameter': 'opex',
+                'value_type': 'float',
+                'value': '0.6',
+                'unit': '€'
+            }
+        ]
+        scenarios = [OEPScenario(**param) for param in parameters]
+        session.add_all(scenarios)
+        transaction.commit()
 
 
 def get_timeseries():

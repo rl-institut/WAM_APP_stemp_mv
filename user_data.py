@@ -1,7 +1,9 @@
 
 from os import path
 from enum import Enum
-from stemp.app_settings import SqlAlchemySession, SCENARIO_PATH
+import sqlahelper
+
+from stemp.app_settings import SCENARIO_PATH
 from stemp.scenarios import import_scenario, create_energysystem
 from stemp.bookkeeping import simulate_energysystem
 from stemp.models import Scenario, Parameter, Simulation, Household, District
@@ -85,7 +87,7 @@ class SessionSimulation(object):
         parameter = Parameter.objects.get_or_create(data=self.parameter)[0]
 
         # Store oemeof results via SQLAlchemy:
-        sa_session = SqlAlchemySession()
+        sa_session = sqlahelper.get_session()
         result_id = store_results(
             sa_session,
             param_results,
