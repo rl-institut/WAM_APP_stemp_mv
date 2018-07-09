@@ -4,10 +4,10 @@ import logging
 from django.core.exceptions import AppRegistryNotReady
 
 from oemof.solph import (
-    EnergySystem, Bus, Flow, Sink, Transformer, Source
+    EnergySystem, Bus, Flow, Sink
 )
 
-from stemp.user_data import DemandType
+from stemp.constants import DemandType
 try:
     from stemp.models import District, Household
 except AppRegistryNotReady:
@@ -28,21 +28,6 @@ def add_basic_energysystem(periods):
     energysystem = EnergySystem(
         timeindex=pandas.date_range('2016-01-01', periods=periods, freq='H')
     )
-
-    # BUSSES
-    b_el_net = Bus(label="b_el_net")
-    energysystem.add(b_el_net)
-
-    # add excess sink to help avoid infeasible problems
-    ex_el = Sink(
-        label="excess_el",
-        inputs={b_el_net: Flow()}
-    )
-    s_el = Source(
-        label="shortage_el",
-        outputs={b_el_net: Flow(variable_costs=1000)},
-    )
-    energysystem.add(ex_el, s_el)
     return energysystem
 
 
@@ -52,33 +37,9 @@ def add_subgrid_and_demands(
         parameters: dict
 ):
     # Add subgrid busses
-    sub_b_el = Bus(label="b_{}_el".format(customer.name))
     sub_b_th = Bus(label="b_{}_th".format(customer.name))
-    energysystem.add(sub_b_el, sub_b_th)
+    energysystem.add(sub_b_th)
 
-    # Connect electrical net to subgrid:
-    t_el = Transformer(
-        label='transformer_to_{}_el'.format(customer.name),
-        inputs={
-            energysystem.groups['b_el_net']: Flow(
-                variable_costs=parameters['General']['net_costs']
-            )
-        },
-        outputs={sub_b_el: Flow()},
-    )
-    energysystem.add(t_el)
-
-    # Add electricity demand
-    demand_el = Sink(
-        label="demand_{}_el".format(customer.name),
-        inputs={
-            sub_b_el: Flow(
-                nominal_value=1,
-                actual_value=customer.annual_load_demand().div(1e6),
-                fixed=True
-            )
-        }
-    )
     # Add heat demand
     demand_th = Sink(
         label="demand_{}_th".format(customer.name),
@@ -90,18 +51,14 @@ def add_subgrid_and_demands(
             )
         }
     )
-    energysystem.add(demand_el, demand_th)
+    energysystem.add(demand_th)
 
     # Add safety excess:
-    ex_el = Sink(
-        label="excess_{}_el".format(customer.name),
-        inputs={sub_b_el: Flow()}
-    )
     ex_th = Sink(
         label="excess_{}_th".format(customer.name),
         inputs={sub_b_th: Flow()}
     )
-    energysystem.add(ex_el, ex_th)
+    energysystem.add(ex_th)
 
 
 def add_households(

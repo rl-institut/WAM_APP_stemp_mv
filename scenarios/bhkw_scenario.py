@@ -3,7 +3,7 @@ from copy import deepcopy
 import sqlahelper
 import transaction
 
-from oemof.solph import Flow, Bus, Investment
+from oemof.solph import Flow, Bus, Investment, Transformer
 from oemof.solph.components import ExtractionTurbineCHP
 from oemof.tools.economics import annuity
 
@@ -18,6 +18,7 @@ NEEDED_PARAMETERS[SHORT_NAME] = [
     'capex', 'lifetime', 'conversion_factor_el', 'conversion_factor_th',
     'full_condensation_factor_el'
 ]
+NEEDED_PARAMETERS['General'].append('bhkw_feedin_tariff')
 
 
 def upload_scenario_parameters():
@@ -41,6 +42,15 @@ def upload_scenario_parameters():
                 'value_type': 'float',
                 'value': '0.05',
                 'unit': '%'
+            },
+            {
+                'scenario': SCENARIO,
+                'component': 'General',
+                'parameter_type': 'costs',
+                'parameter': 'bhkw_feedin_tariff',
+                'value_type': 'float',
+                'value': '-0.08',
+                'unit': '€'
             },
             {
                 'scenario': SCENARIO,
@@ -112,8 +122,23 @@ def create_energysystem(periods=2, **parameters):
 
 def add_bhkw_technology(label, energysystem, timeseries, parameters):
     # Get subgrid busses:
-    sub_b_el = energysystem.groups["b_{}_el".format(label)]
     sub_b_th = energysystem.groups["b_{}_th".format(label)]
+
+    # Add bus from bhkw to net:
+    b_bhkw_el = Bus(label='b_bhkw_el')
+    b_net_el = Bus(label='b_net_el')
+
+    # Add transformer to feed in bhkw_el to net:
+    t_bhkw_net = Transformer(
+        label='transformer_from_{}_el'.format(label),
+        inputs={
+            b_bhkw_el: Flow(
+                variable_costs=parameters['General']['bhkw_feedin_tariff']
+            )
+        },
+        outputs={b_net_el: Flow()},
+    )
+    energysystem.add(b_bhkw_el, b_net_el, t_bhkw_net)
 
     capex = parameters[SHORT_NAME]['capex']
     lifetime = parameters[SHORT_NAME]['lifetime']
@@ -124,12 +149,12 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
         label='{}_chp'.format(label),
         inputs={energysystem.groups['b_gas']: Flow(
             investment=Investment(ep_costs=epc))},
-        outputs={sub_b_el: Flow(), sub_b_th: Flow()},
+        outputs={b_bhkw_el: Flow(), sub_b_th: Flow()},
         conversion_factors={
-            sub_b_el: parameters[SHORT_NAME]['conversion_factor_el'],
+            b_bhkw_el: parameters[SHORT_NAME]['conversion_factor_el'],
             sub_b_th: parameters[SHORT_NAME]['conversion_factor_th']
         },
         conversion_factor_full_condensation={
-            sub_b_el: parameters[SHORT_NAME]['full_condensation_factor_el']}
+            b_bhkw_el: parameters[SHORT_NAME]['full_condensation_factor_el']}
     )
     energysystem.add(chp)

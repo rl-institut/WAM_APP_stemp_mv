@@ -23,8 +23,8 @@ LUETZOW_LON_LAT = (11.181475, 53.655119)
 
 
 def delete_oep_scenario(scenario):
-    # Does not work!
-    OEPScenario.delete({'scenario': scenario})
+    session = sqlahelper.get_session()
+    session.query(OEPScenario).filter_by(scenario=scenario).delete()
 
 
 def insert_scenarios():
@@ -165,7 +165,7 @@ def read_data():
 
 
 if __name__ == '__main__':
-    create_questions_and_households()
+    delete_oep_scenario('bhkw_scenario')
     # insert_heat_demand()
-    # insert_scenarios()
+    insert_scenarios()
     # insert_dhw_timeseries()

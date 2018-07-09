@@ -92,14 +92,6 @@ class Household(models.Model):
     districts = models.ManyToManyField(
         'District', through='DistrictHouseholds')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
-    load_demand = models.FloatField(verbose_name='Jährlicher Strombedarf')
-    load_profile = models.ForeignKey(LoadProfile, on_delete=models.CASCADE)
-
-    layout = {
-        'x_title': 'Zeit [h]',
-        'y_title': 'Verbrauch [kWh]',
-        'title': 'Strom- und Wärmeverbrauch'
-    }
 
     def __str__(self):
         text = self.name
@@ -112,18 +104,9 @@ class Household(models.Model):
                 question.get_hot_water_profile()
         )
 
-    def annual_load_demand(self):
-        return self.load_demand * self.load_profile.as_series()
-
 
 class District(models.Model):
     name = models.CharField(max_length=255)
-
-    layout = {
-        'x_title': 'Zeit [h]',
-        'y_title': 'Verbrauch [kWh]',
-        'title': 'Strom- und Wärmeverbrauch'
-    }
 
     def __str__(self):
         return self.name
@@ -135,25 +118,10 @@ class District(models.Model):
                 district=self, household=hh, amount=amount)
             district_hh.save()
 
-    def annual_load_demand(self):
-        return sum(
-            [hh.annual_load_demand() for hh in self.household_set.all()]
-        )
-
     def annual_heat_demand(self):
         return sum(
             [hh.annual_heat_demand() for hh in self.household_set.all()]
         )
-
-    def as_highchart(self, style='line'):
-        layout = self.layout.copy()
-        df = pandas.DataFrame(
-            {
-                'Stromverbrauch': self.annual_load_demand(),
-                'Wärmebedarf': self.annual_heat_demand()
-            }
-        )
-        return Highchart(df, style, **layout)
 
 
 class Question(models.Model):

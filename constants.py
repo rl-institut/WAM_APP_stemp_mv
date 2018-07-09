@@ -1,9 +1,26 @@
 
 import pandas
 from random import uniform
-from enum import Enum
+from enum import Enum, IntEnum
 
 TIME_INDEX = [str(i + 1) + 'h' for i in range(24)]
+
+
+class DemandType(IntEnum):
+    Single = 0
+    District = 1
+
+    def label(self):
+        if self.value == 'single':
+            return 'Haushalt erstellen'
+        else:
+            return 'Viertel erstellen'
+
+
+class DistrictStatus(Enum):
+    New = 'new'
+    Changed = 'changed'
+    Unchanged = 'unchanged'
 
 
 class LoadProfile(Enum):

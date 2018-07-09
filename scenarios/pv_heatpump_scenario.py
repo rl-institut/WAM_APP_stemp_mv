@@ -5,7 +5,7 @@ from copy import deepcopy
 import sqlahelper
 import transaction
 
-from oemof.solph import Flow, Transformer, Investment, Source
+from oemof.solph import Flow, Transformer, Investment, Source, Bus
 from oemof.tools.economics import annuity
 
 from stemp.oep_models import OEPScenario
@@ -135,8 +135,8 @@ def create_energysystem(periods=2, **parameters):
 
 def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     # Get subgrid busses:
-    sub_b_el = energysystem.groups["b_{}_el".format(label)]
     sub_b_th = energysystem.groups["b_{}_th".format(label)]
+    sub_b_el = Bus(label='b_{}_el'.format(label))
 
     # get investment parameters
     wacc = parameters['General']['wacc']

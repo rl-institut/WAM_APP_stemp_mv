@@ -1,30 +1,13 @@
 
 from os import path
-from enum import IntEnum, Enum
 import sqlahelper
 
+from stemp.constants import DemandType, DistrictStatus
 from stemp.app_settings import SCENARIO_PATH
 from stemp.scenarios import import_scenario, create_energysystem
 from stemp.bookkeeping import simulate_energysystem
 from stemp.models import Scenario, Parameter, Simulation, Household, District
 from db_apps.oemof_results import store_results
-
-
-class DemandType(IntEnum):
-    Single = 0
-    District = 1
-
-    def label(self):
-        if self.value == 'single':
-            return 'Haushalt erstellen'
-        else:
-            return 'Viertel erstellen'
-
-
-class DistrictStatus(Enum):
-    New = 'new'
-    Changed = 'changed'
-    Unchanged = 'unchanged'
 
 
 class SessionSimulation(object):
