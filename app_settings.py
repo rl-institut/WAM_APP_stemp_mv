@@ -8,6 +8,7 @@ import oedialect as _
 
 from wam import settings
 from db_apps import oemof_results
+from stemp import oep_models
 
 SCENARIO_PATH = os.path.join('stemp', 'scenarios')
 
@@ -29,11 +30,11 @@ def build_db_url(db_name):
 engine = sqlalchemy.create_engine(build_db_url('DEFAULT'))
 sqlahelper.add_engine(engine, 'oemof_results')
 oemof_results.Base.metadata.bind = engine
-oemof_results.Base.metadata.create_all()
 
 # Add OEP:
 engine = sqlalchemy.create_engine(build_db_url('DEFAULT'))
 sqlahelper.add_engine(engine, 'oep')
+oep_models.Base.metadata.bind = sqlahelper.get_engine('oep')
 
 # Add reiner:
 engine = sqlalchemy.create_engine(build_db_url('reiners_db'))

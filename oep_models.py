@@ -1,6 +1,6 @@
 
 from collections import defaultdict, OrderedDict, ChainMap
-from stemp.app_settings import ADDITIONAL_PARAMETERS
+from stemp import app_settings
 from sqlalchemy import Column, VARCHAR, BIGINT, JSON
 from sqlalchemy.dialects.postgresql import ARRAY, FLOAT
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,7 +10,6 @@ import sqlahelper
 SCHEMA = 'sandbox'
 
 Base = declarative_base()
-Base.metadata.bind = sqlahelper.get_engine('oep')
 
 
 class OEPScenario(Base):
@@ -35,7 +34,7 @@ class OEPScenario(Base):
             return None
 
         # Get secondary attributes:
-        description = ADDITIONAL_PARAMETERS
+        description = app_settings.ADDITIONAL_PARAMETERS
 
         parameters = defaultdict(OrderedDict)
         for scenario_parameter in scenario_parameters:
@@ -66,6 +65,3 @@ class OEPTimeseries(Base):
     name = Column(VARCHAR(50), unique=True)
     meta = Column(JSON)
     data = Column(ARRAY(FLOAT))
-
-
-Base.metadata.create_all()

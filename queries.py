@@ -5,7 +5,6 @@ import pandas
 import sqlahelper
 from geoalchemy2 import func
 import transaction
-import matplotlib.pyplot as plt
 
 from demandlib import bdew
 
@@ -64,15 +63,33 @@ def insert_heat_demand():
         shlp_type='EFH',
         building_class=1, wind_class=1,
         name='EFH').get_normalized_bdew_profile()
-
     # Multi family house (mfh: Mehrfamilienhaus)
     demand['mfh'] = bdew.HeatBuilding(
         demand.index, temperature=temperature,
         shlp_type='MFH',
         building_class=2, wind_class=0,
         name='MFH').get_normalized_bdew_profile()
-    demand.plot()
-    plt.show()
+
+    # Add to OEP
+    session.add_all([
+        OEPTimeseries(
+            name='Heat Demand EFH',
+            meta={
+                'name': 'Heat demand for EFH',
+                'source': 'oemof/demandlib'
+            },
+            data=demand['efh'].values.tolist()
+        ),
+        OEPTimeseries(
+            name='Heat Demand MFH',
+            meta={
+                'name': 'Heat demand for MFH',
+                'source': 'oemof/demandlib'
+            },
+            data=demand['mfh'].values.tolist()
+        ),
+    ])
+    transaction.commit()
 
 
 def insert_dhw_timeseries():
@@ -109,7 +126,14 @@ def insert_dhw_timeseries():
     transaction.commit()
 
 
+def read_data():
+    session = sqlahelper.get_session()
+    hd = session.query(OEPTimeseries).filter_by(name='Heat Demand EFH').first()
+    print(hd.__dict__)
+
+
 if __name__ == '__main__':
-    insert_heat_demand()
+    read_data()
+    # insert_heat_demand()
     # insert_scenarios()
     # insert_dhw_timeseries()
