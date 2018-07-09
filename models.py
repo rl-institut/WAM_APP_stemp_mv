@@ -92,6 +92,8 @@ class Household(models.Model):
     districts = models.ManyToManyField(
         'District', through='DistrictHouseholds')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
+    load_demand = models.FloatField(verbose_name='Jährlicher Strombedarf')
+    load_profile = models.ForeignKey(LoadProfile, on_delete=models.CASCADE)
 
     layout = {
         'x_title': 'Zeit [h]',
@@ -109,6 +111,9 @@ class Household(models.Model):
                 self.heat_demand * question.get_heat_demand_profile() +
                 question.get_hot_water_profile()
         )
+
+    def annual_load_demand(self):
+        return self.load_demand * self.load_profile.as_series()
 
 
 class District(models.Model):

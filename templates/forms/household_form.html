@@ -12,6 +12,16 @@
   </div>
   <div class="cell medium-10 medium-offset-1">
     <label class="form__label">
+      {{form.load_demand.label}}
+      <div class="input-group">
+        {{form.load_demand.errors}}
+        {{form.load_demand}}
+        <span class="input-group-label">kWh/Jahr</span>
+      </div>
+    </label>
+  </div>
+  <div class="cell medium-10 medium-offset-1">
+    <label class="form__label">
       {{form.name.label}}
       {{form.name.errors}}
       {{form.name}}
