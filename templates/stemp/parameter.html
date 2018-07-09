@@ -36,7 +36,7 @@
           <h3>{{demand_name}}</h3>
         </div>
 
-        <form class="cell medium-10 medium-offset-1 large-8 large-offset-2" action="{% url 'stemp:parameter' %}" method="post">
+        <form class="cell medium-10 medium-offset-1 large-8 large-offset-2" id="parameter_form" action="{% url 'stemp:parameter' %}" method="post">
           {% csrf_token %}
           {% include "forms/parameter_form.html" with form=parameter_form %}
           <input type="hidden" name="scenario" value="{{scenario}}">
@@ -52,4 +52,15 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'jquery.js' %}"></script>
+  <script language="JavaScript">
+    $(document).ready(function() {
+      $("#done").click(function() {
+          $("#parameter_form").submit();
+      });
+    });
+  </script>
 {% endblock %}
