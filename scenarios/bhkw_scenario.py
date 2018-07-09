@@ -15,7 +15,7 @@ SCENARIO = 'bhkw_scenario'
 SHORT_NAME = 'BHKW'
 NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
 NEEDED_PARAMETERS[SHORT_NAME] = [
-    'invest', 'conversion_factor_el', 'conversion_factor_th',
+    'capex', 'lifetime', 'conversion_factor_el', 'conversion_factor_th',
     'full_condensation_factor_el'
 ]
 
@@ -115,7 +115,7 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
     sub_b_el = energysystem.groups["b_{}_el".format(label)]
     sub_b_th = energysystem.groups["b_{}_th".format(label)]
 
-    capex = parameters[SHORT_NAME]['invest']
+    capex = parameters[SHORT_NAME]['capex']
     lifetime = parameters[SHORT_NAME]['lifetime']
     wacc = parameters['General']['wacc']
     epc = annuity(capex, lifetime, wacc)

@@ -58,7 +58,7 @@ class ResultAnalysisVisualization(object):
         self.analyze()
 
     def init_scenarios(self):
-        sa_session = sqlahelper.get_engine('oemof_results').session()
+        sa_session = sqlahelper.get_session()
         for result in self.results:
             result.data = restore_results(
                 sa_session, result.scenario.result_id)
