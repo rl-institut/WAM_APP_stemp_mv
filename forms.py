@@ -160,13 +160,9 @@ class HouseholdQuestionsForm(Form):
         max_value=10,
         min_value=1,
     )
-    at_home = BooleanField(
-        label='Sind Personen tagsüber zu Hause?',
-        required=False
-    )
-    modernized = BooleanField(
-        label='Ist das Haus modernisiert?',
-        required=False
+    house_type = ChoiceField(
+        label='Haushaltstyp',
+        choices=Question.HOUSE_TYPES,
     )
 
     def hh_proposal(self):
@@ -272,10 +268,7 @@ class HouseholdForm(ModelForm):
         self.fields['name'].widget.attrs['readonly'] = True
         self.fields['name'].widget.attrs['class'] = 'input - group - field'
         self.fields['name'].widget.attrs['id'] = 'household-name'
-        self.fields['load_demand'].widget.attrs['class'] = 'input-group-field'
         self.fields['heat_demand'].widget.attrs['class'] = 'input-group-field'
-        self.fields['load_profile'].widget.attrs['class'] = 'form__select'
-        self.fields['heat_profile'].widget.attrs['class'] = 'form__select'
 
     class Meta:
         model = Household

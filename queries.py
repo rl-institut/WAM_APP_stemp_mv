@@ -17,6 +17,8 @@ logging.getLogger().setLevel(logging.INFO)
 
 KELVIN = 273.15
 ENERGY_PER_LITER = 0.058
+QM_PER_PERSON = 44.40
+ENERGY_PER_QM_PER_YEAR = {'EFH': 90, 'MFH': 70}
 LUETZOW_LON_LAT = (11.181475, 53.655119)
 
 
@@ -126,6 +128,36 @@ def insert_dhw_timeseries():
     transaction.commit()
 
 
+def create_questions_and_households():
+    # Start django application
+    from django.core.wsgi import get_wsgi_application
+
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
+    application = get_wsgi_application()
+    from stemp.models import Question, QuestionHousehold, Household
+
+    for num_person in range(1, 11):
+        for house_type in ('EFH', 'MFH'):
+            question = Question(
+                number_of_persons=num_person, house_type=house_type)
+            energy_per_year = (
+                    num_person * QM_PER_PERSON *
+                    ENERGY_PER_QM_PER_YEAR[house_type]
+            )
+            person_str = (
+                f'{num_person} Personen' if num_person > 1 else '1 Person')
+            name = house_type + ', ' + person_str
+            household = Household(name=name, heat_demand=energy_per_year)
+            question.save()
+            household.save()
+            question_household = QuestionHousehold(
+                question_id=question.id,
+                household_id=household.id,
+                default=True
+            )
+            question_household.save()
+
+
 def read_data():
     session = sqlahelper.get_session()
     hd = session.query(OEPTimeseries).filter_by(name='Heat Demand EFH').first()
@@ -133,7 +165,7 @@ def read_data():
 
 
 if __name__ == '__main__':
-    read_data()
+    create_questions_and_households()
     # insert_heat_demand()
     # insert_scenarios()
     # insert_dhw_timeseries()

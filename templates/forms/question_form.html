@@ -7,20 +7,9 @@
     {{form.number_of_persons}}
   </div>
   <div class="cell medium-10 medium-offset-1">
-    <label class="container" for="{{form.at_home.id_for_label}}">
-      {{form.at_home.label}}
-      {{form.at_home.errors}}
-      {{form.at_home}}
-      <span class="checkmark"></span>
-    </label>
-  </div>
-  <div class="cell medium-10 medium-offset-1">
-    <label class="container" for="{{form.modernized.id_for_label}}">
-      {{form.modernized.label}}
-      {{form.modernized.errors}}
-      {{form.modernized}}
-      <span class="checkmark"></span>
-    </label>
+    <label class="form__label" for="{{form.house_type.id_for_label}}">{{form.house_type.label}}</label>
+      {{form.house_type.errors}}
+      {{form.house_type}}
   </div>
 
   <div class="cell u-text--center u-padding--l">

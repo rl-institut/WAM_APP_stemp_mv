@@ -1,8 +1,9 @@
 
 import pandas
+import sqlahelper
 from django.utils import timezone
-
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.postgres.fields import ArrayField, JSONField
 
 from utils.highcharts import Highchart
@@ -88,11 +89,9 @@ class DistrictHouseholds(models.Model):
 
 class Household(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    districts = models.ManyToManyField('District', through='DistrictHouseholds')
-    load_demand = models.FloatField(verbose_name='Jährlicher Strombedarf')
+    districts = models.ManyToManyField(
+        'District', through='DistrictHouseholds')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
-    load_profile = models.ForeignKey('LoadProfile', on_delete=models.CASCADE)
-    heat_profile = models.ForeignKey('HeatProfile', on_delete=models.CASCADE)
 
     layout = {
         'x_title': 'Zeit [h]',
@@ -104,21 +103,12 @@ class Household(models.Model):
         text = self.name
         return text
 
-    def annual_load_demand(self):
-        return self.load_demand * self.load_profile.as_series()
-
     def annual_heat_demand(self):
-        return self.heat_demand * self.heat_profile.as_series()
-
-    def as_highchart(self, style='line'):
-        layout = self.layout.copy()
-        df = pandas.DataFrame(
-            {
-                'Stromverbrauch': self.annual_load_demand(),
-                'Wärmebedarf': self.annual_heat_demand()
-            }
+        question = self.question_household.question
+        return (
+                self.heat_demand * question.get_heat_demand_profile() +
+                question.get_hot_water_profile()
         )
-        return Highchart(df, style, **layout)
 
 
 class District(models.Model):
@@ -162,12 +152,49 @@ class District(models.Model):
 
 
 class Question(models.Model):
-    number_of_persons = models.IntegerField()
-    at_home = models.BooleanField()
-    modernized = models.BooleanField()
+    number_of_persons = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    EFH = ('EFH', 'Heat Demand EFH')
+    MFH = ('MFH', 'Heat Demand EFH')
+    HOUSE_TYPES = (
+        (EFH[0], 'Einfamilienhaus'),
+        (MFH[0], 'Mehrfamilienhaus')
+    )
+    house_type = models.CharField(
+        max_length=3, choices=HOUSE_TYPES, default='EFH')
 
     class Meta:
-        unique_together = ('number_of_persons', 'at_home', 'modernized')
+        unique_together = ('number_of_persons', 'house_type')
+
+    # Hot water and demand are accessed only once:
+    oep_init_done = False
+    timeseries = {}
+
+    def get_oep_timeseries(self):
+        from stemp import oep_models
+        session = sqlahelper.get_session()
+        for name in ('Hot Water', self.EFH[1], self.MFH[1]):
+            self.timeseries[name] = pandas.Series(
+                session.query(oep_models.OEPTimeseries).filter_by(
+                    name=name
+                ).first().data)
+
+    def get_heat_demand_profile(self):
+        if not self.oep_init_done:
+            self.get_oep_timeseries()
+        if self.house_type == self.EFH[0]:
+            return self.timeseries[self.EFH[1]]
+        elif self.house_type == self.MFH[0]:
+            return self.timeseries[self.MFH[1]]
+
+    def get_hot_water_profile(self):
+        if not self.oep_init_done:
+            self.get_oep_timeseries()
+        return self.timeseries['Hot Water'] * self.number_of_persons
+
+    def __str__(self):
+        return self.house_type + f', {self.number_of_persons} persons'
 
 
 class QuestionHousehold(models.Model):

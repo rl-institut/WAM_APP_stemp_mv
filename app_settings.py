@@ -34,7 +34,7 @@ oemof_results.Base.metadata.bind = engine
 # Add OEP:
 engine = sqlalchemy.create_engine(build_db_url('DEFAULT'))
 sqlahelper.add_engine(engine, 'oep')
-oep_models.Base.metadata.bind = sqlahelper.get_engine('oep')
+oep_models.Base.metadata.bind = engine
 
 # Add reiner:
 engine = sqlalchemy.create_engine(build_db_url('reiners_db'))
