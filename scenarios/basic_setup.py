@@ -1,13 +1,13 @@
 
 import pandas
 import logging
-from enum import Enum
 from django.core.exceptions import AppRegistryNotReady
 
 from oemof.solph import (
     EnergySystem, Bus, Flow, Sink, Transformer, Source
 )
 
+from stemp.user_data import DemandType
 try:
     from stemp.models import District, Household
 except AppRegistryNotReady:
@@ -21,11 +21,6 @@ NEEDED_PARAMETERS = {
     'General': ['net_costs', 'wacc'],
     'demand': ['index', 'type']
 }
-
-
-class CustomerOption(str, Enum):
-    Single = 'single'
-    District = 'district'
 
 
 def add_basic_energysystem(periods):
@@ -123,15 +118,11 @@ def add_households(
     customer_index = parameters['demand']['index']
     customer_case = parameters['demand']['type']
 
-    if customer_case == CustomerOption.Single:
+    if customer_case == DemandType.Single:
         household = Household.objects.get(id=customer_index)
         add_household(household)
-    else:
+    elif customer_case == DemandType.District:
         district = District.objects.get(id=customer_index)
-        if customer_case == CustomerOption.Separate:
-            for household in district.household_set.all():
-                add_household(household)
-        elif customer_case == CustomerOption.District:
-            add_household(district)
-        else:
-            raise ValueError('Unknown customer case "' + customer_case + '"')
+        add_household(district)
+    else:
+        raise ValueError('Unknown customer case "' + customer_case + '"')

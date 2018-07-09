@@ -1,6 +1,6 @@
 
 from os import path
-from enum import Enum
+from enum import IntEnum, Enum
 import sqlahelper
 
 from stemp.app_settings import SCENARIO_PATH
@@ -10,9 +10,9 @@ from stemp.models import Scenario, Parameter, Simulation, Household, District
 from db_apps.oemof_results import store_results
 
 
-class DemandType(Enum):
-    Single = 'single'
-    District = 'district'
+class DemandType(IntEnum):
+    Single = 0
+    District = 1
 
     def label(self):
         if self.value == 'single':
@@ -108,7 +108,10 @@ class SessionSimulation(object):
             path.join(SCENARIO_PATH, self.name))
 
     def include_demand(self):
-        self.parameter['demand'] = self.session.demand
+        self.parameter['demand'] = {
+            'type': self.session.demand_type,
+            'index': self.session.demand_id
+        }
 
 
 class UserSession(object):
