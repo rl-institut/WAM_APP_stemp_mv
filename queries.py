@@ -10,7 +10,7 @@ from demandlib import bdew
 
 import stemp.app_settings
 from db_apps import coastdat
-from stemp.oep_models import OEPScenario, OEPTimeseries
+from stemp import oep_models
 from stemp.scenarios import bhkw_scenario, oil_scenario, pv_heatpump_scenario
 
 logging.getLogger().setLevel(logging.INFO)
@@ -24,7 +24,7 @@ LUETZOW_LON_LAT = (11.181475, 53.655119)
 
 def delete_oep_scenario(scenario):
     session = sqlahelper.get_session()
-    session.query(OEPScenario).filter_by(scenario=scenario).delete()
+    session.query(oep_models.OEPScenario).filter_by(scenario=scenario).delete()
 
 
 def insert_scenarios():
@@ -74,7 +74,7 @@ def insert_heat_demand():
 
     # Add to OEP
     session.add_all([
-        OEPTimeseries(
+        oep_models.OEPTimeseries(
             name='Heat Demand EFH',
             meta={
                 'name': 'Heat demand for EFH',
@@ -82,7 +82,7 @@ def insert_heat_demand():
             },
             data=demand['efh'].values.tolist()
         ),
-        OEPTimeseries(
+        oep_models.OEPTimeseries(
             name='Heat Demand MFH',
             meta={
                 'name': 'Heat demand for MFH',
@@ -104,7 +104,7 @@ def insert_dhw_timeseries():
         'name': 'Hot Water for 76l/person/day',
         'source': 'DHWCalc'
     }
-    hot_water = OEPTimeseries(
+    hot_water = oep_models.OEPTimeseries(
         name='Hot Water',
         meta=meta,
         data=hot_water_profile[0].values.tolist()
@@ -116,7 +116,7 @@ def insert_dhw_timeseries():
         'source': 'DHWCalc',
         'energy_factor': ENERGY_PER_LITER
     }
-    hot_water_energy = OEPTimeseries(
+    hot_water_energy = oep_models.OEPTimeseries(
         name='Hot Water Energy',
         meta=meta,
         data=hot_water_energy_profile[0].values.tolist()
@@ -160,12 +160,18 @@ def create_questions_and_households():
 
 def read_data():
     session = sqlahelper.get_session()
-    hd = session.query(OEPTimeseries).filter_by(name='Heat Demand EFH').first()
+    hd = session.query(oep_models.OEPTimeseries).filter_by(name='Heat Demand EFH').first()
     print(hd.__dict__)
 
 
+def create_oep_tables():
+
+    oep_models.Base.metadata.create_all()
+
+
 if __name__ == '__main__':
-    delete_oep_scenario('bhkw_scenario')
+    create_oep_tables()
+    # delete_oep_scenario('bhkw_scenario')
     # insert_heat_demand()
     insert_scenarios()
     # insert_dhw_timeseries()
