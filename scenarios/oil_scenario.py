@@ -14,7 +14,7 @@ SCENARIO = 'oil_scenario'
 SHORT_NAME = 'Oil'
 NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
 NEEDED_PARAMETERS[SHORT_NAME] = [
-    'oil_lifetime', 'oil_capex', 'oil_efficiency'
+    'lifetime', 'capex', 'efficiency'
 ]
 
 
@@ -94,8 +94,8 @@ def create_energysystem(periods=2, **parameters):
 def add_oil_technology(label, energysystem, timeseries, parameters):
     # Get investment parameters:
     wacc = parameters['General']['wacc']
-    capex = parameters[SHORT_NAME]['oil_capex']
-    lifetime = parameters[SHORT_NAME]['oil_lifetime']
+    capex = parameters[SHORT_NAME]['capex']
+    lifetime = parameters[SHORT_NAME]['lifetime']
     epc = annuity(capex, lifetime, wacc)
 
     # Get subgrid busses:
@@ -105,6 +105,6 @@ def add_oil_technology(label, energysystem, timeseries, parameters):
         inputs={energysystem.groups['b_oil']: Flow(
             investment=Investment(ep_costs=epc))},
         outputs={sub_b_th: Flow()},
-        conversion_factors={sub_b_th: parameters[SHORT_NAME]['oil_efficiency']}
+        conversion_factors={sub_b_th: parameters[SHORT_NAME]['efficiency']}
     )
     energysystem.add(oil_heating)

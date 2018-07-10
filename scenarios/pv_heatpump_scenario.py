@@ -15,8 +15,8 @@ from stemp.scenarios import basic_setup
 SCENARIO = 'pv_heatpump_scenario'
 NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
 NEEDED_PARAMETERS['General'].append('pv_feedin_tariff')
-NEEDED_PARAMETERS['PV'] = ['pv_lifetime', 'pv_capex', 'pv_opex']
-NEEDED_PARAMETERS['HP'] = ['hp_lifetime', 'hp_capex', 'hp_opex']
+NEEDED_PARAMETERS['PV'] = ['lifetime', 'capex', 'opex']
+NEEDED_PARAMETERS['HP'] = ['lifetime', 'capex', 'opex']
 
 
 def upload_scenario_parameters():
@@ -136,17 +136,21 @@ def create_energysystem(periods=2, **parameters):
 def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     # Get subgrid busses:
     sub_b_th = energysystem.groups["b_{}_th".format(label)]
+
+    # Add electricity busses:
     sub_b_el = Bus(label='b_{}_el'.format(label))
+    b_el_net = Bus(label='b_el_net')
+    energysystem.add(sub_b_el, b_el_net)
 
     # get investment parameters
     wacc = parameters['General']['wacc']
 
-    capex = parameters['HP']['hp_capex']
-    lifetime = parameters['HP']['hp_lifetime']
+    capex = parameters['HP']['capex']
+    lifetime = parameters['HP']['lifetime']
     epc_hp = annuity(capex, lifetime, wacc)
 
-    capex = parameters['PV']['pv_capex']
-    lifetime = parameters['PV']['pv_lifetime']
+    capex = parameters['PV']['capex']
+    lifetime = parameters['PV']['lifetime']
     epc_pv = annuity(capex, lifetime, wacc)
 
     # Add heat pump:
@@ -159,7 +163,7 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
             )
         },
         outputs={sub_b_th: Flow(
-            variable_costs=parameters['HP']['hp_opex'])},
+            variable_costs=parameters['HP']['opex'])},
         conversion_factors={sub_b_th: COP}
     )
 
@@ -169,7 +173,7 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
         outputs={
             sub_b_el: Flow(
                 actual_value=timeseries['pv'],
-                variable_costs=parameters['PV']['pv_opex'],
+                variable_costs=parameters['PV']['opex'],
                 fixed=True,
                 investment=Investment(ep_costs=epc_pv)
             )
@@ -184,7 +188,7 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
                 variable_costs=parameters['General']['pv_feedin_tariff']
             )
         },
-        outputs={energysystem.groups['b_el_net']: Flow()},
+        outputs={b_el_net: Flow()},
     )
     energysystem.add(
         hp,
