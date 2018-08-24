@@ -3,7 +3,7 @@
 {% load staticfiles %}
 
 {% block header %}
-<script src="{% static 'highcharts.js' %}"></script>
+<script src="{% static 'highcharts/code/highcharts.js' %}"></script>
 {% endblock %}
 
 {% block submenu %}
@@ -18,9 +18,22 @@
   <input class="btn btn-default" type="submit" value="Simulationsergebnisse speichern" name="save">
 </form>
 
-{% for visualization in visualizations %}
-  {{visualization.div | safe}}
-  {{visualization.script | safe}}
-{% endfor %}
+<div class="grid-container fluid u-no-padding">
+  <div class="grid-x">
+
+    <!-- STEPS TASKS START (RIGHT) -->
+    <div class="cell l-bg-color-w scen-create__wrapper u-text--center">
+
+      <div class="grid-x grid-padding-x">
+        {% for visualization in visualizations %}
+          <div class="cell medium-6" style="margin-top: 2rem">
+            {{visualization.div|safe}}
+            {{visualization.script|safe}}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

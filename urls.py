@@ -1,6 +1,5 @@
 
 from django.urls import path
-from django.views.generic.base import TemplateView
 from stemp.views import (
     IndexView, ResultView, ParameterView, DemandSingleView,
     DemandDistrictView, TechnologyView,

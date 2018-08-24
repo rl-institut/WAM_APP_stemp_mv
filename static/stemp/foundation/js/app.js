@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 44);
+/******/ 	return __webpack_require__(__webpack_require__.s = 45);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -14583,6 +14583,8 @@ __webpack_require__(41);
 __webpack_require__(42);
 
 __webpack_require__(43);
+
+__webpack_require__(44);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -40259,6 +40261,58 @@ var _jquery2 = _interopRequireDefault(_jquery);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+(0, _jquery2.default)(document).ready(function () {
+    // This button will increment the value
+    (0, _jquery2.default)('[data-quantity="plus"]').click(function (e) {
+        var fieldName;
+        // Stop acting like a button
+        e.preventDefault();
+        // Get the field name
+        fieldName = (0, _jquery2.default)(this).attr('data-field');
+        // Get its current value
+        var currentVal = parseInt((0, _jquery2.default)('input[name=' + fieldName + ']').val());
+        // If is not undefined
+        if (!isNaN(currentVal)) {
+            // Increment
+            (0, _jquery2.default)('input[name=' + fieldName + ']').val(currentVal + 1);
+        } else {
+            // Otherwise put a 0 there
+            (0, _jquery2.default)('input[name=' + fieldName + ']').val(0);
+        }
+    });
+    // This button will decrement the value till 0
+    (0, _jquery2.default)('[data-quantity="minus"]').click(function (e) {
+        var fieldName;
+        // Stop acting like a button
+        e.preventDefault();
+        // Get the field name
+        fieldName = (0, _jquery2.default)(this).attr('data-field');
+        // Get its current value
+        var currentVal = parseInt((0, _jquery2.default)('input[name=' + fieldName + ']').val());
+        // If it isn't undefined or its greater than 0
+        if (!isNaN(currentVal) && currentVal > 0) {
+            // Decrement one
+            (0, _jquery2.default)('input[name=' + fieldName + ']').val(currentVal - 1);
+        } else {
+            // Otherwise put a 0 there
+            (0, _jquery2.default)('input[name=' + fieldName + ']').val(0);
+        }
+    });
+});
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(0);
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 /* update value of button by the numbers of households to add */
 /* List form */
 (0, _jquery2.default)('#l-number-households').on('moved.zf.slider', function (e, handle) {
@@ -40273,7 +40327,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 });
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40307,7 +40361,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 });
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(20);

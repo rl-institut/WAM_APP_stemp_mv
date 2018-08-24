@@ -4,37 +4,19 @@ from collections import namedtuple
 import sqlahelper
 
 from oemof.solph import analyzer as an
-from utils.highcharts import Highchart
+from stemp import visualizations
 from db_apps.oemof_results import restore_results
 
 Visualization = namedtuple(
     'Visualization',
-    ['name', 'analyzer', 'use_total', 'style', 'kwargs']
+    ['name', 'analyzer', 'use_total', 'highchart']
 )
 VISUALIZATIONS = {
     'invest': Visualization(
         'Invest',
         an.InvestAnalyzer,
-        True,
-        'column',
-        {
-            'title': 'Investment',
-            'x_title': 'Technologie',
-            'y_title': 'Investemnt [€]',
-            'stacked': 'true'
-        }
-    ),
-    'invest_detail': Visualization(
-        'Invest',
-        an.InvestAnalyzer,
         False,
-        'column',
-        {
-            'title': 'Investment',
-            'x_title': 'Technologie',
-            'y_title': 'Investemnt [€]',
-            'stacked': 'true'
-        }
+        visualizations.HCCosts
     )
 }
 
@@ -100,8 +82,7 @@ class ResultAnalysisVisualization(object):
     def visualize(self, name):
         visualization = VISUALIZATIONS[name]
         data = self.__prepare_result_data(visualization)
-        return Highchart(
-            data, visualization.style, **visualization.kwargs).render()
+        return visualization.highchart(data).render()
 
     def rank(self, name):
         """Function to rank results by different Rankings"""
