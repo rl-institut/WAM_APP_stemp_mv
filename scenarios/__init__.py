@@ -94,7 +94,8 @@ def create_energysystem(scenario_module, **parameters):
 
 def get_param_results(energysystem):
     om = Model(energysystem)
-    return outputlib.processing.param_results(om, keys_as_str=True)
+    return outputlib.processing.convert_keys_to_strings(
+        outputlib.processing.param_results(om))
 
 
 def get_simulation_function(scenario_module):
@@ -132,8 +133,10 @@ def default_simulate_fct(
         }
     )
 
-    return (
-        outputlib.processing.results(om),
-        outputlib.processing.param_results(
-            om, exclude_none=True, keys_as_str=True)
+    results = outputlib.processing.results(om)
+    param_results = outputlib.processing.param_results(
+            om, exclude_none=True)
+    return map(
+        outputlib.processing.convert_keys_to_strings,
+        (results, param_results)
     )
