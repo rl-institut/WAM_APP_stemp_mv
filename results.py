@@ -7,19 +7,6 @@ from oemof.solph import analyzer as an
 from stemp import visualizations
 from db_apps.oemof_results import restore_results
 
-Visualization = namedtuple(
-    'Visualization',
-    ['name', 'analyzer', 'use_total', 'highchart']
-)
-VISUALIZATIONS = {
-    'invest': Visualization(
-        'Invest',
-        an.InvestAnalyzer,
-        False,
-        visualizations.HCCosts
-    )
-}
-
 
 class Result(object):
     def __init__(self, scenario):
@@ -59,25 +46,7 @@ class ResultAnalysisVisualization(object):
             # result.analysis.add_analyzer(analyzer.LCOEAnalyzer())
 
     def __prepare_result_data(self, visualization):
-        if visualization.use_total:
-            series = pandas.Series(
-                {
-                    result.scenario.name:
-                    result.analysis.get_analyzer(visualization.analyzer).total
-                    for result in self.results
-                }
-            )
-            series.name = visualization.name
-            return series
-        else:
-            return pandas.DataFrame(
-                {
-                    result.scenario.name:
-                        result.analysis.get_analyzer(
-                            visualization.analyzer).result
-                    for result in self.results
-                }
-            ).transpose()
+        return visualization.strategy.algorithm(self.results)
 
     def visualize(self, name):
         visualization = VISUALIZATIONS[name]
@@ -88,3 +57,53 @@ class ResultAnalysisVisualization(object):
         """Function to rank results by different Rankings"""
         # TODO: Write ranking function
         pass
+
+
+class Strategy(object):
+    name = 'Strategy'
+    analyzer = None
+
+    def _get_data(self, result):
+        return result.analysis.get_analyzer(self.analyzer).result
+
+    def algorithm(self, results):
+        series = pandas.DataFrame(
+            {
+                result.scenario.name: self._get_data(result)
+                for result in results
+            }
+        )
+        series.name = self.name
+        finalized = self._finalize_data(series)
+        return finalized
+
+    @staticmethod
+    def _finalize_data(data):
+        return data
+
+
+class TotalStrategy(Strategy):
+    def _get_data(self, result):
+        return result.analysis.get_analyzer(self.analyzer).total
+
+
+class InvestStrategy(Strategy):
+    name = 'Invest'
+    analyzer = an.InvestAnalyzer
+
+    @staticmethod
+    def _finalize_data(data):
+        return data.transpose()
+
+
+Visualization = namedtuple(
+    'Visualization',
+    ['strategy', 'highchart']
+)
+
+VISUALIZATIONS = {
+    'invest': Visualization(
+        InvestStrategy(),
+        visualizations.HCCosts
+    )
+}
