@@ -53,7 +53,7 @@ class ResultAnalysisVisualization(object):
             demands = []
             for nodes in result.data[0]:
                 try:
-                    if 'demand' in nodes[1].tags:
+                    if nodes[1].tags is not None and 'demand' in nodes[1].tags:
                         demands.append(nodes[1])
                 except AttributeError:
                     pass
