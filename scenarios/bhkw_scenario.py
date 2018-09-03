@@ -9,6 +9,7 @@ from oemof.tools.economics import annuity
 
 from stemp.oep_models import OEPScenario
 from stemp.scenarios import basic_setup
+from stemp.scenarios.basic_setup import AdvancedLabel
 
 
 SCENARIO = 'bhkw_scenario'
@@ -103,11 +104,11 @@ def upload_scenario_parameters():
         transaction.commit()
 
 
-def create_energysystem(periods=2, **parameters):
+def create_energysystem(periods=8760, **parameters):
     energysystem = basic_setup.add_basic_energysystem(periods)
 
     # Create oil bus
-    b_gas = Bus(label="b_gas", balanced=False)
+    b_gas = Bus(label=AdvancedLabel("b_gas", type='Bus'), balanced=False)
     energysystem.add(b_gas)
 
     # Add households separately or as whole district:
@@ -122,15 +123,22 @@ def create_energysystem(periods=2, **parameters):
 
 def add_bhkw_technology(label, energysystem, timeseries, parameters):
     # Get subgrid busses:
-    sub_b_th = energysystem.groups["b_{}_th".format(label)]
+    sub_b_th = basic_setup.find_element_in_groups(
+        energysystem, f"b_{label}_th")
+    b_gas = basic_setup.find_element_in_groups(
+        energysystem, "b_gas")
 
     # Add bus from bhkw to net:
-    b_bhkw_el = Bus(label='b_bhkw_el')
-    b_net_el = Bus(label='b_net_el')
+    b_bhkw_el = Bus(label=AdvancedLabel('b_bhkw_el', type='Bus'))
+    b_net_el = Bus(label=AdvancedLabel('b_net_el', type='Bus'))
 
     # Add transformer to feed in bhkw_el to net:
     t_bhkw_net = Transformer(
-        label='transformer_from_{}_el'.format(label),
+        label=AdvancedLabel(
+            f'transformer_from_{label}_el',
+            type='Transformer',
+            belongs_to=label
+        ),
         inputs={
             b_bhkw_el: Flow(
                 variable_costs=parameters['General']['bhkw_feedin_tariff']
@@ -146,8 +154,9 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
     epc = annuity(capex, lifetime, wacc)
 
     chp = ExtractionTurbineCHP(
-        label='{}_chp'.format(label),
-        inputs={energysystem.groups['b_gas']: Flow(
+        label=AdvancedLabel(
+            f'{label}_chp', type='Transformer', belongs_to=label),
+        inputs={b_gas: Flow(
             investment=Investment(ep_costs=epc))},
         outputs={b_bhkw_el: Flow(), sub_b_th: Flow()},
         conversion_factors={

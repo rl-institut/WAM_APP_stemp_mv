@@ -23,7 +23,16 @@ NEEDED_PARAMETERS = {
     'demand': ['index', 'type']
 }
 
-AdvancedLabel = namedtuple('AdvancedLabel', ('name', 'tags'))
+AdvancedLabel = namedtuple(
+    'AdvancedLabel', ('name', 'type', 'belongs_to', 'tags'))
+AdvancedLabel.__new__.__defaults__ = (None, None)
+
+
+def find_element_in_groups(energysystem, label):
+    try:
+        return next(v for k, v in energysystem.groups.items() if label in k)
+    except StopIteration:
+        raise KeyError(f'Could not find element containing {label} in label')
 
 
 def add_basic_energysystem(periods):
@@ -40,13 +49,23 @@ def add_subgrid_and_demands(
         parameters: dict
 ):
     # Add subgrid busses
-    sub_b_th = Bus(label="b_{}_th".format(customer.name))
+    sub_b_th = Bus(
+        label=AdvancedLabel(
+            f"b_{customer.name}_th",
+            type='Bus',
+            belongs_to=customer.name,
+        )
+    )
     energysystem.add(sub_b_th)
 
     # Add heat demand
     demand_th = Sink(
         label=AdvancedLabel(
-            "demand_{}_th".format(customer.name), tags=('demand', )),
+            f"demand_{customer.name}_th",
+            type='Sink',
+            belongs_to=customer.name,
+            tags=('demand', )
+        ),
         inputs={
             sub_b_th: Flow(
                 nominal_value=1,
@@ -59,7 +78,11 @@ def add_subgrid_and_demands(
 
     # Add safety excess:
     ex_th = Sink(
-        label="excess_{}_th".format(customer.name),
+        label=AdvancedLabel(
+            f"excess_{customer.name}_th",
+            type='Sink',
+            belongs_to=customer.name
+        ),
         inputs={sub_b_th: Flow()}
     )
     energysystem.add(ex_th)

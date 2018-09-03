@@ -10,6 +10,7 @@ from oemof.tools.economics import annuity
 
 from stemp.oep_models import OEPScenario
 from stemp.scenarios import basic_setup
+from stemp.scenarios.basic_setup import AdvancedLabel
 
 
 SCENARIO = 'pv_heatpump_scenario'
@@ -117,7 +118,7 @@ def get_timeseries():
     return timeseries
 
 
-def create_energysystem(periods=2, **parameters):
+def create_energysystem(periods=168, **parameters):
     timeseries = get_timeseries()
 
     energysystem = basic_setup.add_basic_energysystem(periods)
@@ -135,11 +136,13 @@ def create_energysystem(periods=2, **parameters):
 
 def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     # Get subgrid busses:
-    sub_b_th = energysystem.groups["b_{}_th".format(label)]
+    sub_b_th = basic_setup.find_element_in_groups(
+        energysystem, f"b_{label}_th")
 
     # Add electricity busses:
-    sub_b_el = Bus(label='b_{}_el'.format(label))
-    b_el_net = Bus(label='b_el_net')
+    sub_b_el = Bus(label=AdvancedLabel(
+        f'b_{label}_el', type='Bus', belongs_to=label))
+    b_el_net = Bus(label=AdvancedLabel('b_el_net', type='Bus'))
     energysystem.add(sub_b_el, b_el_net)
 
     # get investment parameters
@@ -156,7 +159,8 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     # Add heat pump:
     COP = cop_heating(timeseries['temp'], type_hp='brine')
     hp = Transformer(
-        label="{}_heat_pump".format(label),
+        label=AdvancedLabel(
+            f"{label}_heat_pump", type='Transformer', belongs_to=label),
         inputs={
             sub_b_el: Flow(
                 investment=Investment(ep_costs=epc_hp)
@@ -169,7 +173,7 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
 
     # Add pv system:
     pv = Source(
-        label="{}_pv".format(label),
+        label=AdvancedLabel(f"{label}_pv", type='Source', belongs_to=label),
         outputs={
             sub_b_el: Flow(
                 actual_value=timeseries['pv'],
@@ -182,7 +186,11 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
 
     # Add transformer to feed in pv to net:
     t_pv_net = Transformer(
-        label='transformer_from_{}_el'.format(label),
+        label=AdvancedLabel(
+            f'transformer_from_{label}_el',
+            type='Transformer',
+            belongs_to=label
+        ),
         inputs={
             sub_b_el: Flow(
                 variable_costs=parameters['General']['pv_feedin_tariff']
