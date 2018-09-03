@@ -1,6 +1,7 @@
 
 import pandas
 import logging
+from collections import namedtuple
 from django.core.exceptions import AppRegistryNotReady
 
 from oemof.solph import (
@@ -22,6 +23,8 @@ NEEDED_PARAMETERS = {
     'demand': ['index', 'type']
 }
 
+AdvancedLabel = namedtuple('AdvancedLabel', ('name', 'tags'))
+
 
 def add_basic_energysystem(periods):
     # initialize energy system
@@ -42,7 +45,8 @@ def add_subgrid_and_demands(
 
     # Add heat demand
     demand_th = Sink(
-        label="demand_{}_th".format(customer.name),
+        label=AdvancedLabel(
+            "demand_{}_th".format(customer.name), tags=('demand', )),
         inputs={
             sub_b_th: Flow(
                 nominal_value=1,

@@ -4,8 +4,10 @@ from collections import namedtuple
 import sqlahelper
 
 from oemof.solph import analyzer as an
-from stemp import visualizations
 from db_apps.oemof_results import restore_results
+
+from stemp import visualizations
+from stemp.scenarios.basic_setup import AdvancedLabel
 
 
 class Result(object):
@@ -30,7 +32,11 @@ class ResultAnalysisVisualization(object):
         sa_session = sqlahelper.get_session()
         for result in self.results:
             result.data = restore_results(
-                sa_session, result.scenario.result_id)
+                sa_session,
+                result.scenario.result_id,
+                restore_none_type=True,
+                advanced_label=AdvancedLabel
+            )
         sa_session.close()
 
     def analyze(self):
@@ -42,8 +48,18 @@ class ResultAnalysisVisualization(object):
             result.analysis.add_analyzer(an.VariableCostAnalyzer())
             result.analysis.add_analyzer(an.NodeBalanceAnalyzer())
             result.analysis.analyze()
-            # TODO: How to set demand outputs?
-            # result.analysis.add_analyzer(analyzer.LCOEAnalyzer())
+
+            # Find all demands:
+            demands = []
+            for nodes in result.data[0]:
+                try:
+                    if 'demand' in nodes[1].tags:
+                        demands.append(nodes[1])
+                except AttributeError:
+                    pass
+
+            result.analysis.add_analyzer(an.LCOEAnalyzer(demands))
+            result.analysis.analyze()
 
     def __prepare_result_data(self, visualization):
         return visualization.strategy.algorithm(self.results)
