@@ -103,8 +103,17 @@ class TotalStrategy(Strategy):
         return result.analysis.get_analyzer(self.analyzer).total
 
 
-class InvestStrategy(Strategy):
-    name = 'Invest'
+class LCOEStrategy(Strategy):
+    name = 'LCOE'
+    analyzer = an.LCOEAnalyzer
+
+    @staticmethod
+    def _finalize_data(data):
+        return data.transpose()
+
+
+class InvestmentStrategy(Strategy):
+    name = 'Investment'
     analyzer = an.InvestAnalyzer
 
     @staticmethod
@@ -118,8 +127,12 @@ Visualization = namedtuple(
 )
 
 VISUALIZATIONS = {
+    'lcoe': Visualization(
+        LCOEStrategy(),
+        visualizations.HCCosts
+    ),
     'invest': Visualization(
-        InvestStrategy(),
+        InvestmentStrategy(),
         visualizations.HCCosts
     )
 }

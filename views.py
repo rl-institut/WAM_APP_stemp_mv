@@ -287,6 +287,7 @@ class ResultView(TemplateView):
         visualization = results.ResultAnalysisVisualization(session.scenarios)
         context['visualizations'] = [
             visualization.visualize('invest'),
+            visualization.visualize('lcoe'),
         ]
         return context
 
