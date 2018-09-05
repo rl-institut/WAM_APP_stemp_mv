@@ -80,9 +80,6 @@ class ParameterForm(Form):
         return field
 
     def __init__(self, parameters, data=None, *args, **kwargs):
-        if parameters is None:
-            raise ValueError('No parameters given')
-
         super(ParameterForm, self).__init__(*args, **kwargs)
 
         field_order = OrderedDict()
