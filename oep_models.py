@@ -31,7 +31,10 @@ class OEPScenario(Base):
         scenario_parameters = session.query(cls).filter_by(
             scenario=f'{scenario_name}_{demand_type.suffix()}').all()
         if not scenario_parameters:
-            return None
+            scenario_parameters = session.query(cls).filter_by(
+                scenario=f'{scenario_name}').all()
+        if not scenario_parameters:
+            raise KeyError(f'Scenario "{scenario_name}" not found in OEP')
 
         # Get secondary attributes:
         description = app_settings.ADDITIONAL_PARAMETERS

@@ -11,7 +11,7 @@ from demandlib import bdew
 import stemp.app_settings
 from db_apps import coastdat
 from stemp import oep_models
-from stemp.scenarios import bhkw_scenario, oil_scenario, pv_heatpump_scenario
+from stemp.scenarios import basic_setup
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -28,9 +28,7 @@ def delete_oep_scenario(scenario):
 
 
 def insert_scenarios():
-    bhkw_scenario.upload_scenario_parameters()
-    oil_scenario.upload_scenario_parameters()
-    pv_heatpump_scenario.upload_scenario_parameters()
+    basic_setup.upload_scenario_parameters()
 
 
 def insert_heat_demand():
@@ -170,7 +168,7 @@ def create_oep_tables():
 
 
 if __name__ == '__main__':
-    create_oep_tables()
+    # create_oep_tables()
     # delete_oep_scenario('bhkw_scenario')
     # insert_heat_demand()
     insert_scenarios()

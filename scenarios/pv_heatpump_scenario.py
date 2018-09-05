@@ -2,112 +2,18 @@
 import os
 import pandas
 from copy import deepcopy
-import sqlahelper
-import transaction
 
 from oemof.solph import Flow, Transformer, Investment, Source, Bus
 from oemof.tools.economics import annuity
 
-from stemp.oep_models import OEPScenario
 from stemp.scenarios import basic_setup
 from stemp.scenarios.basic_setup import AdvancedLabel
 
 
-SCENARIO = 'pv_heatpump_scenario'
 NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
 NEEDED_PARAMETERS['General'].append('pv_feedin_tariff')
 NEEDED_PARAMETERS['PV'] = ['lifetime', 'capex', 'opex']
 NEEDED_PARAMETERS['HP'] = ['lifetime', 'capex', 'opex']
-
-
-def upload_scenario_parameters():
-    session = sqlahelper.get_session()
-    if session.query(OEPScenario).filter_by(scenario=SCENARIO).first() is None:
-        parameters = [
-            {
-                'scenario': SCENARIO,
-                'component': 'General',
-                'parameter_type': 'costs',
-                'parameter': 'wacc',
-                'value_type': 'float',
-                'value': '0.05'
-            },
-            {
-                'scenario': SCENARIO,
-                'component': 'General',
-                'parameter_type': 'costs',
-                'parameter': 'net_costs',
-                'value_type': 'float',
-                'value': '0.27',
-                'unit': '€'
-            },
-            {
-                'scenario': SCENARIO,
-                'component': 'General',
-                'parameter_type': 'costs',
-                'parameter': 'pv_feedin_tariff',
-                'value_type': 'float',
-                'value': '-0.08',
-                'unit': '€'
-            },
-            {
-                'scenario': SCENARIO,
-                'component': 'PV',
-                'parameter_type': 'costs',
-                'parameter': 'lifetime',
-                'value_type': 'float',
-                'value': '20',
-                'unit': 'Jahre'
-            },
-            {
-                'scenario': SCENARIO,
-                'component': 'PV',
-                'parameter_type': 'costs',
-                'parameter': 'capex',
-                'value_type': 'float',
-                'value': '1200',
-                'unit': '€'
-            },
-            {
-                'scenario': SCENARIO,
-                'component': 'PV',
-                'parameter_type': 'costs',
-                'parameter': 'opex',
-                'value_type': 'float',
-                'value': '0.6',
-                'unit': '€'
-            },
-            {
-                'scenario': SCENARIO,
-                'component': 'HP',
-                'parameter_type': 'costs',
-                'parameter': 'lifetime',
-                'value_type': 'float',
-                'value': '20',
-                'unit': 'Jahre'
-            },
-            {
-                'scenario': SCENARIO,
-                'component': 'HP',
-                'parameter_type': 'costs',
-                'parameter': 'capex',
-                'value_type': 'float',
-                'value': '1200',
-                'unit': '€'
-            },
-            {
-                'scenario': SCENARIO,
-                'component': 'HP',
-                'parameter_type': 'costs',
-                'parameter': 'opex',
-                'value_type': 'float',
-                'value': '0.6',
-                'unit': '€'
-            }
-        ]
-        scenarios = [OEPScenario(**param) for param in parameters]
-        session.add_all(scenarios)
-        transaction.commit()
 
 
 def get_timeseries():
@@ -118,7 +24,7 @@ def get_timeseries():
     return timeseries
 
 
-def create_energysystem(periods=168, **parameters):
+def create_energysystem(periods=2, **parameters):
     timeseries = get_timeseries()
 
     energysystem = basic_setup.add_basic_energysystem(periods)

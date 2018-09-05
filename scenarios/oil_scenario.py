@@ -8,16 +8,11 @@ from stemp.scenarios import basic_setup
 from stemp.scenarios.basic_setup import AdvancedLabel
 
 
-SCENARIO = 'oil_scenario_efh'
 SHORT_NAME = 'Oil'
 NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
 NEEDED_PARAMETERS[SHORT_NAME] = [
     'lifetime', 'capex', 'efficiency'
 ]
-
-
-def upload_scenario_parameters():
-    basic_setup.upload_scenario_parameters(SCENARIO)
 
 
 def create_energysystem(periods=2, **parameters):

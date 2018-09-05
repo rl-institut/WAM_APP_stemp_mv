@@ -32,23 +32,23 @@ AdvancedLabel = namedtuple(
 AdvancedLabel.__new__.__defaults__ = (None, None)
 
 
-def upload_scenario_parameters(scenario_name):
+def upload_scenario_parameters():
     session = sqlahelper.get_session()
-    if session.query(OEPScenario).filter_by(
-            scenario=scenario_name).first() is None:
-        scenario = SCENARIO_PARAMETERS[scenario_name]
-        scenarios = [
-            OEPScenario(
-                scenario=scenario_name,
-                component=component,
-                parameter=parameter_name,
-                **parameter_data
-            )
-            for component, parameters in scenario.items()
-            for parameter_name, parameter_data in parameters.items()
-        ]
-        session.add_all(scenarios)
-        transaction.commit()
+    for sc in SCENARIO_PARAMETERS:
+        if session.query(OEPScenario).filter_by(
+                scenario=sc).first() is None:
+            scenarios = [
+                OEPScenario(
+                    scenario=sc,
+                    component=component,
+                    parameter=parameter_name,
+                    **parameter_data
+                )
+                for component, parameters in SCENARIO_PARAMETERS[sc].items()
+                for parameter_name, parameter_data in parameters.items()
+            ]
+            session.add_all(scenarios)
+            transaction.commit()
 
 
 def find_element_in_groups(energysystem, label):
