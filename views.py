@@ -218,7 +218,8 @@ class TechnologyView(TemplateView):
         if 'continue' in request.POST:
             for scenario in session.scenarios:
                 # Load default parameters:
-                parameters = OEPScenario.get_scenario_parameters(scenario.name)
+                parameters = OEPScenario.get_scenario_parameters(
+                    scenario.name, session.demand_type)
                 parameter_form = forms.ParameterForm(
                     [(scenario.name, parameters)])
                 scenario.parameter.update(parameter_form.prepared_data())
@@ -246,7 +247,8 @@ class ParameterView(TemplateView):
             parameters.append(
                 (
                     scenario.name,
-                    OEPScenario.get_scenario_parameters(scenario.name)
+                    OEPScenario.get_scenario_parameters(
+                        scenario.name, session.demand_type)
                 )
             )
         return forms.ParameterForm(parameters, data)

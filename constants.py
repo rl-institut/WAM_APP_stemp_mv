@@ -11,10 +11,20 @@ class DemandType(IntEnum):
     District = 1
 
     def label(self):
-        if self.value == 'single':
+        if self.value == 0:
             return 'Haushalt erstellen'
-        else:
+        elif self.value == 1:
             return 'Viertel erstellen'
+        else:
+            raise AttributeError(f'No label given for value={self.value}')
+
+    def suffix(self):
+        if self.value == 0:
+            return 'efh'
+        elif self.value == 1:
+            return 'mfh'
+        else:
+            raise AttributeError(f'No suffix given for value={self.value}')
 
 
 class DistrictStatus(Enum):

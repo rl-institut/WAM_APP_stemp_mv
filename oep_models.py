@@ -26,10 +26,10 @@ class OEPScenario(Base):
     value = Column(VARCHAR(50))
 
     @classmethod
-    def get_scenario_parameters(cls, scenario_name):
+    def get_scenario_parameters(cls, scenario_name, demand_type):
         session = sqlahelper.get_session()
         scenario_parameters = session.query(cls).filter_by(
-            scenario=scenario_name).all()
+            scenario=f'{scenario_name}_{demand_type.suffix()}').all()
         if not scenario_parameters:
             return None
 
