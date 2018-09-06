@@ -17,6 +17,24 @@ class Result(object):
         self.analysis = None
 
 
+class TotalInvestmentAnalyzer(an.Analyzer):
+    requires = ('results', 'param_results')
+    depends_on = (an.SizeAnalyzer,)
+
+    def analyze(self, *args):
+        super(TotalInvestmentAnalyzer, self).analyze(*args)
+        seq_result = self._get_dep_result(an.SizeAnalyzer)
+        try:
+            psc = self.psc(args)
+            size = seq_result[args]
+            invest = psc['investment_capex']
+        except KeyError:
+            return
+        result = invest * size
+        self.result[args] = result
+        self.total += result
+
+
 class ResultAnalysisVisualization(object):
     """
     Scenarios are loaded, analyzed and visualized within this class
@@ -44,6 +62,8 @@ class ResultAnalysisVisualization(object):
             result.analysis = an.Analysis(result.data[1], result.data[0])
             result.analysis.add_analyzer(an.SequenceFlowSumAnalyzer())
             result.analysis.add_analyzer(an.FlowTypeAnalyzer())
+            result.analysis.add_analyzer(an.SizeAnalyzer())
+            result.analysis.add_analyzer(TotalInvestmentAnalyzer())
             result.analysis.add_analyzer(an.InvestAnalyzer())
             result.analysis.add_analyzer(an.VariableCostAnalyzer())
             result.analysis.add_analyzer(an.NodeBalanceAnalyzer())
@@ -112,9 +132,29 @@ class LCOEStrategy(Strategy):
         return data.transpose()
 
 
+class TotalDemandStrategy(Strategy):
+    name = 'Wärmeverbrauch'
+    analyzer = an.SequenceFlowSumAnalyzer
+
+    def _get_data(self, result):
+        return dict(filter(
+            lambda dct: (
+                dct[0][1].tags is not None and
+                'demand' in dct[0][1].tags
+            ),
+            result.analysis.get_analyzer(
+                an.SequenceFlowSumAnalyzer).result.items()
+        ))
+
+
+class SizeStrategy(Strategy):
+    name = 'Sizes'
+    analyzer = an.SizeAnalyzer
+
+
 class InvestmentStrategy(Strategy):
     name = 'Investment'
-    analyzer = an.InvestAnalyzer
+    analyzer = TotalInvestmentAnalyzer
 
     @staticmethod
     def _finalize_data(data):
@@ -133,6 +173,14 @@ VISUALIZATIONS = {
     ),
     'invest': Visualization(
         InvestmentStrategy(),
+        visualizations.HCCosts
+    ),
+    'size': Visualization(
+        SizeStrategy(),
+        visualizations.HCCosts
+    ),
+    'demand': Visualization(
+        TotalDemandStrategy(),
         visualizations.HCCosts
     )
 }

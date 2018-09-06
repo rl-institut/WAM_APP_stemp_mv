@@ -11,9 +11,9 @@ from stemp.scenarios.basic_setup import AdvancedLabel
 
 
 NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
-NEEDED_PARAMETERS['General'].append('pv_feedin_tariff')
-NEEDED_PARAMETERS['PV'] = ['lifetime', 'capex', 'opex']
-NEEDED_PARAMETERS['HP'] = ['lifetime', 'capex', 'opex']
+NEEDED_PARAMETERS['General'].extend(['pv_feedin_tariff', 'net_costs'])
+NEEDED_PARAMETERS['PV'] = ['lifetime', 'capex', 'opex_fix']
+NEEDED_PARAMETERS['HP'] = ['lifetime', 'capex']
 
 
 def get_timeseries():
@@ -24,7 +24,7 @@ def get_timeseries():
     return timeseries
 
 
-def create_energysystem(periods=2, **parameters):
+def create_energysystem(periods=8760, **parameters):
     timeseries = get_timeseries()
 
     energysystem = basic_setup.add_basic_energysystem(periods)
@@ -60,7 +60,8 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
 
     capex = parameters['PV']['capex']
     lifetime = parameters['PV']['lifetime']
-    epc_pv = annuity(capex, lifetime, wacc)
+    opex_fix = parameters['PV']['opex_fix']
+    epc_pv = annuity(capex, lifetime, wacc) + opex_fix
 
     # Add heat pump:
     COP = cop_heating(timeseries['temp'], type_hp='brine')
@@ -72,8 +73,7 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
                 investment=Investment(ep_costs=epc_hp)
             )
         },
-        outputs={sub_b_th: Flow(
-            variable_costs=parameters['HP']['opex'])},
+        outputs={sub_b_th: Flow()},
         conversion_factors={sub_b_th: COP}
     )
 
@@ -83,7 +83,6 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
         outputs={
             sub_b_el: Flow(
                 actual_value=timeseries['pv'],
-                variable_costs=parameters['PV']['opex'],
                 fixed=True,
                 investment=Investment(ep_costs=epc_pv)
             )
@@ -99,7 +98,7 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
         ),
         inputs={
             sub_b_el: Flow(
-                variable_costs=parameters['General']['pv_feedin_tariff']
+                variable_costs=-parameters['General']['pv_feedin_tariff']
             )
         },
         outputs={b_el_net: Flow()},

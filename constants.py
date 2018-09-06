@@ -20,9 +20,9 @@ class DemandType(IntEnum):
 
     def suffix(self):
         if self.value == 0:
-            return 'efh'
+            return 'single'
         elif self.value == 1:
-            return 'mfh'
+            return 'district'
         else:
             raise AttributeError(f'No suffix given for value={self.value}')
 

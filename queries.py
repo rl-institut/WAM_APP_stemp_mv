@@ -9,9 +9,16 @@ import transaction
 from demandlib import bdew
 
 import stemp.app_settings
-from db_apps import coastdat
+from db_apps import coastdat, oemof_results
 from stemp import oep_models
 from stemp.scenarios import basic_setup
+
+from django.core.wsgi import get_wsgi_application
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
+application = get_wsgi_application()
+
+from stemp.models import Simulation
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -22,9 +29,9 @@ ENERGY_PER_QM_PER_YEAR = {'EFH': 90, 'MFH': 70}
 LUETZOW_LON_LAT = (11.181475, 53.655119)
 
 
-def delete_oep_scenario(scenario):
+def delete_scenarios():
     session = sqlahelper.get_session()
-    session.query(oep_models.OEPScenario).filter_by(scenario=scenario).delete()
+    session.query(oep_models.OEPScenario).delete()
 
 
 def insert_scenarios():
@@ -131,7 +138,7 @@ def create_questions_and_households():
     from django.core.wsgi import get_wsgi_application
 
     os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
-    application = get_wsgi_application()
+    _ = get_wsgi_application()
     from stemp.models import Question, QuestionHousehold, Household
 
     for num_person in range(1, 11):
@@ -156,20 +163,23 @@ def create_questions_and_households():
             question_household.save()
 
 
-def read_data():
-    session = sqlahelper.get_session()
-    hd = session.query(oep_models.OEPTimeseries).filter_by(name='Heat Demand EFH').first()
-    print(hd.__dict__)
-
-
 def create_oep_tables():
-
     oep_models.Base.metadata.create_all()
+
+
+def delete_stored_simulations():
+    Simulation.objects.all().delete()
+    session = sqlahelper.get_session()
+    session.query(oemof_results.OemofInputResult).delete()
+    session.query(oemof_results.OemofScalar).delete()
+    session.query(oemof_results.OemofSequence).delete()
+    session.query(oemof_results.OemofData).delete()
+    transaction.commit()
 
 
 if __name__ == '__main__':
     # create_oep_tables()
-    # delete_oep_scenario('bhkw_scenario')
+    delete_stored_simulations()
     # insert_heat_demand()
-    insert_scenarios()
+    # insert_scenarios()
     # insert_dhw_timeseries()

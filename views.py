@@ -288,6 +288,8 @@ class ResultView(TemplateView):
         context['save'] = forms.SaveSimulationForm()
         visualization = results.ResultAnalysisVisualization(session.scenarios)
         context['visualizations'] = [
+            visualization.visualize('size'),
+            visualization.visualize('demand'),
             visualization.visualize('invest'),
             visualization.visualize('lcoe'),
         ]

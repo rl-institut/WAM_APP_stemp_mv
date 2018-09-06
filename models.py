@@ -147,7 +147,7 @@ class Question(models.Model):
     def get_oep_timeseries(self):
         from stemp import oep_models
         session = sqlahelper.get_session()
-        for name in ('Hot Water', self.EFH[1], self.MFH[1]):
+        for name in ('Hot Water Energy', self.EFH[1], self.MFH[1]):
             self.timeseries[name] = pandas.Series(
                 session.query(oep_models.OEPTimeseries).filter_by(
                     name=name
@@ -164,7 +164,7 @@ class Question(models.Model):
     def get_hot_water_profile(self):
         if not self.oep_init_done:
             self.get_oep_timeseries()
-        return self.timeseries['Hot Water'] * self.number_of_persons
+        return self.timeseries['Hot Water Energy'] * self.number_of_persons
 
     def __str__(self):
         return self.house_type + f', {self.number_of_persons} persons'

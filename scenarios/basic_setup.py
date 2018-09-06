@@ -92,7 +92,7 @@ def add_subgrid_and_demands(
         inputs={
             sub_b_th: Flow(
                 nominal_value=1,
-                actual_value=customer.annual_heat_demand().div(1e6),
+                actual_value=customer.annual_heat_demand(),
                 fixed=True
             )
         }
