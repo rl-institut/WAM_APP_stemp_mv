@@ -111,25 +111,24 @@ def add_subgrid_and_demands(
     energysystem.add(ex_th)
 
 
+def get_demand(demand_type, demand_id):
+    if demand_type == DemandType.Single:
+        return Household.objects.get(id=demand_id)
+    elif demand_type == DemandType.District:
+        return District.objects.get(id=demand_id)
+    else:
+        raise ValueError('Unknown customer case "' + demand_type + '"')
+
+
 def add_households(
         energysystem, technology_fct, parameters, timeseries=None
 ):
     """
     Whole district as one, separate or single households are added to es
     """
-    def add_household(customer):
-        add_subgrid_and_demands(customer, energysystem, parameters)
-        technology_fct(customer.name, energysystem, timeseries, parameters)
-
-    # Init parameters:
-    customer_index = parameters['demand']['index']
-    customer_case = parameters['demand']['type']
-
-    if customer_case == DemandType.Single:
-        household = Household.objects.get(id=customer_index)
-        add_household(household)
-    elif customer_case == DemandType.District:
-        district = District.objects.get(id=customer_index)
-        add_household(district)
-    else:
-        raise ValueError('Unknown customer case "' + customer_case + '"')
+    demand = get_demand(
+        parameters['demand']['type'],
+        parameters['demand']['index']
+    )
+    add_subgrid_and_demands(demand, energysystem, parameters)
+    technology_fct(demand.name, energysystem, timeseries, parameters)
