@@ -244,11 +244,15 @@ class ParameterView(TemplateView):
         # Get data from OEP:
         parameters = []
         for scenario in scenarios:
+            scenario_parameters = OEPScenario.get_scenario_parameters(
+                scenario.name, session.demand_type)
+            # Load additional dynamic parameters from module:
+            scenario.module.add_dynamic_parameters(
+                scenario, scenario_parameters)
             parameters.append(
                 (
                     scenario.name,
-                    OEPScenario.get_scenario_parameters(
-                        scenario.name, session.demand_type)
+                    scenario_parameters
                 )
             )
         return forms.ParameterForm(parameters, data)

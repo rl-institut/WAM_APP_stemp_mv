@@ -81,3 +81,50 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
             b_bhkw_el: parameters[SHORT_NAME]['full_condensation_factor_el']}
     )
     energysystem.add(chp)
+
+
+def add_dynamic_parameters(scenario, parameters):
+    demand = basic_setup.get_demand(
+        scenario.session.demand_type,
+        scenario.session.demand_id
+    )
+    max_heat_demand = max(demand.annual_heat_demand())
+
+    # Estimate bhkw size:
+    bhkw_size = max_heat_demand * 1.2  # TODO: Improve estimation
+
+    # Get capex:
+    if bhkw_size < 1:
+        capex = 9.585 * 1e3
+    elif 1 >= bhkw_size < 10:
+        capex = 9.585 * bhkw_size ** -0.542 * 1e3
+    elif 10 >= bhkw_size < 100:
+        capex = 5.438 * bhkw_size ** -0.351 * 1e3
+    elif 100 >= bhkw_size < 1000:
+        capex = 4.907 * bhkw_size ** -0.352 * 1e3
+    elif 1000 >= bhkw_size < 19000:
+        capex = 460.89 * bhkw_size ** -0.015 * 1e3
+    else:
+        raise IndexError(f'No BHKW-capex found for size {bhkw_size}kW')
+
+    # Get eff:
+    if bhkw_size < 1:
+        raise IndexError(f'No BHKW-efficiency found for size {bhkw_size}kW')
+    elif 1 >= bhkw_size < 10:
+        eff = 21.794 * bhkw_size ** 0.108 / 100
+    elif 10 >= bhkw_size < 100:
+        eff = 22.56 * bhkw_size ** 0.1032 / 100
+    elif 100 >= bhkw_size < 1000:
+        eff = 25.416 * bhkw_size ** 0.0732 / 100
+    elif 1000 >= bhkw_size < 19000:
+        eff = 29.627 * bhkw_size ** 0.0498 / 100
+    else:
+        eff = 29.627 / 100
+
+    parameters[SHORT_NAME]['capex'] = (
+        parameters[SHORT_NAME]['capex'].new_child({'value': str(capex)}))
+    parameters[SHORT_NAME]['conversion_factor_el'] = (
+        parameters[SHORT_NAME]['conversion_factor_el'].new_child(
+            {'value': str(eff)}
+        )
+    )

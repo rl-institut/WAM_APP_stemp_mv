@@ -57,3 +57,7 @@ def add_oil_technology(label, energysystem, timeseries, parameters):
         conversion_factors={sub_b_th: parameters[SHORT_NAME]['efficiency']}
     )
     energysystem.add(oil_heating)
+
+
+def add_dynamic_parameters(scenario, parameters):
+    return

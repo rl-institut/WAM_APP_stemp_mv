@@ -190,3 +190,7 @@ def cop_heating(temp, type_hp, **kwargs):
     )
 
     return cop_hp_heating
+
+
+def add_dynamic_parameters(scenario, parameters):
+    return
