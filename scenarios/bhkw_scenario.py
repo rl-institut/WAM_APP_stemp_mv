@@ -77,10 +77,17 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
             b_gas: Flow(
                 variable_costs=parameters['General']['gas_price'],
                 investment=invest,
-                min=parameters[SHORT_NAME]['minimal_load']
+                min=(
+                        parameters[SHORT_NAME]['minimal_load'] /
+                        parameters[SHORT_NAME]['conversion_factor_th']
+                ),
+                co2_emissions=parameters[SHORT_NAME]['co2_emissions']
             )
         },
-        outputs={b_bhkw_el: Flow(), sub_b_th: Flow()},
+        outputs={
+            b_bhkw_el: Flow(),
+            sub_b_th: Flow()
+        },
         conversion_factors={
             b_bhkw_el: parameters[SHORT_NAME]['conversion_factor_el'],
             sub_b_th: parameters[SHORT_NAME]['conversion_factor_th']

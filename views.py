@@ -292,12 +292,7 @@ class ResultView(TemplateView):
         context['save'] = forms.SaveSimulationForm()
         visualization = results.ResultAnalysisVisualization(session.scenarios)
         context['visualizations'] = [
-            visualization.visualize('size'),
-            visualization.visualize('demand'),
-            visualization.visualize('invest'),
-            visualization.visualize('lcoe'),
-            visualization.visualize('co2'),
-        ]
+            visualization.visualize(vis) for vis in results.VISUALIZATIONS]
         return context
 
     @check_session

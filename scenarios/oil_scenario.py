@@ -49,14 +49,17 @@ def add_oil_technology(label, energysystem, timeseries, parameters):
     invest.capex = capex
     oil_heating = Transformer(
         label=AdvancedLabel(f'{label}_oil_heating', type='Transformer'),
-        inputs={b_oil: Flow(
-            variable_costs=parameters['General']['oil_price'],
-            investment=invest)},
+        inputs={
+            b_oil: Flow(
+                variable_costs=parameters['General']['oil_price'],
+                investment=invest,
+                co2_emissions=parameters[SHORT_NAME]['co2_emissions']
+            )
+        },
         outputs={
             sub_b_th: Flow(variable_costs=parameters[SHORT_NAME]['opex'])},
         conversion_factors={sub_b_th: parameters[SHORT_NAME]['efficiency']}
     )
-    oil_heating.co2_emissions = parameters[SHORT_NAME]['co2_emissions']
     energysystem.add(oil_heating)
 
 
