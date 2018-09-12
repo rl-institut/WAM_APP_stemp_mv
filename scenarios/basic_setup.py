@@ -21,6 +21,8 @@ except AppRegistryNotReady:
         'Maybe you have to start django application first.'
     )
 
+DEFAULT_PERIODS = 8760
+
 
 NEEDED_PARAMETERS = {
     'General': ['wacc'],
@@ -58,7 +60,7 @@ def find_element_in_groups(energysystem, label):
         raise KeyError(f'Could not find element containing {label} in label')
 
 
-def add_basic_energysystem(periods, **kwargs):
+def add_basic_energysystem(periods=DEFAULT_PERIODS, **kwargs):
     # initialize energy system
     energysystem = EnergySystem(
         timeindex=pandas.date_range('2016-01-01', periods=periods, freq='H'),

@@ -24,10 +24,10 @@ def get_timeseries():
     return timeseries
 
 
-def create_energysystem(periods=8760, **parameters):
+def create_energysystem(**parameters):
     timeseries = get_timeseries()
 
-    energysystem = basic_setup.add_basic_energysystem(periods)
+    energysystem = basic_setup.add_basic_energysystem()
 
     # Add households separately or as whole district:
     basic_setup.add_households(

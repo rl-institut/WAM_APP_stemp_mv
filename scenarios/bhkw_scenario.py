@@ -2,7 +2,6 @@
 from copy import deepcopy
 
 from oemof.solph import Flow, Bus, Investment, Transformer
-from oemof.solph.components import ExtractionTurbineCHP
 from oemof.tools.economics import annuity
 
 from stemp.scenarios import basic_setup
@@ -13,15 +12,15 @@ SHORT_NAME = 'BHKW'
 NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
 NEEDED_PARAMETERS[SHORT_NAME] = [
     'capex', 'lifetime', 'conversion_factor_el', 'conversion_factor_th',
-    'full_condensation_factor_el', 'co2_emissions'
+    'co2_emissions', 'minimal_load'
 ]
 NEEDED_PARAMETERS['General'].extend(['gas_price', 'bhkw_feedin_tariff'])
 
 BHKW_SIZE_PEAK_FACTOR = 3.33
 
 
-def create_energysystem(periods=8760, **parameters):
-    energysystem = basic_setup.add_basic_energysystem(periods)
+def create_energysystem(**parameters):
+    energysystem = basic_setup.add_basic_energysystem()
 
     # Create oil bus
     b_gas = Bus(label=AdvancedLabel("b_gas", type='Bus'), balanced=False)
@@ -71,25 +70,24 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
     invest = Investment(ep_costs=epc)
     invest.capex = capex
 
-    chp = ExtractionTurbineCHP(
+    bhkw = Transformer(
         label=AdvancedLabel(
             f'{label}_chp', type='Transformer', belongs_to=label),
         inputs={
             b_gas: Flow(
                 variable_costs=parameters['General']['gas_price'],
-                investment=invest
+                investment=invest,
+                min=parameters[SHORT_NAME]['minimal_load']
             )
         },
         outputs={b_bhkw_el: Flow(), sub_b_th: Flow()},
         conversion_factors={
             b_bhkw_el: parameters[SHORT_NAME]['conversion_factor_el'],
             sub_b_th: parameters[SHORT_NAME]['conversion_factor_th']
-        },
-        conversion_factor_full_condensation={
-            b_bhkw_el: parameters[SHORT_NAME]['full_condensation_factor_el']}
+        }
     )
-    chp.co2_emissions = parameters[SHORT_NAME]['co2_emissions']
-    energysystem.add(chp)
+    bhkw.co2_emissions = parameters[SHORT_NAME]['co2_emissions']
+    energysystem.add(bhkw)
 
 
 def add_dynamic_parameters(scenario, parameters):

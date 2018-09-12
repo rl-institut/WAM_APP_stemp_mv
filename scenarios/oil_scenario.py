@@ -16,9 +16,9 @@ NEEDED_PARAMETERS[SHORT_NAME] = [
 ]
 
 
-def create_energysystem(periods=8760, **parameters):
+def create_energysystem(**parameters):
 
-    energysystem = basic_setup.add_basic_energysystem(periods)
+    energysystem = basic_setup.add_basic_energysystem()
 
     # Create oil bus
     b_oil = Bus(label=AdvancedLabel("b_oil", type='Bus'), balanced=False)
