@@ -58,10 +58,11 @@ def find_element_in_groups(energysystem, label):
         raise KeyError(f'Could not find element containing {label} in label')
 
 
-def add_basic_energysystem(periods):
+def add_basic_energysystem(periods, **kwargs):
     # initialize energy system
     energysystem = EnergySystem(
-        timeindex=pandas.date_range('2016-01-01', periods=periods, freq='H')
+        timeindex=pandas.date_range('2016-01-01', periods=periods, freq='H'),
+        ** kwargs
     )
     return energysystem
 
