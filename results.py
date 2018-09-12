@@ -172,6 +172,41 @@ class SizeStrategy(Strategy):
     analyzer = an.SizeAnalyzer
 
 
+class ProfileStrategy(Strategy):
+    name = 'Profile'
+
+    def _get_data(self, result):
+        demand = [
+            v['sequences']['flow'][:100]
+            for k, v in result.analysis.results.items()
+            if k[1].tags is not None and 'demand' in k[1].tags
+        ][0].tolist()
+        gas = None
+        try:
+            gas = [
+                v['sequences']['flow'][:100]
+                for k, v in result.analysis.results.items()
+                if k[0].name == 'b_gas' or k[0].name == 'b_oil'
+            ][0].tolist()
+        except IndexError:
+            pass
+        excess = [
+            v['sequences']['flow'][:100]
+            for k, v in result.analysis.results.items()
+            if k[1].name.startswith('excess')
+        ][0].tolist()
+        return {
+            'Verbrauch': demand,
+            'Einspeisung (Gas/Öl)': gas,
+            'Wärme-Überschuss': excess
+        }
+
+
+    @staticmethod
+    def _finalize_data(data):
+        return data.transpose()
+
+
 class InvestmentStrategy(Strategy):
     name = 'Investment'
     analyzer = TotalInvestmentAnalyzer
@@ -215,5 +250,9 @@ VISUALIZATIONS = {
     'co2': Visualization(
         CO2Strategy(),
         visualizations.HCStemp(title='CO2-Verbrauch')
+    ),
+    'profile': Visualization(
+        ProfileStrategy(),
+        visualizations.HCStemp(title='Profile', style='line')
     )
 }
