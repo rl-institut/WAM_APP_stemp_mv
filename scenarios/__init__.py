@@ -1,6 +1,5 @@
 
 import os
-import pandas
 from importlib import import_module
 import logging
 from configobj import ConfigObj
@@ -134,7 +133,7 @@ def default_simulate_fct(
     )
 
     results = outputlib.processing.results(om)
-    param_results = outputlib.processing.param_results(
+    param_results = outputlib.processing.parameter_as_dict(
             om, exclude_none=True)
     return map(
         outputlib.processing.convert_keys_to_strings,
