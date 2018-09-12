@@ -296,6 +296,7 @@ class ResultView(TemplateView):
             visualization.visualize('demand'),
             visualization.visualize('invest'),
             visualization.visualize('lcoe'),
+            visualization.visualize('co2'),
         ]
         return context
 

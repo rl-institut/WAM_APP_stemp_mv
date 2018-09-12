@@ -35,6 +35,24 @@ class TotalInvestmentAnalyzer(an.Analyzer):
         self.total += result
 
 
+class CO2Analyzer(an.Analyzer):
+    requires = ('results', 'param_results')
+    depends_on = (an.SequenceFlowSumAnalyzer,)
+
+    def analyze(self, *args):
+        super(CO2Analyzer, self).analyze(*args)
+        seq_result = self._get_dep_result(an.SequenceFlowSumAnalyzer)
+        try:
+            psc = self.psc(args)
+            flow = seq_result[args]
+            co2 = psc['co2_emissions']
+        except KeyError:
+            return
+        result = co2 * flow
+        self.result[args] = result
+        self.total += result
+
+
 class ResultAnalysisVisualization(object):
     """
     Scenarios are loaded, analyzed and visualized within this class
@@ -61,6 +79,7 @@ class ResultAnalysisVisualization(object):
         for result in self.results:
             result.analysis = an.Analysis(result.data[1], result.data[0])
             result.analysis.add_analyzer(an.SequenceFlowSumAnalyzer())
+            result.analysis.add_analyzer(CO2Analyzer())
             result.analysis.add_analyzer(an.FlowTypeAnalyzer())
             result.analysis.add_analyzer(an.SizeAnalyzer())
             result.analysis.add_analyzer(TotalInvestmentAnalyzer())
@@ -87,7 +106,8 @@ class ResultAnalysisVisualization(object):
     def visualize(self, name):
         visualization = VISUALIZATIONS[name]
         data = self.__prepare_result_data(visualization)
-        return visualization.highchart(data).render()
+        visualization.highchart.set_data(data)
+        return visualization.highchart.render()
 
     def rank(self, name):
         """Function to rank results by different Rankings"""
@@ -161,6 +181,15 @@ class InvestmentStrategy(Strategy):
         return data.transpose()
 
 
+class CO2Strategy(Strategy):
+    name = 'CO2'
+    analyzer = CO2Analyzer
+
+    @staticmethod
+    def _finalize_data(data):
+        return data.transpose()
+
+
 Visualization = namedtuple(
     'Visualization',
     ['strategy', 'highchart']
@@ -169,18 +198,22 @@ Visualization = namedtuple(
 VISUALIZATIONS = {
     'lcoe': Visualization(
         LCOEStrategy(),
-        visualizations.HCCosts
+        visualizations.HCCosts()
     ),
     'invest': Visualization(
         InvestmentStrategy(),
-        visualizations.HCCosts
+        visualizations.HCStemp(title='Investition')
     ),
     'size': Visualization(
         SizeStrategy(),
-        visualizations.HCCosts
+        visualizations.HCStemp(title='Optimierte Größen')
     ),
     'demand': Visualization(
         TotalDemandStrategy(),
-        visualizations.HCCosts
+        visualizations.HCStemp(title='Verbrauch')
+    ),
+    'co2': Visualization(
+        CO2Strategy(),
+        visualizations.HCStemp(title='CO2-Verbrauch')
     )
 }

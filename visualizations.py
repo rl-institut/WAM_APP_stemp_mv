@@ -5,8 +5,9 @@ from utils.highcharts import Highchart, RLI_THEME
 class HCStemp(Highchart):
     setup = {}
 
-    def __init__(self, data):
-        super(HCStemp, self).__init__(data, theme=RLI_THEME, setup=self.setup)
+    def __init__(self, data=None, **kwargs):
+        super(HCStemp, self).__init__(
+            data, theme=RLI_THEME, setup=self.setup, **kwargs)
 
 
 class HCCosts(HCStemp):
