@@ -65,7 +65,7 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
 
     capex = parameters[SHORT_NAME]['capex']
     lifetime = parameters[SHORT_NAME]['lifetime']
-    wacc = parameters['General']['wacc']
+    wacc = parameters['General']['wacc'] / 100
     epc = annuity(capex, lifetime, wacc)
     invest = Investment(ep_costs=epc)
     invest.capex = capex
@@ -89,8 +89,8 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
             sub_b_th: Flow()
         },
         conversion_factors={
-            b_bhkw_el: parameters[SHORT_NAME]['conversion_factor_el'],
-            sub_b_th: parameters[SHORT_NAME]['conversion_factor_th']
+            b_bhkw_el: parameters[SHORT_NAME]['conversion_factor_el'] / 100,
+            sub_b_th: parameters[SHORT_NAME]['conversion_factor_th'] / 100
         }
     )
     bhkw.co2_emissions = parameters[SHORT_NAME]['co2_emissions']
@@ -125,20 +125,20 @@ def add_dynamic_parameters(scenario, parameters):
     if bhkw_size < 1:
         raise IndexError(f'No BHKW-efficiency found for size {bhkw_size}kW')
     elif 1 <= bhkw_size < 10:
-        eff = 21.794 * bhkw_size ** 0.108 / 100
+        eff = 21.794 * bhkw_size ** 0.108
     elif 10 <= bhkw_size < 100:
-        eff = 22.56 * bhkw_size ** 0.1032 / 100
+        eff = 22.56 * bhkw_size ** 0.1032
     elif 100 <= bhkw_size < 1000:
-        eff = 25.416 * bhkw_size ** 0.0732 / 100
+        eff = 25.416 * bhkw_size ** 0.0732
     elif 1000 <= bhkw_size < 19000:
-        eff = 29.627 * bhkw_size ** 0.0498 / 100
+        eff = 29.627 * bhkw_size ** 0.0498
     else:
-        eff = 29.627 / 100
+        eff = 29.627
 
     parameters[SHORT_NAME]['capex'] = (
         parameters[SHORT_NAME]['capex'].new_child({'value': str(capex)}))
     parameters[SHORT_NAME]['conversion_factor_el'] = (
         parameters[SHORT_NAME]['conversion_factor_el'].new_child(
-            {'value': str(eff)}
+            {'value': str(int(eff))}
         )
     )

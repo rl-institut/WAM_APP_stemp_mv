@@ -36,7 +36,7 @@ def create_energysystem(**parameters):
 
 def add_oil_technology(label, energysystem, timeseries, parameters):
     # Get investment parameters:
-    wacc = parameters['General']['wacc']
+    wacc = parameters['General']['wacc'] / 100
     capex = parameters[SHORT_NAME]['capex']
     lifetime = parameters[SHORT_NAME]['lifetime']
     epc = annuity(capex, lifetime, wacc)
@@ -58,7 +58,8 @@ def add_oil_technology(label, energysystem, timeseries, parameters):
         },
         outputs={
             sub_b_th: Flow(variable_costs=parameters[SHORT_NAME]['opex'])},
-        conversion_factors={sub_b_th: parameters[SHORT_NAME]['efficiency']}
+        conversion_factors={
+            sub_b_th: parameters[SHORT_NAME]['efficiency'] / 100}
     )
     energysystem.add(oil_heating)
 

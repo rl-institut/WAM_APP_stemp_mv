@@ -52,7 +52,7 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     energysystem.add(sub_b_el, b_el_net)
 
     # get investment parameters
-    wacc = parameters['General']['wacc']
+    wacc = parameters['General']['wacc'] / 100
 
     capex = parameters['HP']['capex']
     lifetime = parameters['HP']['lifetime']
