@@ -12,10 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='household',
-            name='heat_profile',
-        ),
-        migrations.RemoveField(
-            model_name='household',
             name='load_demand',
         ),
         migrations.RemoveField(
