@@ -56,6 +56,7 @@ def add_oil_technology(label, energysystem, timeseries, parameters):
             sub_b_th: Flow(variable_costs=parameters[SHORT_NAME]['opex'])},
         conversion_factors={sub_b_th: parameters[SHORT_NAME]['efficiency']}
     )
+    oil_heating.co2_emissions = parameters[SHORT_NAME]['co2_emissions']
     energysystem.add(oil_heating)
 
 
