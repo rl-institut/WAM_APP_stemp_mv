@@ -10,6 +10,8 @@ from wam import settings
 from db_apps import oemof_results
 from stemp import oep_models
 
+ACTIVATED_VISUALIZATIONS = os.environ['ACTIVATED_VISUALIZATIONS'].split(',')
+
 SCENARIO_PATH = os.path.join('stemp', 'scenarios')
 SCENARIO_PARAMETERS = ConfigObj(
     os.path.join(settings.BASE_DIR, 'stemp', 'scenarios', 'parameters.cfg'))

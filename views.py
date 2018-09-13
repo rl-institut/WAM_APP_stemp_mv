@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 from django. forms import MultipleChoiceField
 
 from wam.settings import SESSION_DATA
-from stemp.app_settings import LABELS
+from stemp.app_settings import LABELS, ACTIVATED_VISUALIZATIONS
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
 from stemp import results
@@ -292,7 +292,8 @@ class ResultView(TemplateView):
         context['save'] = forms.SaveSimulationForm()
         visualization = results.ResultAnalysisVisualization(session.scenarios)
         context['visualizations'] = [
-            visualization.visualize(vis) for vis in results.VISUALIZATIONS]
+            visualization.visualize(vis) for vis in ACTIVATED_VISUALIZATIONS
+        ]
         return context
 
     @check_session
