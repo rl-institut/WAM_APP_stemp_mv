@@ -187,7 +187,10 @@ class LCOEStrategy(Strategy):
         elif scenario == 'oil_scenario':
             if nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
                 return ' (Öl)'
-            elif nodes[0] is not None and nodes[0].name.endswith('oil_heating'):
+            elif (
+                    nodes[0] is not None and
+                    nodes[0].name.endswith('oil_heating')
+            ):
                 return ' (OPEX)'
         return nodes
 
