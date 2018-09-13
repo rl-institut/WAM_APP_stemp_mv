@@ -119,8 +119,30 @@ class Strategy(object):
     name = 'Strategy'
     analyzer = None
 
+    @staticmethod
+    def _get_label(scenario, nodes):
+        # TODO: Export label mappings into cfg or scenario
+        if isinstance(nodes, str):
+            return nodes
+        if scenario == 'bhkw_scenario':
+            if nodes[1] is not None and nodes[1].name.endswith('chp'):
+                return 'BHKW'
+        elif scenario == 'oil_scenario':
+            if nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
+                return 'Ölkessel'
+            elif nodes[0] is not None and nodes[0].name.endswith('oil_heating'):
+                return 'Ölkessel'
+        return nodes
+
     def _get_data(self, result):
-        return result.analysis.get_analyzer(self.analyzer).result
+        data = result.analysis.get_analyzer(self.analyzer).result
+        return self._set_label(result.scenario.name, data)
+
+    def _set_label(self, scenario, data):
+        return {
+            self._get_label(scenario, k): v
+            for k, v in data.items()
+        }
 
     def algorithm(self, results):
         series = pandas.DataFrame(
@@ -135,21 +157,39 @@ class Strategy(object):
 
     @staticmethod
     def _finalize_data(data):
-        return data
-
-
-class TotalStrategy(Strategy):
-    def _get_data(self, result):
-        return result.analysis.get_analyzer(self.analyzer).total
+        return data.transpose()
 
 
 class LCOEStrategy(Strategy):
     name = 'LCOE'
     analyzer = an.LCOEAnalyzer
 
+    def _get_data(self, result):
+        data = result.analysis.get_analyzer(self.analyzer).result
+        filtered_data = {}
+        for k, v in data.items():
+            new_label = self._get_label(result.scenario.name, k)
+            if v.investment > 0.0:
+                filtered_data[new_label + ' (Investment)'] = v.investment
+            if v.variable_costs > 0.0:
+                filtered_data[
+                    new_label + self._get_suffix(result.scenario.name, k)
+                ] = v.variable_costs
+        return filtered_data
+
     @staticmethod
-    def _finalize_data(data):
-        return data.transpose()
+    def _get_suffix(scenario, nodes):
+        if isinstance(nodes, str):
+            return nodes
+        if scenario == 'bhkw_scenario':
+            if nodes[1] is not None and nodes[1].name.endswith('chp'):
+                return ' (Gas)'
+        elif scenario == 'oil_scenario':
+            if nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
+                return ' (Öl)'
+            elif nodes[0] is not None and nodes[0].name.endswith('oil_heating'):
+                return ' (OPEX)'
+        return nodes
 
 
 class TotalDemandStrategy(Strategy):
@@ -202,27 +242,14 @@ class ProfileStrategy(Strategy):
         }
 
 
-    @staticmethod
-    def _finalize_data(data):
-        return data.transpose()
-
-
 class InvestmentStrategy(Strategy):
     name = 'Investment'
     analyzer = TotalInvestmentAnalyzer
-
-    @staticmethod
-    def _finalize_data(data):
-        return data.transpose()
 
 
 class CO2Strategy(Strategy):
     name = 'CO2'
     analyzer = CO2Analyzer
-
-    @staticmethod
-    def _finalize_data(data):
-        return data.transpose()
 
 
 Visualization = namedtuple(
