@@ -15,20 +15,11 @@ class HCCosts(HCStemp):
         'chart': {
             'type': 'column'
         },
-        'title': {
-            'text': 'Wärmekosten',
-        },
-        'subtitle': {
-            'text': 'Cent pro Kilowattstunde'
-        },
-        'xAxis': {
-            'categories': ['BHKW', 'PV + Wärmepumpe', 'Ölheizung', 'Gasheizung']
-        },
         'yAxis': {
             'min': 0,
-            'title': {'text': ''},
             'stackLabels': {
                 'enabled': True,
+                'format': "{total:.2f}€",
                 'style': {
                     'fontWeight': 'bold',
                     'color': "(Highcharts.theme && Highcharts.theme.textColor) || 'gray'"
@@ -37,15 +28,16 @@ class HCCosts(HCStemp):
         },
         'tooltip': {
             'headerFormat': '<b>{point.x}</b><br/>',
-            'pointFormat': '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+            'pointFormat': '{series.name}: {point.y:.2f}€<br/>Total: {point.stackTotal:.2f}€'
         },
         'plotOptions': {
             'column': {
                 'stacking': 'normal',
                 'dataLabels': {
                     'enabled': True,
+                    'format': "{point.y:.2f}€",
                     'color': "(Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'"
-                }
+                },
             }
         },
     }

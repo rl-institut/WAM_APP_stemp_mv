@@ -263,23 +263,29 @@ Visualization = namedtuple(
 VISUALIZATIONS = {
     'lcoe': Visualization(
         LCOEStrategy(),
-        visualizations.HCCosts()
+        visualizations.HCCosts(
+            title='Wärmekosten',
+            subtitle='Euro pro Kilowattstunde'
+        )
     ),
     'invest': Visualization(
         InvestmentStrategy(),
-        visualizations.HCStemp(title='Investition')
+        visualizations.HCCosts(
+            title='Investition',
+            subtitle='Euro'
+        )
     ),
     'size': Visualization(
         SizeStrategy(),
-        visualizations.HCStemp(title='Optimierte Größen')
+        visualizations.HCStemp(title='Optimierte Größen', stacked=True)
     ),
     'demand': Visualization(
         TotalDemandStrategy(),
-        visualizations.HCStemp(title='Verbrauch')
+        visualizations.HCStemp(title='Verbrauch', stacked=True)
     ),
     'co2': Visualization(
         CO2Strategy(),
-        visualizations.HCStemp(title='CO2-Verbrauch')
+        visualizations.HCStemp(title='CO2-Verbrauch', stacked=True)
     ),
     'profile': Visualization(
         ProfileStrategy(),
