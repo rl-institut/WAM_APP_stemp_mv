@@ -49,28 +49,28 @@ class ParameterForm(Form):
             field = BooleanField(initial=bool(parameter_data['value']))
         elif parameter_data['value_type'] == 'float':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
-                step_size = parameter_data.get('step_size', 0.1)
+                step_size = parameter_data.get('step_size', "0.1")
                 field = FloatField(
                     widget=SliderInput(
                         step_size=step_size,
                         attrs=attrs
                     ),
-                    initial=float(parameter_data['value']),
-                    min_value=float(parameter_data['min']),
-                    max_value=float(parameter_data['max']),
+                    initial=parameter_data['value'],
+                    min_value=parameter_data['min'],
+                    max_value=parameter_data['max'],
                 )
             else:
-                field = FloatField(initial=float(parameter_data['value']))
+                field = FloatField(initial=parameter_data['value'])
         elif parameter_data['value_type'] == 'integer':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
                 field = IntegerField(
                     widget=SliderInput(attrs=attrs),
-                    initial=int(parameter_data['value']),
-                    min_value=int(parameter_data['min']),
-                    max_value=int(parameter_data['max']),
+                    initial=parameter_data['value'],
+                    min_value=parameter_data['min'],
+                    max_value=parameter_data['max'],
                 )
             else:
-                field = IntegerField(initial=int(parameter_data['value']))
+                field = IntegerField(initial=parameter_data['value'])
         else:
             raise TypeError(
                 'Unknown value type "' + parameter_data['value_type'] +

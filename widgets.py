@@ -165,7 +165,14 @@ class SliderInput(NumberInput):
         super(SliderInput, self).__init__(attrs)
         self.step_size = step_size
 
+    def __get_precision(self):
+        try:
+            return len(str(self.step_size).split('.')[1])
+        except IndexError:
+            return 0
+
     def get_context(self, name, value, attrs):
         context = super(SliderInput, self).get_context(name, value, attrs)
         context['widget']['step_size'] = self.step_size
+        context['widget']['precision'] = self.__get_precision()
         return context
