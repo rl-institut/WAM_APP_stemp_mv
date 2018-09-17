@@ -11,6 +11,7 @@ from db_apps import oemof_results
 from stemp import oep_models
 
 ACTIVATED_VISUALIZATIONS = os.environ['ACTIVATED_VISUALIZATIONS'].split(',')
+STORE_LP_FILE = True
 
 SCENARIO_PATH = os.path.join('stemp', 'scenarios')
 SCENARIO_PARAMETERS = ConfigObj(

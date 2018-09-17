@@ -50,14 +50,19 @@ class ParameterForm(Form):
         elif parameter_data['value_type'] == 'float':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
                 step_size = parameter_data.get('step_size', "0.1")
+                min_value = float(parameter_data['min'])
+                min_value = (
+                    int(min_value)
+                    if int(min_value) == min_value else min_value
+                )
                 field = FloatField(
                     widget=SliderInput(
                         step_size=step_size,
                         attrs=attrs
                     ),
-                    initial=parameter_data['value'],
-                    min_value=parameter_data['min'],
-                    max_value=parameter_data['max'],
+                    initial=float(parameter_data['value']),
+                    min_value=min_value,
+                    max_value=float(parameter_data['max'])
                 )
             else:
                 field = FloatField(initial=parameter_data['value'])
@@ -65,12 +70,12 @@ class ParameterForm(Form):
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
                 field = IntegerField(
                     widget=SliderInput(attrs=attrs),
-                    initial=parameter_data['value'],
-                    min_value=parameter_data['min'],
-                    max_value=parameter_data['max'],
+                    initial=int(parameter_data['value']),
+                    min_value=int(parameter_data['min']),
+                    max_value=int(parameter_data['max'])
                 )
             else:
-                field = IntegerField(initial=parameter_data['value'])
+                field = IntegerField(initial=int(parameter_data['value']))
         else:
             raise TypeError(
                 'Unknown value type "' + parameter_data['value_type'] +

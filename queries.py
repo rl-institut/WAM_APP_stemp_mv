@@ -38,23 +38,60 @@ def insert_scenarios():
     basic_setup.upload_scenario_parameters()
 
 
-def insert_heat_demand():
+def get_coastdat_data(session, year, datatype, location):
     # Get temperature from coastdat dataset:
-    session = sqlahelper.get_session()
     query = coastdat.get_timeseries_join(session)
-    query = query.filter(coastdat.Year.year == 2014)
-    query = query.filter(coastdat.Datatype.name == 'T_2M')
+    query = query.filter(coastdat.Year.year == year)
+    query = query.filter(coastdat.Datatype.name == datatype)
     ts = query.order_by(
         func.ST_Distance(
             coastdat.Spatial.geom,
             func.Geometry(
                 func.ST_GeographyFromText(
-                    'POINT({} {})'.format(*LUETZOW_LON_LAT)
+                    'POINT({} {})'.format(*location)
                 )
             )
         )
     ).limit(1).first()
-    temperature = pandas.Series(ts.tsarray) - KELVIN
+    data = pandas.Series(ts.tsarray) - KELVIN
+    return data
+
+
+def insert_pv_and_temp():
+    session = sqlahelper.get_session()
+
+    temperature = get_coastdat_data(
+        session, year=2014, datatype='T_2M', location=LUETZOW_LON_LAT)
+    meta = {
+        'name': 'Temperature from year 2014 at Lützow (in Kelvin)',
+        'source': 'Coastdat'
+    }
+    temp = oep_models.OEPTimeseries(
+        name='Temperature',
+        meta=meta,
+        data=temperature
+    )
+    session.add(temp)
+
+    pv_feedin = pandas.read_csv(
+        os.path.join(os.path.dirname(__file__), 'scenarios', 'pv_feedin.csv'))
+    meta = {
+        'name': 'PV-Feedin from year 2014 at Lützow',
+        'source': 'RLI'
+    }
+    pv = oep_models.OEPTimeseries(
+        name='PV',
+        meta=meta,
+        data=pv_feedin['pv_feedin']
+    )
+    session.add(pv)
+    transaction.commit()
+
+
+def insert_heat_demand():
+    session = sqlahelper.get_session()
+    temperature = get_coastdat_data(
+        session, year=2014, datatype='T_2M', location=LUETZOW_LON_LAT)
 
     demand = pandas.DataFrame(
         index=pandas.date_range(
@@ -163,6 +200,11 @@ def create_questions_and_households():
             question_household.save()
 
 
+def delete_oep_tables():
+    oep_models.Base.metadata.drop_all()
+    transaction.commit()
+
+
 def create_oep_tables():
     oep_models.Base.metadata.create_all()
 
@@ -178,8 +220,11 @@ def delete_stored_simulations():
 
 
 if __name__ == '__main__':
+    # insert_pv_and_temp()
+    # delete_oep_tables()
     # create_oep_tables()
     delete_stored_simulations()
     # insert_heat_demand()
-    # insert_scenarios()
+    delete_scenarios()
+    insert_scenarios()
     # insert_dhw_timeseries()

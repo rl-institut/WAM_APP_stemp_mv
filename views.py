@@ -189,8 +189,9 @@ class TechnologyView(TemplateView):
     def get_context_data(self, session, **kwargs):
         context = super(TechnologyView, self).get_context_data(**kwargs)
         choices = (
-            ('bhkw_scenario', 'BHKW'),
-            ('pv_heatpump_scenario', 'PV + Wärmepumpe'),
+            ('gas_scenario', 'Gasheizung'),
+            ('bhkw_scenario', 'Blockheizkraftwerk (BHKW)'),
+            ('pv_heatpump_scenario', 'Photovoltaik (PV) + Wärmepumpe'),
             ('oil_scenario', 'Ölheizung')
         )
         context['technology'] = forms.ChoiceForm(

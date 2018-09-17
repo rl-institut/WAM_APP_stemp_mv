@@ -1,11 +1,12 @@
 
-import os
 import pandas
+import sqlahelper
 from copy import deepcopy
 
 from oemof.solph import Flow, Transformer, Investment, Source, Bus
 from oemof.tools.economics import annuity
 
+from stemp.oep_models import OEPTimeseries
 from stemp.scenarios import basic_setup
 from stemp.scenarios.basic_setup import AdvancedLabel
 
@@ -17,10 +18,12 @@ NEEDED_PARAMETERS['HP'] = ['lifetime', 'capex']
 
 
 def get_timeseries():
-    # FIXME: Get timeseries from open energy platform or elsewhere public
-    csv_path = 'timeseries.csv'
-    timeseries = pandas.read_csv(
-        os.path.join(os.path.dirname(__file__), csv_path))
+    session = sqlahelper.get_session()
+    temp = session.query(OEPTimeseries).filter_by(
+        name='Temperature').first().data
+    pv = session.query(OEPTimeseries).filter_by(
+        name='PV').first().data
+    timeseries = pandas.DataFrame({'temp': temp, 'pv': pv})
     return timeseries
 
 
@@ -48,29 +51,27 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     # Add electricity busses:
     sub_b_el = Bus(label=AdvancedLabel(
         f'b_{label}_el', type='Bus', belongs_to=label))
-    b_el_net = Bus(label=AdvancedLabel('b_el_net', type='Bus'))
+    b_el_net = Bus(label=AdvancedLabel('b_el_net', type='Bus'), balanced=False)
     energysystem.add(sub_b_el, b_el_net)
 
     # get investment parameters
     wacc = parameters['General']['wacc'] / 100
 
+    # Add heat pump:
     capex = parameters['HP']['capex']
     lifetime = parameters['HP']['lifetime']
-    epc_hp = annuity(capex, lifetime, wacc)
+    epc = annuity(capex, lifetime, wacc)
+    hp_invest = Investment(ep_costs=epc)
+    hp_invest.capex = capex
+    COP = cop_heating(timeseries['temp'], type_hp='air')
 
-    capex = parameters['PV']['capex']
-    lifetime = parameters['PV']['lifetime']
-    opex_fix = parameters['PV']['opex_fix']
-    epc_pv = annuity(capex, lifetime, wacc) + opex_fix
-
-    # Add heat pump:
-    COP = cop_heating(timeseries['temp'], type_hp='brine')
     hp = Transformer(
         label=AdvancedLabel(
             f"{label}_heat_pump", type='Transformer', belongs_to=label),
         inputs={
             sub_b_el: Flow(
-                investment=Investment(ep_costs=epc_hp)
+                investment=hp_invest,
+                co2_emissions=parameters['HP']['co2_emissions']
             )
         },
         outputs={sub_b_th: Flow()},
@@ -78,15 +79,37 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     )
 
     # Add pv system:
+    capex = parameters['PV']['capex']
+    lifetime = parameters['PV']['lifetime']
+    opex_fix = parameters['PV']['opex_fix']
+    epc = annuity(capex, lifetime, wacc) + opex_fix
+    pv_invest = Investment(ep_costs=epc)
+    pv_invest.capex = capex
     pv = Source(
         label=AdvancedLabel(f"{label}_pv", type='Source', belongs_to=label),
         outputs={
             sub_b_el: Flow(
                 actual_value=timeseries['pv'],
                 fixed=True,
-                investment=Investment(ep_costs=epc_pv)
+                investment=pv_invest,
+                co2_emissions=parameters['PV']['co2_emissions']
             )
         }
+    )
+
+    # Add transformer to get electricty from net for heat pump:
+    t_net_el = Transformer(
+        label=AdvancedLabel(
+            f'transformer_net_to_{label}_el',
+            type='Transformer',
+            belongs_to=label
+        ),
+        inputs={
+            b_el_net: Flow(
+                variable_costs=parameters['General']['net_costs']
+            )
+        },
+        outputs={sub_b_el: Flow()},
     )
 
     # Add transformer to feed in pv to net:
@@ -106,7 +129,8 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     energysystem.add(
         hp,
         pv,
-        t_pv_net
+        t_pv_net,
+        t_net_el
     )
 
 

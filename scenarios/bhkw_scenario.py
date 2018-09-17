@@ -93,8 +93,31 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
             sub_b_th: parameters[SHORT_NAME]['conversion_factor_th'] / 100
         }
     )
-    bhkw.co2_emissions = parameters[SHORT_NAME]['co2_emissions']
     energysystem.add(bhkw)
+
+    # Additional gas for peak load
+    capex = parameters['Gas']['capex']
+    lifetime = parameters['Gas']['lifetime']
+    epc = annuity(capex, lifetime, wacc)
+    invest = Investment(ep_costs=epc)
+    invest.capex = capex
+    gas_heating = Transformer(
+        label=AdvancedLabel(f'{label}_gas_heating', type='Transformer'),
+        inputs={
+            b_gas: Flow(
+                variable_costs=parameters['General']['gas_price'],
+                investment=invest,
+                co2_emissions=parameters['Gas']['co2_emissions']
+            )
+        },
+        outputs={
+            sub_b_th: Flow(variable_costs=parameters['Gas']['opex'])
+        },
+        conversion_factors={
+            sub_b_th: parameters['Gas']['efficiency'] / 100
+        }
+    )
+    energysystem.add(gas_heating)
 
 
 def add_dynamic_parameters(scenario, parameters):

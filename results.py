@@ -124,15 +124,29 @@ class Strategy(object):
         # TODO: Export label mappings into cfg or scenario
         if isinstance(nodes, str):
             return nodes
-        if scenario == 'bhkw_scenario':
-            if nodes[1] is not None and nodes[1].name.endswith('chp'):
-                return 'BHKW'
-        elif scenario == 'oil_scenario':
-            if nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
-                return 'Ölkessel'
-            elif nodes[0] is not None and nodes[0].name.endswith('oil_heating'):
-                return 'Ölkessel'
-        return nodes
+        if nodes[1] is not None and nodes[1].name.endswith('chp'):
+            return 'BHKW'
+        elif nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
+            return 'Ölkessel'
+        elif (
+                nodes[0] is not None and
+                nodes[0].name.endswith('oil_heating')
+        ):
+            return 'Ölkessel'
+        elif nodes[1] is not None and nodes[1].name.endswith('gas_heating'):
+            return 'Gasheizung'
+        elif (
+                nodes[0] is not None and
+                nodes[0].name.endswith('gas_heating')
+        ):
+            return 'Gasheizung'
+        elif nodes[1] is not None and nodes[1].name.endswith('heat_pump'):
+            return 'Wärmepumpe'
+        elif nodes[0] is not None and nodes[0].name.endswith('pv'):
+            return 'PV'
+        elif nodes[0] is not None and nodes[0].name.endswith('net'):
+            return 'Netzkosten'
+        return '-'.join(map(str, nodes))
 
     def _get_data(self, result):
         data = result.analysis.get_analyzer(self.analyzer).result
@@ -181,18 +195,23 @@ class LCOEStrategy(Strategy):
     def _get_suffix(scenario, nodes):
         if isinstance(nodes, str):
             return nodes
-        if scenario == 'bhkw_scenario':
-            if nodes[1] is not None and nodes[1].name.endswith('chp'):
-                return ' (Gas)'
-        elif scenario == 'oil_scenario':
-            if nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
-                return ' (Öl)'
-            elif (
-                    nodes[0] is not None and
-                    nodes[0].name.endswith('oil_heating')
-            ):
-                return ' (OPEX)'
-        return nodes
+        if nodes[1] is not None and nodes[1].name.endswith('chp'):
+            return ' (Gas)'
+        elif nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
+            return ' (Öl)'
+        elif (
+                nodes[0] is not None and
+                nodes[0].name.endswith('oil_heating')
+        ):
+            return ' (OPEX)'
+        elif nodes[1] is not None and nodes[1].name.endswith('gas_heating'):
+            return ' (Gas)'
+        elif (
+                nodes[0] is not None and
+                nodes[0].name.endswith('gas_heating')
+        ):
+            return ' (OPEX)'
+        return ''
 
 
 class TotalDemandStrategy(Strategy):

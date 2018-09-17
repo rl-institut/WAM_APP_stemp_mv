@@ -10,6 +10,7 @@ from oemof.tools import helpers
 
 try:
     from wam.settings import BASE_DIR
+    from stemp.app_settings import STORE_LP_FILE
 except KeyError:
     logging.warning(
         'Could not find wam settings. '
@@ -107,16 +108,15 @@ def get_simulation_function(scenario_module):
 
 
 def default_simulate_fct(
-        energysystem, solver='cbc', debug=False, tee_switch=True,
-        keep=True):
+        energysystem, solver='cbc', tee_switch=True, keep=True):
     # create Optimization model based on energy_system
     logging.info("Create optimization problem")
     om = Model(energysystem=energysystem)
 
     # if debug is true an lp-file will be written
-    if debug:
+    if STORE_LP_FILE:
         filename = os.path.join(
-            helpers.extend_basic_path('lp_files'), 'storage_invest.lp')
+            helpers.extend_basic_path('lp_files'), 'kopernikus.lp')
         logging.info('Store lp-file in {0}.'.format(filename))
         om.write(filename, io_options={'symbolic_solver_labels': True})
 
