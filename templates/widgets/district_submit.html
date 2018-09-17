@@ -1,11 +1,13 @@
 
-<button type="submit" class="cell medium-10 medium-offset-1 large-8 large-offset-2 card-thin card-thin--empty" name="{{widget.name}}" value="{{widget.value}}">
-  <div class="grid-x">
-    <div class="cell small-2">
-      <i class ="icon ion-plus icon--small"></i>
+<div class="cell">
+  <button type="submit" class="card-medium card-medium--empty" name="{{widget.name}}" value="{{widget.value}}">
+    <div class="grid-x">
+      <div class="cell small-2">
+        <i class ="icon ion-plus icon--small"></i>
+      </div>
+      <div class="cell small-9 small-offset-1 card-medium--empty__text">
+        {{widget.value}}
+      </div>
     </div>
-    <div class="cell small-9 small-offset-1 card-thin--empty__text">
-      {{widget.value}}
-    </div>
-  </div>
-</button>
+  </button>
+</div>

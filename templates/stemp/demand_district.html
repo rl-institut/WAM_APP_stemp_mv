@@ -32,25 +32,31 @@
       <form class="grid-x scen-create__form" method="post" id="district">
         {% csrf_token %}
         <input type="hidden" name="district_name" id="district_name" value="">
-        <input type="hidden" name="district_status" value={{district_status}}>
+        <input type="hidden" name="district_status" id="district_status" value="{{district_status}}">
 
-        <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 scen-create__form-header">
+        <div class="cell medium-10 medium-offset-1 scen-create__form-header">
           <h3>{{demand_name|default:"Neues Viertel"}}</h3>
-          <div class="icon-save">
-            <a href="#">
-              <img src="{% static 'stemp/img/icons_custom/Enavi_Save_1.svg' %}" alt="Als Szenario speichern" title="Als Szenario speichern">
-            </a>
-          </div>
+          <!--<div class="icon-save">-->
+            <!--<a href="#" onclick="district_submit()">-->
+              <!--<img src="{% static 'stemp/img/icons_custom/Enavi_Save_1_ungültig.svg' %}" alt="Speichern" title="Als Szenario speichern">-->
+            <!--</a>-->
+          <!--</div>-->
           <div class="icon-load">
             <a data-open="load_modal">
-              <img src="{% static 'stemp/img/icons_custom/Enavi_Upload.svg' %}" alt="Gespeichertes Szenario laden" title="Gespeichertes Szenario laden">
+              <img src="{% static 'stemp/img/icons_custom/Enavi_Upload_ungültig.svg' %}" alt="Gespeichertes Viertel laden" title="Gespeichertes Szenario laden">
             </a>
           </div>
         </div>
 
-        {% for field in district_form %}
-          {{field}}
-        {% endfor %}
+        <div class="cell large-10 large-offset-1 card-medium">
+          <div class="grid-container">
+            <div class="grid-x grid-padding-x small-up-1 medium-up-2">
+              {% for field in district_form %}
+                {{field}}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
 
         {% url 'stemp:demand_selection' as back_url%}
 
@@ -100,6 +106,9 @@
   }
   function district_save() {
     $("#district").submit();
+  }
+  function district_changed() {
+    $("#district_status").val("changed");
   }
 </script>
 {% endblock %}
