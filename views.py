@@ -150,7 +150,7 @@ class DemandDistrictView(TemplateView):
 
     @check_session
     def post(self, request, session):
-        if 'add_household' in request.POST:
+        if 'add_household' in request.POST or 'trash' in request.POST:
             return self.__change_district_list(request, session)
         elif 'load_district' in request.POST:
             session.demand_id = request.POST['district']
