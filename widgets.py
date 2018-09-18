@@ -146,7 +146,40 @@ class DistrictSubmitWidget(Widget):
 
 
 class TechnologyWidget(CheckboxSelectMultiple):
+    """
+    From: https://www.abidibo.net/blog/2017/10/16/add-data-attributes-option-
+    tags-django-admin-select-field/
+    """
     template_name = 'widgets/technology.html'
+
+    def __init__(self, attrs=None, choices=(), information=None):
+        super(TechnologyWidget, self).__init__(attrs, choices)
+        self.information = {} if information is None else information
+
+    def create_option(
+            self,
+            name,
+            value,
+            label,
+            selected,
+            index,
+            subindex=None,
+            attrs=None
+    ):
+        option = super(TechnologyWidget, self).create_option(
+            name,
+            value,
+            label,
+            selected,
+            index,
+            subindex=None,
+            attrs=None
+        )
+        data = self.information.get(value, {})
+        for k, v in data.items():
+            option['attrs'][k] = v
+
+        return option
 
 
 class SubmitWidget(Widget):

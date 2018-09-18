@@ -9,7 +9,9 @@ from django.forms import (
 
 from stemp.fields import HouseholdField, SubmitField
 from stemp.widgets import (
-    DynamicSelectWidget, DynamicRadioWidget, SliderInput, DistrictSubmitWidget)
+    DynamicSelectWidget, DynamicRadioWidget, SliderInput, DistrictSubmitWidget,
+    TechnologyWidget
+)
 from stemp.models import (
     LoadProfile, Household, Simulation, District, Question)
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -30,7 +32,25 @@ class ChoiceForm(Form):
             label=label,
             choices=choices,
             initial=initial,
-            widget=widget(attrs=attrs)
+            widget=widget(attrs=attrs),
+        )
+
+
+class TechnologyForm(Form):
+    def __init__(
+            self, name, label=None, choices=None,
+            initial=None, information=None, *args, **kwargs
+    ):
+        super(TechnologyForm, self).__init__(*args, **kwargs)
+        choices = [] if choices is None else choices
+        label = label if label is not None else name
+        attrs = {'class': 'btn btn-default'}
+        information = {} if information is None else information
+        self.fields[name] = MultipleChoiceField(
+            label=label,
+            choices=choices,
+            initial=initial,
+            widget=TechnologyWidget(attrs=attrs, information=information),
         )
 
 

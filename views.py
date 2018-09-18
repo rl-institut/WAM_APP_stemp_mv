@@ -2,17 +2,12 @@
 import pandas
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
-from django. forms import MultipleChoiceField
 
 from wam.settings import SESSION_DATA
 from stemp.app_settings import LABELS, ACTIVATED_VISUALIZATIONS
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
-from stemp import results
-from stemp import models
-from stemp import forms
-from stemp.widgets import TechnologyWidget
-from stemp import visualizations
+from stemp import results, models, forms, visualizations
 
 
 def check_session(func):
@@ -194,13 +189,36 @@ class TechnologyView(TemplateView):
             ('pv_heatpump_scenario', 'Photovoltaik (PV) + Wärmepumpe'),
             ('oil_scenario', 'Ölheizung')
         )
-        context['technology'] = forms.ChoiceForm(
+        technology_information = {
+            'bhkw_scenario': {
+                'image': '/stemp/img/BHKW_Bild.svg',
+                'description': """
+                <p>Ein Blockheizkraftwerk (BHKW) ist eine Anlage die mittels Prinzip der Kraft-Wärme-Kopplung gleichzeitig Strom und Wärme produzieren kann. </p>
+                <ol>
+                  <li>Brennstoff (Öl, Gas, Holzpellets) fließt in den Motor hinein und wird dort verbrannt. Bei der Verbrennung wird die (mechanische) Bewegungsenergie produziert, um den Generator anzutreiben. Gleichzeitig wird auch Abwärme produziert. Der Generator wandelt die Bewegungsenergie in Strom um, der direkt genutzt werden kann. </li>
+                  <li>Die durch den Motor fließende Kühlflüssigkeit wird durch Wärme aus dem Abgas weiter erhitzt und so auf ein noch höheres Temperaturniveau gebracht. </li>
+                  <li>Das nun erhitzte Wasser kann in einem Plattenwärmetauscher die Wärme an das Heizungssystem abgeben. </li>
+                </ol>
+                """
+            },
+            'pv_heatpump_scenario': {
+                'image': 'stemp/img/Waermepumpe_Bild.svg',
+                'description': """
+                <p>Eine Wärmepumpe ist eine mit Strom betriebene Maschine. Durch eine Photovoltaik-Anlage kann der nachhaltige Betrieb der Pumpe erhöht werden. Im Kreislauf der Wärmepumpe zirkuliert ein Kältemittel.</p>
+                <ol>
+                  <li>Die Umweltenergie (Luft, Erde und Wasser als Energiequelle) wird vom Wärmetauscher (Verdampfer) genutzt um das Kältemittel zu erwärmen. </li>
+                  <li>Der dabei entstehende Kältemitteldampf wird im Verdichter durch die Komprimierung auf ein höheres Temperaturniveau gebracht und ist jetzt sehr heiß.</li>
+                  <li>Die Wärme des heißen Dampfes wird im Verflüssiger an das Heizungswasser abgegeben und kühlt im Behälter ab. Das Kältemittel ist wieder flüssig.</li>
+                  <li>Im letzten Schritt wird das verflüssigte Kältemittel durch das Expansionsventil erneut gekühlt. Anschließend wird es in den Verdampfer zurückgeführt.</li>
+                </ol>
+                """
+            }
+        }
+        context['technology'] = forms.TechnologyForm(
             'technology',
             'Technology',
             choices=choices,
-            field=MultipleChoiceField,
-            widget=TechnologyWidget,
-            submit_on_change=False
+            information=technology_information
         )
         context['demand_type'] = str(session.demand_type.value)
         context['demand_label'] = session.demand_type.label()

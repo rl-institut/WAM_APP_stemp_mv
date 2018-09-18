@@ -1,4 +1,6 @@
 
+{% load staticfiles %}
+
 {% for group, options, index in widget.optgroups %}
   {% for option in options %}
     <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 u-text--left">
@@ -7,9 +9,25 @@
         <input type="checkbox" name="{{option.name}}" value="{{option.value}}" id="{{option.attrs.id}}">
         <span class="checkmark"></span>
       </label>
-      <span data-tooltip title="Informationen zur Technologie" class="has-tip--no-border">
-        <i class ="icon ion-information-circled icon--small info-box"></i>
+      <span class="has-tip--no-border">
+        <i data-open="modal-{{option.value}}" class ="icon ion-information-circled icon--small info-box" title="Hier klicken für mehr Informationen zum {{option.label}}"></i>
       </span>
+      <div class="reveal" id="modal-{{option.value}}" data-reveal>
+        <div class="grid-x technology">
+          <div class="cell technology__header">
+            <h2 style="font-size: 1.2rem">{{option.label}}</h2>
+          </div>
+          <div class="cell technology__img">
+            <img src="{% static option.attrs.image %}">
+          </div>
+          <div class="cell technology__text">
+            {{option.attrs.description|safe}}
+          </div>
+        </div>
+        <button class="close-button" data-close aria-label="Schließen" type="button">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
     </div>
   {% endfor %}
 {% endfor %}
