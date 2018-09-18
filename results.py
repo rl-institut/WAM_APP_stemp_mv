@@ -296,7 +296,11 @@ VISUALIZATIONS = {
     ),
     'size': Visualization(
         SizeStrategy(),
-        visualizations.HCStemp(title='Optimierte Größen', stacked=True)
+        visualizations.HCStemp(
+            title='Installierte Leistungen',
+            subtitle='kW',
+            stacked=True
+        )
     ),
     'demand': Visualization(
         TotalDemandStrategy(),
@@ -304,7 +308,11 @@ VISUALIZATIONS = {
     ),
     'co2': Visualization(
         CO2Strategy(),
-        visualizations.HCStemp(title='CO2-Verbrauch', stacked=True)
+        visualizations.HCStemp(
+            title='CO2-Verbrauch',
+            subtitle='g/kWh',
+            stacked=True
+        )
     ),
     'profile': Visualization(
         ProfileStrategy(),
