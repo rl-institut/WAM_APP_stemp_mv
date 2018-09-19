@@ -4,9 +4,9 @@
 {% for group, options, index in widget.optgroups %}
   {% for option in options %}
     <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 u-text--left">
-      <label class="container" for="{{option.attrs.id}}">
+      <label class="container" for="{{option.name}}_{{option.index}}">
         {{option.label}}
-        <input type="checkbox" name="{{option.name}}" value="{{option.value}}" id="{{option.attrs.id}}">
+        <input type="checkbox" name="{{option.name}}" value="{{option.value}}" id="{{option.name}}_{{option.index}}">
         <span class="checkmark"></span>
       </label>
       <span class="has-tip--no-border">
