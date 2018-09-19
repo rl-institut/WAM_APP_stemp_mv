@@ -140,7 +140,7 @@ def add_dynamic_parameters(scenario, parameters):
     elif 100 <= bhkw_size < 1000:
         capex = 4.907 * bhkw_size ** -0.352 * 1e3
     elif 1000 <= bhkw_size < 19000:
-        capex = 460.89 * bhkw_size ** -0.015 * 1e3
+        capex = 460.89 * bhkw_size ** -0.015
     else:
         raise IndexError(f'No BHKW-capex found for size {bhkw_size}kW')
 
