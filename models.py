@@ -120,7 +120,10 @@ class District(models.Model):
 
     def annual_heat_demand(self):
         return sum(
-            [hh.annual_heat_demand() for hh in self.household_set.all()]
+            [
+                dh.household.annual_heat_demand() * dh.amount
+                for dh in self.districthouseholds_set.all()
+            ]
         )
 
 
