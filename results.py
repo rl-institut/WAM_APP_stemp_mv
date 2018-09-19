@@ -126,6 +126,12 @@ class Strategy(object):
             return nodes
         if nodes[1] is not None and nodes[1].name.endswith('chp'):
             return 'BHKW'
+        elif nodes[0].name.endswith('chp'):
+            return 'BHKW (Stromgutschrift)'
+        elif nodes[0].name.startswith('b_bhkw_el') and nodes[1] is not None and nodes[1].name.startswith('transformer_from'):
+            return 'BHKW (Stromgutschrift)'
+        elif nodes[1] is not None and nodes[1].name.startswith('transformer_from'):
+            return 'PV (Stromgutschrift)'
         elif nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
             return 'Ölkessel'
         elif (
@@ -145,7 +151,7 @@ class Strategy(object):
         elif nodes[0] is not None and nodes[0].name.endswith('pv'):
             return 'PV'
         elif nodes[0] is not None and nodes[0].name.endswith('net'):
-            return 'Netzkosten'
+            return 'Stromkosten'
         return '-'.join(map(str, nodes))
 
     def _get_data(self, result):
@@ -183,9 +189,9 @@ class LCOEStrategy(Strategy):
         filtered_data = {}
         for k, v in data.items():
             new_label = self._get_label(result.scenario.name, k)
-            if v.investment > 0.0:
+            if abs(v.investment) > 0.001:
                 filtered_data[new_label + ' (Investment)'] = v.investment
-            if v.variable_costs > 0.0:
+            if abs(v.variable_costs) > 0.001:
                 filtered_data[
                     new_label + self._get_suffix(result.scenario.name, k)
                 ] = v.variable_costs
