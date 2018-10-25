@@ -89,8 +89,6 @@ class DistrictHouseholds(models.Model):
 
 class Household(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    districts = models.ManyToManyField(
-        'District', through='DistrictHouseholds')
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
 
     def __str__(self):
@@ -107,6 +105,8 @@ class Household(models.Model):
 
 class District(models.Model):
     name = models.CharField(max_length=255)
+    households = models.ManyToManyField(
+        'Household', through='DistrictHouseholds')
 
     def __str__(self):
         return self.name

@@ -65,6 +65,6 @@ class OEPTimeseries(Base):
     __table_args__ = {'schema': SCHEMA}
 
     id = Column(BIGINT, primary_key=True)
-    name = Column(VARCHAR(50), unique=True)
+    name = Column(VARCHAR(50))
     meta = Column(JSON)
     data = Column(ARRAY(FLOAT))
