@@ -5,6 +5,27 @@ from enum import Enum, IntEnum
 
 TIME_INDEX = [str(i + 1) + 'h' for i in range(24)]
 
+KELVIN = 273.15
+ENERGY_PER_LITER = 0.058
+QM_PER_PERSON = 44
+ENERGY_PER_QM_PER_YEAR = {'EFH': 90, 'MFH': 70}
+LOCATION = (11.181475, 53.655119)  # Lützow (lon,lat)
+
+DEFAULT_NUMBER_OF_PERSONS = 2
+DEFAULT_LITER_PER_DAY = 44
+
+EFH = ('EFH', 'Heat Demand EFH')
+MFH = ('MFH', 'Heat Demand MFH')
+HOUSE_TYPES = (
+    (EFH[0], 'Einfamilienhaus'),
+    (MFH[0], 'Mehrfamilienhaus')
+)
+
+HEAT_TYPES = (
+    ('radiator', 'Heizkörper'),
+    ('floor', 'Fussbodenheizung')
+)
+
 
 class DemandType(IntEnum):
     Single = 0

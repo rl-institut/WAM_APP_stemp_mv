@@ -42,11 +42,10 @@ class DemandSingleView(TemplateView):
             labels = LABELS['demand_single']['Single']
         return labels
 
-    def get_context_data(self, hh_proposal=None):
+    def get_context_data(self):
         context = super(DemandSingleView, self).get_context_data()
-        context['specific_form'] = forms.HouseholdQuestionsForm()
+        context['household_form'] = forms.HouseholdForm()
         context['list_form'] = forms.HouseholdSelectForm()
-        context['new_form'] = hh_proposal
         context['labels'] = self.get_labels()
         context['is_district_hh'] = self.is_district_hh
         return context
@@ -54,7 +53,6 @@ class DemandSingleView(TemplateView):
     def get(self, request, *args, **kwargs):
         # Start session (if no session yet):
         SESSION_DATA.start_session(request)
-        request.session.modified = True
         session = SESSION_DATA.get_session(request)
         session.demand_type = (
             DemandType.District if self.is_district_hh else DemandType.Single)
@@ -65,27 +63,22 @@ class DemandSingleView(TemplateView):
     @check_session
     def post(self, request, session):
         hh_id = None
-        if 'questions' in request.POST:
-            hh_questions = forms.HouseholdQuestionsForm(request.POST)
-            if hh_questions.is_valid():
-                proposal_form = hh_questions.hh_proposal()
-                context = self.get_context_data(proposal_form)
-                return self.render_to_response(context)
-        elif 'new' in request.POST:
-            hh_id = models.Household.objects.get(name=request.POST['name']).id
-        elif 'new_save' in request.POST:
+        form = request.POST['form']
+        if form == 'house':
             hh_form = forms.HouseholdForm(request.POST)
             if hh_form.is_valid():
                 hh = hh_form.save()
-                question = models.Question.objects.get(
-                    pk=request.POST['question_id'])
-                qh = models.QuestionHousehold(question=question, household=hh)
-                qh.save()
                 hh_id = hh.id
-        elif 'list' in request.POST:
+            else:
+                context = self.get_context_data()
+                context['household_form'] = hh_form
+                return self.render_to_response(context)
+        elif form == 'list':
             hh = forms.HouseholdSelectForm(request.POST)
             if hh.is_valid():
                 hh_id = hh.cleaned_data['profile'].id
+        else:
+            raise ValueError(f'Unknown value "{form}" detected')
 
         if self.is_district_hh:
             session.current_district[str(hh_id)] = 1
@@ -220,7 +213,7 @@ class TechnologyView(TemplateView):
             choices=choices,
             information=technology_information
         )
-        context['demand_type'] = str(session.demand_type.value)
+        context['demand_type'] = session.demand_type.suffix()
         context['demand_label'] = session.demand_type.label()
         context['demand_name'] = session.get_demand_name()
         return context

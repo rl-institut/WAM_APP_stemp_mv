@@ -7,6 +7,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.postgres.fields import ArrayField, JSONField
 
 from utils.highcharts import Highchart
+from stemp import constants
 
 
 class Parameter(models.Model):
@@ -88,18 +89,59 @@ class DistrictHouseholds(models.Model):
 
 
 class Household(models.Model):
+    timeseries = None
+
     name = models.CharField(max_length=255, unique=True)
+    house_type = models.CharField(
+        max_length=3,
+        choices=constants.HOUSE_TYPES,
+        default='EFH',
+        verbose_name='Haustyp'
+    )
     heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
+    number_of_persons = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    square_meters = models.IntegerField(verbose_name='Quadratmeter')
+    heat_type = models.CharField(
+        choices=constants.HEAT_TYPES,
+        default='radiator',
+        max_length=10,
+        verbose_name='Heizungsmodell'
+    )
+    warm_water_per_day = models.IntegerField()
+
+    def get_oep_timeseries(self, name):
+        if self.timeseries is None:
+            from stemp import oep_models
+            session = sqlahelper.get_session()
+            keys = ('Hot Water Energy', constants.EFH[1], constants.MFH[1])
+            for name in keys:
+                self.timeseries[name] = pandas.Series(
+                    session.query(oep_models.OEPTimeseries).filter_by(
+                        name=name
+                    ).first().data)
+        return self.timeseries[name]
+
+    def get_heat_demand_profile(self):
+        if self.house_type == constants.EFH[0]:
+            return self.get_oep_timeseries(constants.EFH[1])
+        elif self.house_type == constants.MFH[0]:
+            return self.get_oep_timeseries(constants.MFH[1])
+
+    def get_hot_water_profile(self):
+        return (
+            self.get_oep_timeseries('Hot Water Energy') *
+            self.number_of_persons
+        )
 
     def __str__(self):
-        text = self.name
-        return text
+        return self.name
 
     def annual_heat_demand(self):
-        question = self.question_household.question
         return (
-                self.heat_demand * question.get_heat_demand_profile() +
-                question.get_hot_water_profile()
+                self.heat_demand * self.get_heat_demand_profile() +
+                self.get_hot_water_profile()
         )
 
 
@@ -125,63 +167,3 @@ class District(models.Model):
                 for dh in self.districthouseholds_set.all()
             ]
         )
-
-
-class Question(models.Model):
-    number_of_persons = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
-    )
-    EFH = ('EFH', 'Heat Demand EFH')
-    MFH = ('MFH', 'Heat Demand EFH')
-    HOUSE_TYPES = (
-        (EFH[0], 'Einfamilienhaus'),
-        (MFH[0], 'Mehrfamilienhaus')
-    )
-    house_type = models.CharField(
-        max_length=3, choices=HOUSE_TYPES, default='EFH')
-
-    class Meta:
-        unique_together = ('number_of_persons', 'house_type')
-
-    # Hot water and demand are accessed only once:
-    oep_init_done = False
-    timeseries = {}
-
-    def get_oep_timeseries(self):
-        from stemp import oep_models
-        session = sqlahelper.get_session()
-        for name in ('Hot Water Energy', self.EFH[1], self.MFH[1]):
-            self.timeseries[name] = pandas.Series(
-                session.query(oep_models.OEPTimeseries).filter_by(
-                    name=name
-                ).first().data)
-
-    def get_heat_demand_profile(self):
-        if not self.oep_init_done:
-            self.get_oep_timeseries()
-        if self.house_type == self.EFH[0]:
-            return self.timeseries[self.EFH[1]]
-        elif self.house_type == self.MFH[0]:
-            return self.timeseries[self.MFH[1]]
-
-    def get_hot_water_profile(self):
-        if not self.oep_init_done:
-            self.get_oep_timeseries()
-        return self.timeseries['Hot Water Energy'] * self.number_of_persons
-
-    def __str__(self):
-        return self.house_type + f', {self.number_of_persons} persons'
-
-
-class QuestionHousehold(models.Model):
-    question = models.ForeignKey(
-        Question,
-        on_delete=models.CASCADE,
-        related_name='question_household'
-    )
-    household = models.OneToOneField(
-        Household,
-        on_delete=models.CASCADE,
-        related_name='question_household',
-    )
-    default = models.BooleanField(default=False)

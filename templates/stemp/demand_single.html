@@ -1,6 +1,7 @@
 {% extends "stemp/base.html" %}
 
 {% load staticfiles %}
+{% load crispy_forms_tags %}
 
 {% block body-class %}u-vh--100{% endblock %}
 
@@ -37,7 +38,48 @@
 
         <!-- FORM START -->
         <div class="cell u-text--left">
-          {% include 'includes/household_selection.html' %}
+          <div class="grid-x" id="tabs">
+            <div class="cell medium-10 medium-offset-1 large-8 large-offset-2">
+              <h4>Einen Haushalt erstellen</h4>
+            </div>
+            <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 tabs-btn">
+              <ul>
+                <li>
+                  <a href="#tabs-1">
+                    <button type="button" class="button tabs-btn--left active" id="quarterCustomBtn">Benutzerdefiniert</button>
+                  </a>
+                </li>
+                <li>
+                  <a href="#tabs-2">
+                    <button type="button" class="button tabs-btn--right not-active" id="quarterListBtn">Aus Liste</button>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- QUESTIONS START -->
+            <div class="cell large-8 large-offset-2 reveal-house__questions scen-padding-btm" id="tabs-1">
+              <form method="post" id="household_form" class="reveal-house__questions-form">
+                {% csrf_token %}
+                {% crispy household_form %}
+                <input type="hidden" value="house" name="form">
+              </form>
+            </div>
+            <!-- QUESTIONS END -->
+
+            <!-- LIST START -->
+            <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 reveal-house__list" id="tabs-2">
+              <div class="grid-x">
+                <form method="post" id="list" class="reveal-house__list-form">
+                  {% csrf_token %}
+                  {% crispy list_form %}
+                  <input type="hidden" value="list" name="form">
+                </form>
+              </div>
+            </div>
+            <!-- LIST END -->
+
+          </div>
         </div>
         <!-- FORM END -->
 
@@ -54,19 +96,8 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="{% static 'jquery.js' %}"></script>
   <script language="JavaScript">
   $(document).ready(function() {
-    // Scrolls to household-form after question was submitted:
-    if ( $( "#household-name" ).length ) {
-      $('html, body').animate(
-        {
-          scrollTop: ($('#household-name').offset().top)
-        },
-        500
-      );
-    }
-
     // Allows one submit button for forms in both tabs:
     $("#done").click(function() {
       if ($("#tabs-1").attr("aria-hidden") == "true") {
@@ -75,45 +106,7 @@
         $("#household_form").submit();
       }
     });
-
-    // Disables "done" button if no question was submitted
-    {% if not new_form %}
-    $("#quarterListBtn").click(function() {
-      $("#done").attr("disable", false);
-    });
-    $("#quarterCustomBtn").click(function() {
-      $("#done").attr("disable", true);
-    });
-    {% endif %}
-
-    // Changes question button text:
-    {% if new_form %}
-      var changed = false;
-      $("#household_form :input").on('input', function() {
-        if (! changed) {
-          changed = true;
-          enable_saving_mode();
-        }
-      });
-
-      function enable_saving_mode() {
-        $("input[name=new]").attr("name", "new_save");
-        $("input[name=name]").prop("readonly", false);
-
-        $.ajax(
-          {
-            url: "{% url 'stemp:household_name' %}",
-            data: {
-              'hh_name': $("input[name=name]").attr("value")
-            },
-            dataType: 'json',
-            success: function (result) {
-              $("input[name=name]").attr("value", result.next)
-            }
-          }
-        );
-      };
-    {% endif %}
   });
   </script>
+  {{household_form.media}}
 {% endblock %}

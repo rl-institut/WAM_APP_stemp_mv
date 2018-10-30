@@ -38,9 +38,8 @@
 
         <form class="cell medium-10 medium-offset-1 large-8 large-offset-2" id="parameter_form" action="{% url 'stemp:parameter' %}" method="post">
           {% csrf_token %}
-          {% include "forms/parameter_form.html" with form=parameter_form %}
+          {% crispy parameter_form %}
           <input type="hidden" name="scenario" value="{{scenario}}">
-          <!--<input class="btn btn-default" type="submit" value="Parameter laden" name="load">-->
         </form>
 
         {% url 'stemp:technology' as back_url%}

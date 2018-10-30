@@ -1,20 +1,22 @@
 
 from collections import defaultdict, OrderedDict
 from itertools import chain
+
 from django.forms import (
     Form, ChoiceField, IntegerField, Select, CharField, FloatField,
     BooleanField, MultipleChoiceField, CheckboxSelectMultiple, ModelForm,
-    ModelChoiceField
+    ModelChoiceField, NumberInput
 )
+from crispy_forms.helper import FormHelper
 
+from stemp import constants
 from stemp.fields import HouseholdField, SubmitField
 from stemp.widgets import (
     DynamicSelectWidget, DynamicRadioWidget, SliderInput, DistrictSubmitWidget,
     TechnologyWidget
 )
 from stemp.models import (
-    LoadProfile, Household, Simulation, District, Question)
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+    LoadProfile, Household, Simulation, District)
 
 
 class ChoiceForm(Form):
@@ -106,6 +108,8 @@ class ParameterForm(Form):
 
     def __init__(self, parameters, data=None, *args, **kwargs):
         super(ParameterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.template = 'forms/parameter_form.html'
 
         field_order = OrderedDict()
         for scenario, scenario_data in parameters:
@@ -169,40 +173,37 @@ class LoadProfileForm(Form):
     )
 
 
-class HouseholdQuestionsForm(Form):
+class HouseholdForm(ModelForm):
     number_of_persons = IntegerField(
         widget=SliderInput(
             attrs={
-                'class': 'input input--s',
-                'id': 'hh_question_count'
+                'id': 'number_of_persons'
             }
         ),
         label='Anzahl Personen im Haushalt',
-        initial=2,
+        initial=constants.DEFAULT_NUMBER_OF_PERSONS,
         max_value=10,
         min_value=1,
     )
-    house_type = ChoiceField(
-        label='Haushaltstyp',
-        choices=Question.HOUSE_TYPES,
-    )
 
-    def hh_proposal(self):
-        if self.data is not None:
-            question = Question.objects.get(**self.cleaned_data)
-            qh = question.question_household.filter(default=True)
-            if len(qh) == 0:
-                raise ObjectDoesNotExist(
-                    'No household connected to current question with data:\n' +
-                    str(self.cleaned_data)
-                )
-            elif len(qh) > 1:
-                raise MultipleObjectsReturned(
-                    'Multiple default households connected to current '
-                    'question with data:\n' + str(self.cleaned_data)
-                )
-            return HouseholdForm(
-                question_id=question.id, instance=qh.first().household)
+    class Meta:
+        model = Household
+        fields = '__all__'
+        widgets = {'heat_demand': NumberInput(attrs={'readonly': True})}
+
+    class Media:
+        js = ('stemp/js/household.js',)
+
+    def __init__(self, *args, **kwargs):
+        kwargs['initial'] = {
+            'square_meters': (
+                constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON
+            ),
+            'warm_water_per_day': constants.DEFAULT_LITER_PER_DAY
+        }
+        super(HouseholdForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.template = 'forms/household_form.html'
 
 
 class HouseholdSelectForm(Form):
@@ -211,6 +212,11 @@ class HouseholdSelectForm(Form):
         label='Haushalt auswählen',
         initial=0,
     )
+
+    def __init__(self, *args, **kwargs):
+        super(HouseholdSelectForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.template = 'forms/household_list_form.html'
 
 
 class DistrictSelectForm(Form):
@@ -280,21 +286,6 @@ class DistrictListForm(Form):
             label="",
             initial='Haushalt hinzufügen'
         )
-
-
-class HouseholdForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        self.question_id = kwargs.pop('question_id', None)
-        super(HouseholdForm, self).__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs['placeholder'] = "Name vom Haushalt"
-        self.fields['name'].widget.attrs['readonly'] = True
-        self.fields['name'].widget.attrs['class'] = 'input - group - field'
-        self.fields['name'].widget.attrs['id'] = 'household-name'
-        self.fields['heat_demand'].widget.attrs['class'] = 'input-group-field'
-
-    class Meta:
-        model = Household
-        exclude = ['districts']
 
 
 class DistrictForm(ModelForm):

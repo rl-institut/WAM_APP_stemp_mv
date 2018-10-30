@@ -41,7 +41,6 @@ class Migration(migrations.Migration):
                 ('load_demand', models.FloatField(verbose_name='Jährlicher Strombedarf')),
                 ('heat_demand', models.FloatField(verbose_name='Jährlicher Wärmebedarf')),
                 ('district', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.District')),
-                ('heat_profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.HeatProfile')),
             ],
         ),
         migrations.CreateModel(

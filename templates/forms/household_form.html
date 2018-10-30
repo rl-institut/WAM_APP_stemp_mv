@@ -1,5 +1,41 @@
+{% load staticfiles %}
 
 <div class="grid-x">
+  <div class="cell medium-10 medium-offset-1">
+    <label for="{{form.number_of_persons.id_for_label}}" class="form__label">{{form.number_of_persons.label}}</label>
+    {{form.number_of_persons.errors}}
+    {{form.number_of_persons}}
+  </div>
+  <div class="cell medium-10 medium-offset-1">
+    <label class="form__label" for="{{form.house_type.id_for_label}}">{{form.house_type.label}}</label>
+      {{form.house_type.errors}}
+      {{form.house_type}}
+  </div>
+  Heizung:
+  {{form.heat_type.label}}
+  {{form.heat_type}}
+  <fieldset id="heat_by_option">
+    <legend>Wie soll die jährliche Energie berechnet werden?</legend>
+    <ul class="menu vertical">
+      <li><input type="radio" name="heat_by" checked="" value="person" id="heat_by_persons" required><label for="heat_by_persons">Nach Anzahl der Personen</label></li>
+      <li>
+        <input type="radio" name="heat_by" value="square" id="heat_by_sm"><label for="heat_by_sm">Nach Quadratmetern</label>
+        <div id="square" hidden="true">
+          {{form.square_meters.label}}
+          {{form.square_meters}}
+          <div id="square_update"></div>
+        </div>
+      </li>
+      <li>
+        <input type="radio" name="heat_by" value="hand" id="heat_by_hand"><label for="heat_by_hand">Von Hand</label>
+        <div id="hand" hidden="true">
+          <label class="form__label" for="energy_hand">Jährlicher Wärmbedarf:</label>
+          <input type="number" id="energy_hand" value="10" name="energy_hand">
+          <div id="hand_update"></div>
+        </div>
+      </li>
+    </ul>
+  </fieldset>
   <div class="cell medium-10 medium-offset-1">
     <label class="form__label">
       {{form.heat_demand.label}}
@@ -10,6 +46,12 @@
       </div>
     </label>
   </div>
+  Warmwasser:
+  {{form.warm_water_per_day.label}}
+  {{form.warm_water_per_day.errors}}
+  {{form.warm_water_per_day}}
+  <label class="form__label" for="warm_water">Jährlicher Energiebedarf durch Warmwasser:</label>
+  <input type="number" id="warm_water">
   <div class="cell medium-10 medium-offset-1">
     <label class="form__label">
       {{form.name.label}}

@@ -5,7 +5,7 @@ from stemp.views import (
     DemandDistrictView, TechnologyView,
     DemandSelectionView
 )
-from stemp.views_dynamic import HouseholdProfileView, get_next_household_name
+from stemp import views_dynamic
 
 app_name = 'stemp'
 
@@ -36,12 +36,20 @@ urlpatterns = [
     path('parameter/', ParameterView.as_view(), name='parameter'),
     path('result/', ResultView.as_view(), name='result'),
     path(
-        'demand/household_profile/',
-        HouseholdProfileView.as_view(),
+        'ajax/get_next_household_name/',
+        views_dynamic.get_next_household_name,
+        name='household_name'
     ),
     path(
-        'ajax/get_next_household_name/',
-        get_next_household_name,
-        name='household_name'
+        'ajax/get_energy/',
+        views_dynamic.get_energy,
+    ),
+    path(
+        'ajax/get_square_meters/',
+        views_dynamic.get_square_meters,
+    ),
+    path(
+        'ajax/get_warm_water_energy/',
+        views_dynamic.get_warm_water_energy,
     ),
 ]
