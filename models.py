@@ -116,11 +116,13 @@ class Household(models.Model):
             from stemp import oep_models
             session = sqlahelper.get_session()
             keys = ('Hot Water Energy', constants.EFH[1], constants.MFH[1])
-            for name in keys:
-                self.timeseries[name] = pandas.Series(
-                    session.query(oep_models.OEPTimeseries).filter_by(
-                        name=name
-                    ).first().data)
+            self.timeseries = {
+                name: pandas.Series(
+                    session.query(
+                        oep_models.OEPTimeseries
+                    ).filter_by(name=name).first().data)
+                for name in keys
+            }
         return self.timeseries[name]
 
     def get_heat_demand_profile(self):
