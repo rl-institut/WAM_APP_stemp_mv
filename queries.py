@@ -7,26 +7,22 @@ from geoalchemy2 import func
 import transaction
 
 from demandlib import bdew
-
-import stemp.app_settings
-from db_apps import coastdat, oemof_results
-from stemp import oep_models
-from stemp.scenarios import basic_setup
+import oedialect
 
 from django.core.wsgi import get_wsgi_application
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 application = get_wsgi_application()
 
+from stemp import constants
 from stemp.models import Simulation
 
-logging.getLogger().setLevel(logging.INFO)
+import stemp.app_settings
+from db_apps import coastdat, oemof_results
+from stemp import oep_models
+from stemp.scenarios import basic_setup
 
-KELVIN = 273.15
-ENERGY_PER_LITER = 0.058
-QM_PER_PERSON = 44.40
-ENERGY_PER_QM_PER_YEAR = {'EFH': 90, 'MFH': 70}
-LUETZOW_LON_LAT = (11.181475, 53.655119)
+logging.getLogger().setLevel(logging.INFO)
 
 
 def delete_scenarios():
@@ -53,7 +49,7 @@ def get_coastdat_data(session, year, datatype, location):
             )
         )
     ).limit(1).first()
-    data = pandas.Series(ts.tsarray) - KELVIN
+    data = pandas.Series(ts.tsarray) - constants.KELVIN
     return data
 
 
@@ -61,7 +57,11 @@ def insert_pv_and_temp():
     session = sqlahelper.get_session()
 
     temperature = get_coastdat_data(
-        session, year=2014, datatype='T_2M', location=LUETZOW_LON_LAT)
+        session,
+        year=2014,
+        datatype='T_2M',
+        location=constants.LOCATION
+    )
     meta = {
         'name': 'Temperature from year 2014 at Lützow (in Kelvin)',
         'source': 'Coastdat'
@@ -91,7 +91,7 @@ def insert_pv_and_temp():
 def insert_heat_demand():
     session = sqlahelper.get_session()
     temperature = get_coastdat_data(
-        session, year=2014, datatype='T_2M', location=LUETZOW_LON_LAT)
+        session, year=2014, datatype='T_2M', location=constants.LOCATION)
 
     demand = pandas.DataFrame(
         index=pandas.date_range(
@@ -152,11 +152,11 @@ def insert_dhw_timeseries():
         data=hot_water_profile[0].values.tolist()
     )
 
-    hot_water_energy_profile = hot_water_profile * ENERGY_PER_LITER
+    hot_water_energy_profile = hot_water_profile * constants.ENERGY_PER_LITER
     meta = {
         'name': 'Annual energy for hot water supply for 76l/person/day',
         'source': 'DHWCalc',
-        'energy_factor': ENERGY_PER_LITER
+        'energy_factor': constants.ENERGY_PER_LITER
     }
     hot_water_energy = oep_models.OEPTimeseries(
         name='Hot Water Energy',
@@ -183,8 +183,8 @@ def create_questions_and_households():
             question = Question(
                 number_of_persons=num_person, house_type=house_type)
             energy_per_year = (
-                    num_person * QM_PER_PERSON *
-                    ENERGY_PER_QM_PER_YEAR[house_type]
+                    num_person * constants.QM_PER_PERSON *
+                    constants.ENERGY_PER_QM_PER_YEAR[house_type]
             )
             person_str = (
                 f'{num_person} Personen' if num_person > 1 else '1 Person')
@@ -201,8 +201,10 @@ def create_questions_and_households():
 
 
 def delete_oep_tables():
-    oep_models.Base.metadata.drop_all()
-    transaction.commit()
+    try:
+        oep_models.Base.metadata.drop_all()
+    except oedialect.engine.ConnectionException:
+        pass
 
 
 def create_oep_tables():
@@ -220,11 +222,12 @@ def delete_stored_simulations():
 
 
 if __name__ == '__main__':
-    # insert_pv_and_temp()
     # delete_oep_tables()
     # create_oep_tables()
-    delete_stored_simulations()
+
+    # insert_pv_and_temp()
     # insert_heat_demand()
-    delete_scenarios()
-    insert_scenarios()
+    delete_stored_simulations()
+    # delete_scenarios()
+    # insert_scenarios()
     # insert_dhw_timeseries()
