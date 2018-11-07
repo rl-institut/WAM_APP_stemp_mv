@@ -4,6 +4,9 @@ import sqlalchemy
 import sqlahelper
 from configobj import ConfigObj
 
+# Pyomo objects must be loaded in main thread and are imported from here:
+from oemof.solph.plumbing import _Sequence as Sequence
+
 import oedialect as _
 
 from wam import settings

@@ -104,7 +104,7 @@ class Household(models.Model):
     )
     square_meters = models.IntegerField(verbose_name='Quadratmeter')
     heat_type = models.CharField(
-        choices=constants.HEAT_TYPES,
+        choices=((ht.name, ht.value) for ht in constants.HeatType),
         default='radiator',
         max_length=10,
         verbose_name='Heizungsmodell'
@@ -146,6 +146,9 @@ class Household(models.Model):
                 self.get_hot_water_profile()
         )
 
+    def contains_radiator(self):
+        return self.heat_type == constants.HeatType.radiator.name
+
 
 class District(models.Model):
     name = models.CharField(max_length=255)
@@ -167,5 +170,13 @@ class District(models.Model):
             [
                 dh.household.annual_heat_demand() * dh.amount
                 for dh in self.districthouseholds_set.all()
+            ]
+        )
+
+    def contains_radiator(self):
+        return any(
+            [
+                hh.heat_type == constants.HeatType.radiator.name
+                for hh in self.households.all()
             ]
         )

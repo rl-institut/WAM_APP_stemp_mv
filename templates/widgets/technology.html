@@ -1,17 +1,25 @@
 
 {% load staticfiles %}
+{% load labels %}
 
 {% for group, options, index in widget.optgroups %}
   {% for option in options %}
     <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 u-text--left">
       <label class="container" for="{{option.name}}_{{option.index}}">
-        {{option.label}}
+        {% if option.attrs.warning %}
+          <font color="grey">
+            {{option.label}}
+          </font>
+        {% else %}
+          {{option.label}}
+        {% endif %}
         <input type="checkbox" name="{{option.name}}" value="{{option.value}}" id="{{option.name}}_{{option.index}}">
         <span class="checkmark"></span>
       </label>
       <span class="has-tip--no-border">
         <i data-open="modal-{{option.value}}" class ="icon ion-information-circled icon--small info-box" title="Hier klicken für mehr Informationen zum {{option.label}}"></i>
-      </span>
+      </span><br>
+      {% if option.attrs.warning %}<font color="grey">{% label value=option.attrs.warning app='stemp' %}</font>{% endif %}
       <div class="reveal" id="modal-{{option.value}}" data-reveal>
         <div class="grid-x technology">
           <div class="cell technology__header">
@@ -21,7 +29,7 @@
             <img src="{% static option.attrs.image %}">
           </div>
           <div class="cell technology__text">
-            {{option.attrs.description|safe}}
+            {% label value=option.attrs.description app='stemp' safe=True %}
           </div>
         </div>
         <button class="close-button" data-close aria-label="Schließen" type="button">

@@ -21,10 +21,10 @@ HOUSE_TYPES = (
     (MFH[0], 'Mehrfamilienhaus')
 )
 
-HEAT_TYPES = (
-    ('radiator', 'Heizkörper'),
-    ('floor', 'Fussbodenheizung')
-)
+
+class HeatType(Enum):
+    radiator = 'Heizkörper'
+    floor = 'Fussbodenheizung'
 
 
 class DemandType(IntEnum):

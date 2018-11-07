@@ -185,28 +185,20 @@ class TechnologyView(TemplateView):
         technology_information = {
             'bhkw_scenario': {
                 'image': '/stemp/img/BHKW_Bild.svg',
-                'description': """
-                <p>Ein Blockheizkraftwerk (BHKW) ist eine Anlage die mittels Prinzip der Kraft-Wärme-Kopplung gleichzeitig Strom und Wärme produzieren kann. </p>
-                <ol>
-                  <li>Brennstoff (Öl, Gas, Holzpellets) fließt in den Motor hinein und wird dort verbrannt. Bei der Verbrennung wird die (mechanische) Bewegungsenergie produziert, um den Generator anzutreiben. Gleichzeitig wird auch Abwärme produziert. Der Generator wandelt die Bewegungsenergie in Strom um, der direkt genutzt werden kann. </li>
-                  <li>Die durch den Motor fließende Kühlflüssigkeit wird durch Wärme aus dem Abgas weiter erhitzt und so auf ein noch höheres Temperaturniveau gebracht. </li>
-                  <li>Das nun erhitzte Wasser kann in einem Plattenwärmetauscher die Wärme an das Heizungssystem abgeben. </li>
-                </ol>
-                """
+                'description': 'technology:bhkw_scenario:description'
             },
             'pv_heatpump_scenario': {
                 'image': 'stemp/img/Waermepumpe_Bild.svg',
-                'description': """
-                <p>Eine Wärmepumpe ist eine mit Strom betriebene Maschine. Durch eine Photovoltaik-Anlage kann der nachhaltige Betrieb der Pumpe erhöht werden. Im Kreislauf der Wärmepumpe zirkuliert ein Kältemittel.</p>
-                <ol>
-                  <li>Die Umweltenergie (Luft, Erde und Wasser als Energiequelle) wird vom Wärmetauscher (Verdampfer) genutzt um das Kältemittel zu erwärmen. </li>
-                  <li>Der dabei entstehende Kältemitteldampf wird im Verdichter durch die Komprimierung auf ein höheres Temperaturniveau gebracht und ist jetzt sehr heiß.</li>
-                  <li>Die Wärme des heißen Dampfes wird im Verflüssiger an das Heizungswasser abgegeben und kühlt im Behälter ab. Das Kältemittel ist wieder flüssig.</li>
-                  <li>Im letzten Schritt wird das verflüssigte Kältemittel durch das Expansionsventil erneut gekühlt. Anschließend wird es in den Verdampfer zurückgeführt.</li>
-                </ol>
-                """
+                'description': 'technology:pv_heatpump_scenario:description'
             }
         }
+
+        # Add warning if radiator is chosen in combination with heatpump:
+        demand = session.get_demand()
+        if demand.contains_radiator():
+            technology_information['pv_heatpump_scenario']['warning'] = (
+                'technology:pv_heatpump_scenario:warning')
+
         context['technology'] = forms.TechnologyForm(
             'technology',
             'Technology',
@@ -215,7 +207,7 @@ class TechnologyView(TemplateView):
         )
         context['demand_type'] = session.demand_type.suffix()
         context['demand_label'] = session.demand_type.label()
-        context['demand_name'] = session.get_demand_name()
+        context['demand_name'] = demand.name
         return context
 
     @check_session
@@ -273,7 +265,7 @@ class ParameterView(TemplateView):
         context = super(ParameterView, self).get_context_data(**kwargs)
         context['parameter_form'] = self.get_scenario_parameters(session)
         context['demand_label'] = session.demand_type.label()
-        context['demand_name'] = session.get_demand_name()
+        context['demand_name'] = session.get_demand().name
         return context
 
     @check_session

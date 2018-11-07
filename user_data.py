@@ -113,11 +113,11 @@ class UserSession(object):
         self.demand_id = None
         self.current_district = {}
 
-    def get_demand_name(self):
+    def get_demand(self):
         if self.demand_type == DemandType.Single:
-            return Household.objects.get(pk=self.demand_id).name
+            return Household.objects.get(pk=self.demand_id)
         elif self.demand_type == DemandType.District:
-            return District.objects.get(pk=self.demand_id).name
+            return District.objects.get(pk=self.demand_id)
 
     def get_district_status(self):
         if self.demand_id is None:
