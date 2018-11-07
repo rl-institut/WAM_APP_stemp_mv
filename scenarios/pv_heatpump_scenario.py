@@ -213,7 +213,46 @@ def cop_heating(temp, type_hp, **kwargs):
         share_fh * cop_hp_heating_fh + share_rad * cop_hp_heating_rad
     )
 
+    cop_hp_heating.clip(lower=0.0, inplace=True)
+
     return cop_hp_heating
+
+
+def cop_ww(temp, ww_profile_sfh, ww_profile_mfh, **kwargs):
+    """
+    Returns the COP of a heat pump for warm water
+    Parameters
+    temp -- pandas Series with temperature profile (ambient or brine temp.)
+    ww_profile_sfh -- pandas Dataframe with warm water profile for
+        single family houses
+    ww_profile_mfh -- pandas Dataframe with warm water profile for
+        multi family houses
+    """
+
+    t_ww_sfh = kwargs.get('t_ww_sfh', 50)  # warm water temp. in SFH
+    t_ww_mfh = kwargs.get('t_ww_mfh', 60)  # warm water temp. in MFH
+    cop_max = kwargs.get('cop_max', 7)
+    type_hp = kwargs.get('type_hp', 'air')
+    if type_hp == 'air':
+        eta_g = kwargs.get('eta_g', 0.3)  # COP/COP_max
+    elif type_hp == 'brine':
+        eta_g = kwargs.get('eta_g', 0.4)  # COP/COP_max
+    else:
+        # TODO Raise Warning
+        eta_g = kwargs.get('eta_g', 0.4)  # COP/COP_max
+
+    # calculate the share of the warm water demand of sfh and mfh for each hour
+    share_sfh = ww_profile_sfh.values / (ww_profile_sfh.values +
+        ww_profile_mfh.values)
+
+    # calculates mixed WW supply temperature for single and multi family houses
+    t_sup_ww = share_sfh * t_ww_sfh + (1 - share_sfh) * t_ww_mfh
+
+    # calculate COP
+    cop = eta_g * ((t_sup_ww + 273.15) / (t_sup_ww - temp))
+    cop[cop > cop_max] = cop_max
+
+    return cop
 
 
 def add_dynamic_parameters(scenario, parameters):

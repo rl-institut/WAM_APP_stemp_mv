@@ -85,7 +85,9 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
             )
         },
         outputs={
-            b_bhkw_el: Flow(),
+            b_bhkw_el: Flow(
+                co2_emissions=-217.0  # FIXME: MAKE IT A PARAMETER
+            ),
             sub_b_th: Flow()
         },
         conversion_factors={
