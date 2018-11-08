@@ -1,6 +1,5 @@
 
 import os
-from importlib import import_module
 import logging
 from configobj import ConfigObj
 
@@ -17,35 +16,10 @@ except KeyError:
         'Maybe you have to start django application first.'
     )
 
-
-SCENARIO_PATH = 'stemp.scenarios'
-import_module(SCENARIO_PATH)
 EXCLUDED_PATHS = ('__init__.py',)
 CREATE_ENERGYSYSTEM_FCT = 'create_energysystem'
 NEEDED_PARAMETERS = 'NEEDED_PARAMETERS'
 SIMULATE_FCT = 'simulate'
-
-
-def get_scenarios():
-    def scenarios_in_path(current_folder):
-        path = os.path.join(BASE_DIR, current_folder)
-        nonlocal scenarios
-        scenarios += [
-            os.path.join(current_folder, filename.split('.')[0])
-            for filename in os.listdir(path)
-            if filename not in EXCLUDED_PATHS and filename.endswith('.py')
-        ]
-        subfolders = [
-            os.path.join(current_folder, subfolder)
-            for subfolder in os.listdir(path)
-            if os.path.isdir(os.path.join(path, subfolder))
-        ]
-        for subfolder in subfolders:
-            scenarios_in_path(subfolder)
-
-    scenarios = []
-    scenarios_in_path(SCENARIO_PATH)
-    return scenarios
 
 
 def get_scenario_config(scenario):
@@ -53,12 +27,6 @@ def get_scenario_config(scenario):
         return None
     config_path = os.path.join(BASE_DIR, scenario + '.cfg')
     return ConfigObj(config_path)
-
-
-def import_scenario(filename):
-    splitted = filename.split(os.path.sep)
-    module_name = '.'.join(splitted[1:])
-    return import_module('.' + module_name, package=splitted[0])
 
 
 def create_energysystem(scenario_module, **parameters):

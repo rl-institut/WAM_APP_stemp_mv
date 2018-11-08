@@ -1,10 +1,9 @@
 
-from os import path
 import sqlahelper
 
 from stemp.constants import DemandType, DistrictStatus
-from stemp.app_settings import SCENARIO_PATH
-from stemp.scenarios import import_scenario, create_energysystem
+from stemp.app_settings import SCENARIO_MODULES
+from stemp.scenarios import create_energysystem
 from stemp.bookkeeping import simulate_energysystem
 from stemp.models import Scenario, Parameter, Simulation, Household, District
 from db_apps.oemof_results import store_results
@@ -14,11 +13,10 @@ class SessionSimulation(object):
     def __init__(self, name, session):
         self.session = session
         self.name = name
-        self.module = None
+        self.module = SCENARIO_MODULES[name]
         self.energysystem = None
         self.parameter = {}
         self.result_id = None
-        self.import_scenario_module()
 
     def check_for_result(self):
         """
@@ -85,10 +83,6 @@ class SessionSimulation(object):
             result_id=result_id
         )
         return result_id
-
-    def import_scenario_module(self):
-        self.module = import_scenario(
-            path.join(SCENARIO_PATH, self.name))
 
     def include_demand(self):
         self.parameter['demand'] = {
