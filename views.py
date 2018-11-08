@@ -177,27 +177,27 @@ class TechnologyView(TemplateView):
     def get_context_data(self, session, **kwargs):
         context = super(TechnologyView, self).get_context_data(**kwargs)
         choices = (
-            ('gas_scenario', 'Gasheizung'),
-            ('bhkw_scenario', 'Blockheizkraftwerk (BHKW)'),
-            ('pv_heatpump_scenario', 'Photovoltaik (PV) + Wärmepumpe'),
-            ('oil_scenario', 'Ölheizung')
+            ('gas', 'Gasheizung'),
+            ('bhkw', 'Blockheizkraftwerk (BHKW)'),
+            ('pv_heatpump', 'Photovoltaik (PV) + Wärmepumpe'),
+            ('oil', 'Ölheizung')
         )
         technology_information = {
-            'bhkw_scenario': {
+            'bhkw': {
                 'image': '/stemp/img/BHKW_Bild.svg',
-                'description': 'technology:bhkw_scenario:description'
+                'description': 'technology:bhkw:description'
             },
-            'pv_heatpump_scenario': {
+            'pv_heatpump': {
                 'image': 'stemp/img/Waermepumpe_Bild.svg',
-                'description': 'technology:pv_heatpump_scenario:description'
+                'description': 'technology:pv_heatpump:description'
             }
         }
 
         # Add warning if radiator is chosen in combination with heatpump:
         demand = session.get_demand()
         if demand.contains_radiator():
-            technology_information['pv_heatpump_scenario']['warning'] = (
-                'technology:pv_heatpump_scenario:warning')
+            technology_information['pv_heatpump']['warning'] = (
+                'technology:pv_heatpump:warning')
 
         context['technology'] = forms.TechnologyForm(
             'technology',
