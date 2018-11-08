@@ -18,8 +18,6 @@ STORE_LP_FILE = True
 ACTIVATED_SCENARIOS = list(filter(None, os.environ.get(
     'ACTIVATED_SCENARIOS', "").split(',')))
 SCENARIO_PATH = os.path.join('stemp', 'scenarios')
-SCENARIO_PARAMETERS = ConfigObj(
-    os.path.join(settings.BASE_DIR, 'stemp', 'scenarios', 'parameters.cfg'))
 
 ADDITIONAL_PARAMETERS = ConfigObj(
     os.path.join(settings.BASE_DIR, 'stemp', 'attributes.cfg'))
@@ -63,4 +61,3 @@ SCENARIO_MODULES = {
     scenario: import_scenario(scenario)
     for scenario in ACTIVATED_SCENARIOS
 }
-

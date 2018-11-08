@@ -1,8 +1,10 @@
 
+import os
 import sqlahelper
 import transaction
 import pandas
 import logging
+from configobj import ConfigObj
 from collections import namedtuple
 from django.core.exceptions import AppRegistryNotReady
 
@@ -10,8 +12,9 @@ from oemof.solph import (
     EnergySystem, Bus, Flow, Sink
 )
 
-from stemp.app_settings import SCENARIO_PARAMETERS
-from stemp.constants import DemandType
+from wam import settings
+from stemp import app_settings
+from stemp import constants
 from stemp.oep_models import OEPScenario
 try:
     from stemp.models import District, Household
@@ -36,21 +39,29 @@ AdvancedLabel.__new__.__defaults__ = (None, None)
 
 def upload_scenario_parameters():
     session = sqlahelper.get_session()
-    for sc in SCENARIO_PARAMETERS:
-        if session.query(OEPScenario).filter_by(
-                scenario=sc).first() is None:
-            scenarios = [
-                OEPScenario(
-                    scenario=sc,
-                    component=component,
-                    parameter=parameter_name,
-                    **parameter_data
-                )
-                for component, parameters in SCENARIO_PARAMETERS[sc].items()
-                for parameter_name, parameter_data in parameters.items()
-            ]
-            session.add_all(scenarios)
-            transaction.commit()
+    for scenario in app_settings.ACTIVATED_SCENARIOS:
+        sc_parameters = ConfigObj(
+            os.path.join(
+                settings.BASE_DIR,
+                app_settings.SCENARIO_PATH,
+                f'{scenario}.cfg'
+            )
+        )
+        for sc_setup in sc_parameters:
+            if session.query(OEPScenario).filter_by(
+                    scenario=sc_setup).first() is None:
+                scenarios = [
+                    OEPScenario(
+                        scenario=sc_setup,
+                        component=com,
+                        parameter=parameter_name,
+                        **parameter_data
+                    )
+                    for com, parameters in sc_parameters[sc_setup].items()
+                    for parameter_name, parameter_data in parameters.items()
+                ]
+                session.add_all(scenarios)
+                transaction.commit()
 
 
 def find_element_in_groups(energysystem, label):
@@ -115,9 +126,9 @@ def add_subgrid_and_demands(
 
 
 def get_demand(demand_type, demand_id):
-    if demand_type == DemandType.Single:
+    if demand_type == constants.DemandType.Single:
         return Household.objects.get(id=demand_id)
-    elif demand_type == DemandType.District:
+    elif demand_type == constants.DemandType.District:
         return District.objects.get(id=demand_id)
     else:
         raise ValueError('Unknown customer case "' + demand_type + '"')
