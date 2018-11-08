@@ -39,15 +39,8 @@ AdvancedLabel.__new__.__defaults__ = (None, None)
 
 def upload_scenario_parameters():
     session = sqlahelper.get_session()
-    for scenario in app_settings.ACTIVATED_SCENARIOS:
-        sc_parameters = ConfigObj(
-            os.path.join(
-                settings.BASE_DIR,
-                app_settings.SCENARIO_PATH,
-                f'{scenario}.cfg'
-            )
-        )
-        for sc_setup in sc_parameters:
+    for sc_parameters in app_settings.SCENARIO_PARAMETERS.values():
+        for sc_setup in sc_parameters['SETUPS']:
             if session.query(OEPScenario).filter_by(
                     scenario=sc_setup).first() is None:
                 scenarios = [

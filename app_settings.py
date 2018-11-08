@@ -15,10 +15,6 @@ ACTIVATED_VISUALIZATIONS = list(filter(None, os.environ.get(
     'ACTIVATED_VISUALIZATIONS', "").split(',')))
 STORE_LP_FILE = True
 
-ACTIVATED_SCENARIOS = list(filter(None, os.environ.get(
-    'ACTIVATED_SCENARIOS', "").split(',')))
-SCENARIO_PATH = os.path.join('stemp', 'scenarios')
-
 ADDITIONAL_PARAMETERS = ConfigObj(
     os.path.join(settings.BASE_DIR, 'stemp', 'attributes.cfg'))
 
@@ -50,6 +46,11 @@ sqlahelper.add_engine(engine, 'reiners_db')
 
 
 # SCENARIO SETUP:
+ACTIVATED_SCENARIOS = list(filter(None, os.environ.get(
+    'ACTIVATED_SCENARIOS', "").split(',')))
+SCENARIO_PATH = os.path.join('stemp', 'scenarios')
+
+
 def import_scenario(scenario):
     filename = os.path.join(SCENARIO_PATH, scenario)
     splitted = filename.split(os.path.sep)
@@ -59,5 +60,15 @@ def import_scenario(scenario):
 
 SCENARIO_MODULES = {
     scenario: import_scenario(scenario)
+    for scenario in ACTIVATED_SCENARIOS
+}
+SCENARIO_PARAMETERS = {
+    scenario: ConfigObj(
+        os.path.join(
+            settings.BASE_DIR,
+            SCENARIO_PATH,
+            f'{scenario}.cfg'
+        )
+    )
     for scenario in ACTIVATED_SCENARIOS
 }

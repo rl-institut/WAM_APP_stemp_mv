@@ -19,7 +19,7 @@
       <span class="has-tip--no-border">
         <i data-open="modal-{{option.value}}" class ="icon ion-information-circled icon--small info-box" title="Hier klicken für mehr Informationen zum {{option.label}}"></i>
       </span><br>
-      {% if option.attrs.warning %}<font color="grey">{% label value=option.attrs.warning app='stemp' %}</font>{% endif %}
+      {% if option.attrs.warning %}<font color="grey">{{option.attrs.warning}}</font>{% endif %}
       <div class="reveal" id="modal-{{option.value}}" data-reveal>
         <div class="grid-x technology">
           <div class="cell technology__header">
@@ -29,7 +29,7 @@
             <img src="{% static option.attrs.image %}">
           </div>
           <div class="cell technology__text">
-            {% label value=option.attrs.description app='stemp' safe=True %}
+            {{option.attrs.description|safe}}
           </div>
         </div>
         <button class="close-button" data-close aria-label="Schließen" type="button">

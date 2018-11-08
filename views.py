@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
 from wam.settings import SESSION_DATA
-from stemp.app_settings import LABELS, ACTIVATED_VISUALIZATIONS
+from stemp import app_settings
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
 from stemp import results, models, forms, visualizations
@@ -37,9 +37,9 @@ class DemandSingleView(TemplateView):
 
     def get_labels(self):
         if self.is_district_hh:
-            labels = LABELS['demand_single']['District']
+            labels = app_settings.LABELS['demand_single']['District']
         else:
-            labels = LABELS['demand_single']['Single']
+            labels = app_settings.LABELS['demand_single']['Single']
         return labels
 
     def get_context_data(self):
@@ -101,7 +101,7 @@ class DemandDistrictView(TemplateView):
         context['district_load_form'] = forms.DistrictSelectForm()
         context['district_form'] = forms.DistrictListForm(
             session.current_district)
-        context['labels'] = LABELS['demand_district']
+        context['labels'] = app_settings.LABELS['demand_district']
         return context
 
     def get(self, request, *args, **kwargs):
@@ -177,27 +177,25 @@ class TechnologyView(TemplateView):
     def get_context_data(self, session, **kwargs):
         context = super(TechnologyView, self).get_context_data(**kwargs)
         choices = (
-            ('gas', 'Gasheizung'),
-            ('bhkw', 'Blockheizkraftwerk (BHKW)'),
-            ('pv_heatpump', 'Photovoltaik (PV) + Wärmepumpe'),
-            ('oil', 'Ölheizung')
+            (sc, params['LABELS']['name'])
+            for sc, params in app_settings.SCENARIO_PARAMETERS.items()
         )
         technology_information = {
-            'bhkw': {
-                'image': '/stemp/img/BHKW_Bild.svg',
-                'description': 'technology:bhkw:description'
-            },
-            'pv_heatpump': {
-                'image': 'stemp/img/Waermepumpe_Bild.svg',
-                'description': 'technology:pv_heatpump:description'
+            sc: {
+                'image': params['LABELS']['image'],
+                'description': params['LABELS']['description']
             }
+            for sc, params in app_settings.SCENARIO_PARAMETERS.items()
+            if 'description' in params['LABELS']
         }
 
         # Add warning if radiator is chosen in combination with heatpump:
         demand = session.get_demand()
         if demand.contains_radiator():
             technology_information['pv_heatpump']['warning'] = (
-                'technology:pv_heatpump:warning')
+                app_settings.SCENARIO_PARAMETERS[
+                    'pv_heatpump']['LABELS']['warning']
+            )
 
         context['technology'] = forms.TechnologyForm(
             'technology',
@@ -296,7 +294,8 @@ class ResultView(TemplateView):
         context['save'] = forms.SaveSimulationForm()
         visualization = results.ResultAnalysisVisualization(session.scenarios)
         context['visualizations'] = [
-            visualization.visualize(vis) for vis in ACTIVATED_VISUALIZATIONS
+            visualization.visualize(vis)
+            for vis in app_settings.ACTIVATED_VISUALIZATIONS
         ]
         return context
 
