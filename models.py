@@ -39,36 +39,7 @@ class Simulation(models.Model):
         return '(' + ','.join(ids) + ')'
 
 
-class ProfileMixin(object):
-    def as_series(self):
-        return pandas.Series(self.profile)
-
-    @classmethod
-    def get_ids_and_names(cls):
-        profiles = cls.objects.all()
-        return [(p.id, p.name) for p in profiles]
-
-    def as_highchart(self, style='line'):
-        layout = self.layout.copy()
-        profile_series = self.as_series()
-        return Highchart(profile_series, style, **layout)
-
-
-class LoadProfile(models.Model, ProfileMixin):
-    name = models.CharField(max_length=255)
-    profile = ArrayField(models.FloatField(), size=8760, null=True)
-
-    layout = {
-            'x_title': 'Zeit [h]',
-            'y_title': 'Stromverbrauch [kWh]',
-            'title': 'Stromverbrauch'
-    }
-
-    def __str__(self):
-        return self.name
-
-
-class HeatProfile(models.Model, ProfileMixin):
+class HeatProfile(models.Model):
     name = models.CharField(max_length=255)
     profile = ArrayField(models.FloatField(), size=8760, null=True)
 

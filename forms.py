@@ -12,11 +12,10 @@ from crispy_forms.helper import FormHelper
 from stemp import constants
 from stemp.fields import HouseholdField, SubmitField
 from stemp.widgets import (
-    DynamicSelectWidget, DynamicRadioWidget, SliderInput, DistrictSubmitWidget,
+    DynamicRadioWidget, SliderInput, DistrictSubmitWidget,
     TechnologyWidget
 )
-from stemp.models import (
-    LoadProfile, Household, Simulation, District)
+from stemp.models import (Household, Simulation, District)
 
 
 class ChoiceForm(Form):
@@ -158,19 +157,6 @@ class ParameterForm(Form):
             component, parameter = field_name.split(self.delimiter)
             data[component][parameter] = value
         return data
-
-
-class LoadProfileForm(Form):
-    """Tjaden, T.; Bergner, J.; Weniger, J.; Quaschning, V.:
-    „Repräsentative elektrische Lastprofile für Einfamilienhäuser in
-    Deutschland auf 1-sekündiger Datenbasis“, Datensatz,
-    Hochschule für Technik und Wirtschaft HTW Berlin, 2015"""
-    choices = LoadProfile.get_ids_and_names()
-    profile = ChoiceField(
-        label='Lastprofil',
-        choices=choices,
-        widget=DynamicSelectWidget(dynamic_url='load_profile/', initial=1)
-    )
 
 
 class HouseholdForm(ModelForm):
