@@ -50,7 +50,7 @@ def upload_scenario_parameters():
                         parameter=parameter_name,
                         **parameter_data
                     )
-                    for com, parameters in sc_parameters[sc_setup].items()
+                    for com, parameters in sc_parameters['SETUPS'][sc_setup].items()
                     for parameter_name, parameter_data in parameters.items()
                 ]
                 session.add_all(scenarios)
