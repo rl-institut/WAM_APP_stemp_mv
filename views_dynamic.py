@@ -43,3 +43,23 @@ def get_energy(request):
         raise ValueError(f'Unknown choice "{choice}". Cannot calculate energy')
     energy = sm * constants.ENERGY_PER_QM_PER_YEAR[house_type]
     return JsonResponse({'energy': energy})
+
+
+def get_roof_area(request):
+    heat_option = request.GET['heat_option']
+    value = int(request.GET['value'])
+    if heat_option == 'person':
+        sm = value * constants.QM_PER_PERSON
+    elif heat_option == 'square':
+        sm = value
+    else:
+        raise ValueError(f'Unknown heat option "{heat_option}"')
+    house_type = request.GET['house_type']
+    if house_type == 'EFH':
+        sm /= 2
+    elif house_type == 'MFH':
+        sm /= 4
+    else:
+        raise ValueError(f'Unknown house type "{house_type}"')
+    sm *= 0.4
+    return JsonResponse({'roof_area': sm})

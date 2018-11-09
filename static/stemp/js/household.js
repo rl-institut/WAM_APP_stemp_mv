@@ -6,10 +6,20 @@ $("#heat_by_option").change(function() {
     $("#hand").attr("hidden", true);
   }
   update_energy();
+  update_roof_area();
+});
+
+$("#roof_by_option").change(function() {
+  if ($("#roof_by_hand").prop("checked")) {
+    $("#id_roof_area").removeAttr('readonly');
+  } else {
+    $("#id_roof_area").attr('readonly', 'true');
+  }
 });
 
 $("#id_house_type").change(function() {
   update_energy();
+  update_roof_area();
   set_energy(
     'person',
     $('#number_of_persons').val(),
@@ -40,6 +50,36 @@ function update_energy() {
   }
 };
 
+function update_roof_area() {
+  if ($("#roof_by_auto").prop("checked")) {
+    var heat_option = $("input[name=heat_by]:checked").val();
+    switch (heat_option) {
+      case 'person':
+      case 'hand':
+        var heat_option = 'person';
+        var value = $('#number_of_persons').val();
+        break;
+      case 'square':
+        var value = $('#id_square_meters').val();
+        break;
+    }
+    $.ajax({
+      url : "/stemp/ajax/get_roof_area/",
+      type : "GET",
+      data : {
+        heat_option: heat_option,
+        value: value,
+        house_type: $('#id_house_type').val()
+      },
+
+      // handle a successful response
+      success : function(json) {
+        $("#id_roof_area").val(json.roof_area);
+      }
+    });
+  };
+};
+
 $("#energy_hand").change(function() {
   update_energy();
 });
@@ -51,6 +91,7 @@ $("#id_warm_water_per_day").change(function() {
 $("#number_of_persons_slider").on('changed.zf.slider', function() {
   update_energy();
   set_square_meters($('#number_of_persons').val());
+  update_roof_area();
   set_energy(
     'person',
     $('#number_of_persons').val(),

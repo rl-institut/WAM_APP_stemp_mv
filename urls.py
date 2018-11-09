@@ -52,4 +52,8 @@ urlpatterns = [
         'ajax/get_warm_water_energy/',
         views_dynamic.get_warm_water_energy,
     ),
+    path(
+        'ajax/get_roof_area/',
+        views_dynamic.get_roof_area,
+    ),
 ]

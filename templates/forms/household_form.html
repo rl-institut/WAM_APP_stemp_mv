@@ -11,6 +11,19 @@
       {{form.house_type.errors}}
       {{form.house_type}}
   </div>
+  <fieldset id="roof_by_option">
+    <legend>Wie soll die verfügbare Dachfläche berechnet werden?</legend>
+    <ul class="menu vertical">
+      <li><input type="radio" name="roof_by" checked="" value="auto" id="roof_by_auto" required><label for="roof_by_auto">Automatisch</label></li>
+      <li>
+        <input type="radio" name="roof_by" id="roof_by_hand"><label for="roof_by_hand">Von Hand</label>
+      </li>
+    </ul>
+  </fieldset>
+  <div id="roof">
+    {{form.roof_area.label}}
+    {{form.roof_area}}
+  </div>
   Heizung:
   {{form.heat_type.label}}
   {{form.heat_type}}

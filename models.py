@@ -81,6 +81,8 @@ class Household(models.Model):
         verbose_name='Heizungsmodell'
     )
     warm_water_per_day = models.IntegerField()
+    roof_area = models.FloatField(
+        verbose_name='Verfügbare Dachfläche für Photovoltaik')
 
     def get_oep_timeseries(self, name):
         if self.timeseries is None:

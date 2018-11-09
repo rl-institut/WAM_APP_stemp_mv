@@ -31,7 +31,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('profile', django.contrib.postgres.fields.ArrayField(base_field=models.FloatField(), null=True, size=8760)),
             ],
-            bases=(models.Model, stemp.models.ProfileMixin),
         ),
         migrations.CreateModel(
             name='Household',
@@ -50,7 +49,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('profile', django.contrib.postgres.fields.ArrayField(base_field=models.FloatField(), null=True, size=8760)),
             ],
-            bases=(models.Model, stemp.models.ProfileMixin),
         ),
         migrations.CreateModel(
             name='Parameter',

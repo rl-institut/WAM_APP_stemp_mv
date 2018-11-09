@@ -175,7 +175,10 @@ class HouseholdForm(ModelForm):
     class Meta:
         model = Household
         fields = '__all__'
-        widgets = {'heat_demand': NumberInput(attrs={'readonly': True})}
+        widgets = {
+            'heat_demand': NumberInput(attrs={'readonly': True}),
+            'roof_area': NumberInput(attrs={'readonly': True})
+        }
 
     class Media:
         js = ('stemp/js/household.js',)
