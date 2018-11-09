@@ -12,7 +12,7 @@ from db_apps import oemof_results
 from stemp import oep_models
 
 ACTIVATED_VISUALIZATIONS = list(filter(None, os.environ.get(
-    'ACTIVATED_VISUALIZATIONS', "").split(',')))
+    'STEMP_ACTIVATED_VISUALIZATIONS', "").split(',')))
 STORE_LP_FILE = True
 
 ADDITIONAL_PARAMETERS = ConfigObj(
@@ -30,24 +30,30 @@ def build_db_url(db_name):
     return db_url.format(**conf)
 
 
+DB_SETUP = {
+    'oemof_results': os.environ.get('STEMP_DB_RESULTS', 'DEFAULT'),
+    'oep': os.environ.get('STEMP_DB_SCENARIOS', 'OEP'),
+    'reiners_db': os.environ.get('STEMP_DB_INTERNAL', 'reiners_db')
+}
+
 # Add sqlalchemy for oemof_results:
-engine = sqlalchemy.create_engine(build_db_url('DEFAULT'))
+engine = sqlalchemy.create_engine(build_db_url(DB_SETUP['oemof_results']))
 sqlahelper.add_engine(engine, 'oemof_results')
 oemof_results.Base.metadata.bind = engine
 
 # Add OEP:
-engine = sqlalchemy.create_engine(build_db_url('DEFAULT'))
+engine = sqlalchemy.create_engine(build_db_url(DB_SETUP['oep']))
 sqlahelper.add_engine(engine, 'oep')
 oep_models.Base.metadata.bind = engine
 
 # Add reiner:
-engine = sqlalchemy.create_engine(build_db_url('reiners_db'))
+engine = sqlalchemy.create_engine(build_db_url(DB_SETUP['reiners_db']))
 sqlahelper.add_engine(engine, 'reiners_db')
 
 
 # SCENARIO SETUP:
 ACTIVATED_SCENARIOS = list(filter(None, os.environ.get(
-    'ACTIVATED_SCENARIOS', "").split(',')))
+    'STEMP_ACTIVATED_SCENARIOS', "").split(',')))
 SCENARIO_PATH = os.path.join('stemp', 'scenarios')
 
 
