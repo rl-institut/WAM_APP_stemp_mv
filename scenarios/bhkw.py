@@ -14,7 +14,8 @@ NEEDED_PARAMETERS[SHORT_NAME] = [
     'capex', 'lifetime', 'conversion_factor_el', 'conversion_factor_th',
     'co2_emissions', 'minimal_load'
 ]
-NEEDED_PARAMETERS['General'].extend(['gas_price', 'bhkw_feedin_tariff'])
+NEEDED_PARAMETERS['General'].extend(
+    ['gas_price', 'gas_rate', 'bhkw_feedin_tariff'])
 
 BHKW_SIZE_PEAK_FACTOR = 3.33
 
@@ -69,13 +70,18 @@ def add_bhkw_technology(demand, energysystem, timeseries, parameters):
     epc = annuity(capex, lifetime, wacc)
     invest = Investment(ep_costs=epc)
     invest.capex = capex
+    avg_gas_price = basic_setup.average_cost_per_year(
+        parameters['General']['gas_price'],
+        lifetime,
+        parameters['General']['gas_rate']
+    )
 
     bhkw = Transformer(
         label=AdvancedLabel(
             f'{demand.name}_chp', type='Transformer', belongs_to=demand.name),
         inputs={
             b_gas: Flow(
-                variable_costs=parameters['General']['gas_price'],
+                variable_costs=avg_gas_price,
                 investment=invest,
                 min=(
                         parameters[SHORT_NAME]['minimal_load'] /
@@ -107,7 +113,7 @@ def add_bhkw_technology(demand, energysystem, timeseries, parameters):
         label=AdvancedLabel(f'{demand.name}_gas_heating', type='Transformer'),
         inputs={
             b_gas: Flow(
-                variable_costs=parameters['General']['gas_price'],
+                variable_costs=avg_gas_price,
                 investment=invest,
                 co2_emissions=parameters['Gas']['co2_emissions']
             )

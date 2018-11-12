@@ -116,6 +116,13 @@ def add_subgrid_and_demands(
     energysystem.add(ex_th)
 
 
+def average_cost_per_year(start, years, rate):
+    cost = 0.0
+    for year in range(years):
+        cost += (start * (1 + rate / 100.0) ** (year - 1))
+    return cost / years
+
+
 def get_demand(demand_type, demand_id):
     if demand_type == constants.DemandType.Single:
         return Household.objects.get(id=demand_id)

@@ -10,7 +10,7 @@ from stemp.scenarios.basic_setup import AdvancedLabel
 
 SHORT_NAME = 'Oil'
 NEEDED_PARAMETERS = deepcopy(basic_setup.NEEDED_PARAMETERS)
-NEEDED_PARAMETERS['General'].append('oil_price')
+NEEDED_PARAMETERS['General'].extend(['oil_price', 'oil_rate'])
 NEEDED_PARAMETERS[SHORT_NAME] = [
     'lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions'
 ]
@@ -40,6 +40,11 @@ def add_oil_technology(demand, energysystem, timeseries, parameters):
     capex = parameters[SHORT_NAME]['capex']
     lifetime = parameters[SHORT_NAME]['lifetime']
     epc = annuity(capex, lifetime, wacc)
+    avg_oil_price = basic_setup.average_cost_per_year(
+        parameters['General']['oil_price'],
+        lifetime,
+        parameters['General']['oil_rate']
+    )
 
     # Get subgrid busses:
     sub_b_th = basic_setup.find_element_in_groups(
@@ -51,7 +56,7 @@ def add_oil_technology(demand, energysystem, timeseries, parameters):
         label=AdvancedLabel(f'{demand.name}_oil_heating', type='Transformer'),
         inputs={
             b_oil: Flow(
-                variable_costs=parameters['General']['oil_price'],
+                variable_costs=avg_oil_price,
                 investment=invest,
                 co2_emissions=parameters[SHORT_NAME]['co2_emissions']
             )
