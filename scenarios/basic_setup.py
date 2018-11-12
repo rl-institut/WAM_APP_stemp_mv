@@ -1,10 +1,8 @@
 
-import os
 import sqlahelper
 import transaction
 import pandas
 import logging
-from configobj import ConfigObj
 from collections import namedtuple
 from django.core.exceptions import AppRegistryNotReady
 
@@ -12,7 +10,6 @@ from oemof.solph import (
     EnergySystem, Bus, Flow, Sink
 )
 
-from wam import settings
 from stemp import app_settings
 from stemp import constants
 from stemp.oep_models import OEPScenario
@@ -50,7 +47,8 @@ def upload_scenario_parameters():
                         parameter=parameter_name,
                         **parameter_data
                     )
-                    for com, parameters in sc_parameters['SETUPS'][sc_setup].items()
+                    for com, parameters in sc_parameters[
+                        'SETUPS'][sc_setup].items()
                     for parameter_name, parameter_data in parameters.items()
                 ]
                 session.add_all(scenarios)
@@ -138,4 +136,4 @@ def add_households(
         parameters['demand']['index']
     )
     add_subgrid_and_demands(demand, energysystem, parameters)
-    technology_fct(demand.name, energysystem, timeseries, parameters)
+    technology_fct(demand, energysystem, timeseries, parameters)

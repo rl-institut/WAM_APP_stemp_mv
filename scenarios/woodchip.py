@@ -35,7 +35,7 @@ def create_energysystem(**parameters):
     return energysystem
 
 
-def add_woodchip_technology(label, energysystem, timeseries, parameters):
+def add_woodchip_technology(demand, energysystem, timeseries, parameters):
     # Get investment parameters:
     wacc = parameters['General']['wacc'] / 100
     capex = parameters[SHORT_NAME]['capex']
@@ -44,12 +44,15 @@ def add_woodchip_technology(label, energysystem, timeseries, parameters):
 
     # Get subgrid busses:
     sub_b_th = basic_setup.find_element_in_groups(
-        energysystem, f"b_{label}_th")
+        energysystem, f"b_{demand.name}_th")
     b_woodchip = basic_setup.find_element_in_groups(energysystem, "b_woodchip")
     invest = Investment(ep_costs=epc)
     invest.capex = capex
     woodchip_heating = Transformer(
-        label=AdvancedLabel(f'{label}_woodchip_heating', type='Transformer'),
+        label=AdvancedLabel(
+            f'{demand.name}_woodchip_heating',
+            type='Transformer'
+        ),
         inputs={
             b_woodchip: Flow(
                 variable_costs=parameters['General']['woodchip_price'],

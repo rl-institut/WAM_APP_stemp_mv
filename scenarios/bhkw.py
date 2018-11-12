@@ -36,10 +36,10 @@ def create_energysystem(**parameters):
     return energysystem
 
 
-def add_bhkw_technology(label, energysystem, timeseries, parameters):
+def add_bhkw_technology(demand, energysystem, timeseries, parameters):
     # Get subgrid busses:
     sub_b_th = basic_setup.find_element_in_groups(
-        energysystem, f"b_{label}_th")
+        energysystem, f"b_{demand.name}_th")
     b_gas = basic_setup.find_element_in_groups(
         energysystem, "b_gas")
 
@@ -50,9 +50,9 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
     # Add transformer to feed in bhkw_el to net:
     t_bhkw_net = Transformer(
         label=AdvancedLabel(
-            f'transformer_from_{label}_el',
+            f'transformer_from_{demand.name}_el',
             type='Transformer',
-            belongs_to=label
+            belongs_to=demand.name
         ),
         inputs={
             b_bhkw_el: Flow(
@@ -72,7 +72,7 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
 
     bhkw = Transformer(
         label=AdvancedLabel(
-            f'{label}_chp', type='Transformer', belongs_to=label),
+            f'{demand.name}_chp', type='Transformer', belongs_to=demand.name),
         inputs={
             b_gas: Flow(
                 variable_costs=parameters['General']['gas_price'],
@@ -104,7 +104,7 @@ def add_bhkw_technology(label, energysystem, timeseries, parameters):
     invest = Investment(ep_costs=epc)
     invest.capex = capex
     gas_heating = Transformer(
-        label=AdvancedLabel(f'{label}_gas_heating', type='Transformer'),
+        label=AdvancedLabel(f'{demand.name}_gas_heating', type='Transformer'),
         inputs={
             b_gas: Flow(
                 variable_costs=parameters['General']['gas_price'],

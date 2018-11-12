@@ -6,7 +6,6 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.postgres.fields import ArrayField, JSONField
 
-from utils.highcharts import Highchart
 from stemp import constants
 
 
@@ -122,6 +121,10 @@ class Household(models.Model):
     def contains_radiator(self):
         return self.heat_type == constants.HeatType.radiator.name
 
+    @property
+    def max_pv_size(self):
+        return self.roof_area / constants.QM_PER_PV_KW
+
 
 class District(models.Model):
     name = models.CharField(max_length=255)
@@ -153,3 +156,7 @@ class District(models.Model):
                 for hh in self.households.all()
             ]
         )
+
+    @property
+    def max_pv_size(self):
+        return sum([hh.max_pv_size for hh in self.households.all()])

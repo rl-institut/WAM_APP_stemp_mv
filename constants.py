@@ -8,6 +8,7 @@ TIME_INDEX = [str(i + 1) + 'h' for i in range(24)]
 KELVIN = 273.15
 ENERGY_PER_LITER = 0.058
 QM_PER_PERSON = 44
+QM_PER_PV_KW = 7
 ENERGY_PER_QM_PER_YEAR = {'EFH': 90, 'MFH': 70}
 LOCATION = (11.181475, 53.655119)  # Lützow (lon,lat)
 

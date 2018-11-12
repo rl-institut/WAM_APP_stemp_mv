@@ -43,14 +43,14 @@ def create_energysystem(**parameters):
     return energysystem
 
 
-def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
+def add_pv_heatpump_technology(demand, energysystem, timeseries, parameters):
     # Get subgrid busses:
     sub_b_th = basic_setup.find_element_in_groups(
-        energysystem, f"b_{label}_th")
+        energysystem, f"b_{demand.name}_th")
 
     # Add electricity busses:
     sub_b_el = Bus(label=AdvancedLabel(
-        f'b_{label}_el', type='Bus', belongs_to=label))
+        f'b_{demand.name}_el', type='Bus', belongs_to=demand.name))
     b_el_net = Bus(label=AdvancedLabel('b_el_net', type='Bus'), balanced=False)
     energysystem.add(sub_b_el, b_el_net)
 
@@ -67,7 +67,10 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
 
     hp = Transformer(
         label=AdvancedLabel(
-            f"{label}_heat_pump", type='Transformer', belongs_to=label),
+            f"{demand.name}_heat_pump",
+            type='Transformer',
+            belongs_to=demand.name
+        ),
         inputs={
             sub_b_el: Flow(
                 investment=hp_invest,
@@ -83,10 +86,14 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     lifetime = parameters['PV']['lifetime']
     opex_fix = parameters['PV']['opex_fix']
     epc = annuity(capex, lifetime, wacc) + opex_fix
-    pv_invest = Investment(ep_costs=epc)
+    pv_invest = Investment(ep_costs=epc, maximum=demand.max_pv_size)
     pv_invest.capex = capex
     pv = Source(
-        label=AdvancedLabel(f"{label}_pv", type='Source', belongs_to=label),
+        label=AdvancedLabel(
+            f"{demand.name}_pv",
+            type='Source',
+            belongs_to=demand.name
+        ),
         outputs={
             sub_b_el: Flow(
                 actual_value=timeseries['pv'],
@@ -100,9 +107,9 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     # Add transformer to get electricty from net for heat pump:
     t_net_el = Transformer(
         label=AdvancedLabel(
-            f'transformer_net_to_{label}_el',
+            f'transformer_net_to_{demand.name}_el',
             type='Transformer',
-            belongs_to=label
+            belongs_to=demand.name
         ),
         inputs={
             b_el_net: Flow(
@@ -115,9 +122,9 @@ def add_pv_heatpump_technology(label, energysystem, timeseries, parameters):
     # Add transformer to feed in pv to net:
     t_pv_net = Transformer(
         label=AdvancedLabel(
-            f'transformer_from_{label}_el',
+            f'transformer_from_{demand.name}_el',
             type='Transformer',
-            belongs_to=label
+            belongs_to=demand.name
         ),
         inputs={
             sub_b_el: Flow(
