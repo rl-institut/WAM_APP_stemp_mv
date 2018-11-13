@@ -1,14 +1,12 @@
 docopt
 shapely
 feedinlib
-bokeh
-pandas
-numpy
 scipy
 configobj
 requests
 pathos
-psycopg2
+psycopg2-binary
 sqlalchemy
 sqlahelper
 celery
+-e git://github.com/henhuy/oemof.git@oemof_kopy#egg=oemof
