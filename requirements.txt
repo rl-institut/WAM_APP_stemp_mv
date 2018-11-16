@@ -8,5 +8,6 @@ pathos
 psycopg2-binary
 sqlalchemy
 sqlahelper
+geoalchemy2
 celery
 -e git://github.com/henhuy/oemof.git@oemof_kopy#egg=oemof
