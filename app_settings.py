@@ -64,10 +64,8 @@ def import_scenario(scenario):
     return import_module('.' + module_name, package=splitted[0])
 
 
-SCENARIO_MODULES = {
-    scenario: import_scenario(scenario)
-    for scenario in ACTIVATED_SCENARIOS
-}
+# SCENARIO_MODULES are set in apps.StempConfig.ready:
+SCENARIO_MODULES = None
 SCENARIO_PARAMETERS = {
     scenario: ConfigObj(
         os.path.join(
