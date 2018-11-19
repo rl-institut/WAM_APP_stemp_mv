@@ -66,5 +66,5 @@ class OEPTimeseries(Base):
 
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(50))
-    meta = Column(JSON)
+    meta_data = Column(JSON)
     data = Column(ARRAY(FLOAT))

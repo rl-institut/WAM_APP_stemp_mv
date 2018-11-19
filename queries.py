@@ -68,7 +68,7 @@ def insert_pv_and_temp():
     }
     temp = oep_models.OEPTimeseries(
         name='Temperature',
-        meta=meta,
+        meta_data=meta,
         data=temperature
     )
     session.add(temp)
@@ -81,7 +81,7 @@ def insert_pv_and_temp():
     }
     pv = oep_models.OEPTimeseries(
         name='PV',
-        meta=meta,
+        meta_data=meta,
         data=pv_feedin['pv_feedin']
     )
     session.add(pv)
@@ -118,7 +118,7 @@ def insert_heat_demand():
     session.add_all([
         oep_models.OEPTimeseries(
             name='Heat Demand EFH',
-            meta={
+            meta_data={
                 'name': 'Heat demand for EFH',
                 'source': 'oemof/demandlib'
             },
@@ -126,7 +126,7 @@ def insert_heat_demand():
         ),
         oep_models.OEPTimeseries(
             name='Heat Demand MFH',
-            meta={
+            meta_data={
                 'name': 'Heat demand for MFH',
                 'source': 'oemof/demandlib'
             },
@@ -148,7 +148,7 @@ def insert_dhw_timeseries():
     }
     hot_water = oep_models.OEPTimeseries(
         name='Hot Water',
-        meta=meta,
+        meta_data=meta,
         data=hot_water_profile[0].values.tolist()
     )
 
@@ -160,7 +160,7 @@ def insert_dhw_timeseries():
     }
     hot_water_energy = oep_models.OEPTimeseries(
         name='Hot Water Energy',
-        meta=meta,
+        meta_data=meta,
         data=hot_water_energy_profile[0].values.tolist()
     )
 
