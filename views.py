@@ -189,9 +189,10 @@ class TechnologyView(TemplateView):
             if 'description' in params['LABELS']
         }
 
+        demand = session.get_demand()
+
         # Add warning if radiator is chosen in combination with heatpump:
         if 'pv_heatpump' in app_settings.ACTIVATED_SCENARIOS:
-            demand = session.get_demand()
             if demand.contains_radiator():
                 technology_information['pv_heatpump']['warning'] = (
                     app_settings.SCENARIO_PARAMETERS[
