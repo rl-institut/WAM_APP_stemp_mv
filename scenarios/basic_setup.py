@@ -53,6 +53,7 @@ def upload_scenario_parameters():
                 ]
                 session.add_all(scenarios)
                 transaction.commit()
+                logging.info(f'Scenario upload: {sc_setup} done.')
 
 
 def find_element_in_groups(energysystem, label):

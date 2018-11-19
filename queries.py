@@ -17,7 +17,6 @@ application = get_wsgi_application()
 from stemp import constants
 from stemp.models import Simulation
 
-import stemp.app_settings
 from db_apps import coastdat, oemof_results
 from stemp import oep_models
 from stemp.scenarios import basic_setup
@@ -219,15 +218,3 @@ def delete_stored_simulations():
     session.query(oemof_results.OemofSequence).delete()
     session.query(oemof_results.OemofData).delete()
     transaction.commit()
-
-
-if __name__ == '__main__':
-    # delete_oep_tables()
-    # create_oep_tables()
-
-    # insert_pv_and_temp()
-    # insert_heat_demand()
-    delete_stored_simulations()
-    # delete_scenarios()
-    # insert_scenarios()
-    # insert_dhw_timeseries()

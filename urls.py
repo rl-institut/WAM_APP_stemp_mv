@@ -1,11 +1,14 @@
 
 from django.urls import path
+
+from wam.admin import wam_admin_site
 from stemp.views import (
     IndexView, ResultView, ParameterView, DemandSingleView,
     DemandDistrictView, TechnologyView,
     DemandSelectionView
 )
 from stemp import views_dynamic
+from stemp import views_admin
 
 app_name = 'stemp'
 
@@ -55,5 +58,13 @@ urlpatterns = [
     path(
         'ajax/get_roof_area/',
         views_dynamic.get_roof_area,
+    ),
+]
+
+admin_url_patterns = [
+    path(
+        'stemp/manage',
+        wam_admin_site.admin_view(views_admin.ManageView.as_view()),
+        name='manage'
     ),
 ]

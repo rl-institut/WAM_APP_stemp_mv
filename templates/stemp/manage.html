@@ -1,0 +1,15 @@
+
+<form method="post">
+  {% csrf_token %}
+  <ul style="list-style-type:none">
+    <li><input type="submit" name="recreate_oep_tables" value="Recreate (empty!) OEP tables"></li>
+    <li><input type="submit" name="reload_scenarios" value="Reload scenarios"></li>
+    <li><input type="submit" name="insert_dhw_timeseries" value="Insert DHW Timeseries"></li>
+    <li><input type="submit" name="insert_heat_demand" value="Insert heat demand"></li>
+    <li><input type="submit" name="insert_pv_and_temp" value="Insert PV and Temperature"></li>
+  </ul>
+</form>
+
+{% if info %}
+Info: {{info}}
+{% endif %}
