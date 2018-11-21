@@ -15,7 +15,7 @@
         </button>
       {% else %}
         {% if is_district_hh %}
-          <button type="submit" class="btn btn-apply btn-apply--secondary" name="done" id={{done_id|default:"done"}}>
+          <button type="submit" class="btn btn-apply btn-apply--secondary" name="done" id={{done_id|default:"done"}}{% if function %} onclick="{{function}}"{% endif %}>
             ​Hinzufügen
             <i class ="icon ion-android-add​ icon--small"></i>
           </button>

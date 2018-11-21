@@ -6,11 +6,11 @@
 
 {% block content %}
 
-<div class="grid-container fluid u-no-padding">
-  <div class="grid-x">
+<div class="cell large-auto large-cell-block-container">
+  <div class="grid-x" style="height:100%">
 
     <!-- STEPS INFO START (LEFT) -->
-    <div class="cell large-4 l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
+    <aside class="cell large-4 large-cell-block-y l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
       <div class="cell"><h1>{{labels.index}}</h1></div>
       <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
         <li class="current"><span class="show-for-sr">{{labels.index_tip}}</span> 1</li>
@@ -24,63 +24,63 @@
         <h2 class="scen-create__header">{{labels.title}}</h2>
         <p class="scen-create__text show-for-large">{{labels.text}}</p>
       </div>
-    </div>
+    </aside>
     <!-- STEPS INFO END -->
 
     <!-- STEPS TASKS START (RIGHT) -->
-    <div class="cell large-8 large-offset-4 l-bg-color-w scen-create__wrapper u-text--center">
-      <form class="grid-x scen-create__form" method="post" id="district">
-        {% csrf_token %}
-        <input type="hidden" name="district_name" id="district_name" value="">
-        <input type="hidden" name="district_status" id="district_status" value="{{district_status}}">
+    <div class="cell large-8 large-cell-block-y">
+      <div class="grid-y large-grid-frame">
+        <main class="cell large-auto large-cell-block-y main-content-wrap">
 
-        <div class="cell medium-10 medium-offset-1 scen-create__form-header">
-          <h3>{{demand_name|default:"Neues Viertel"}}</h3>
-          <!--<div class="icon-save">-->
-            <!--<a href="#" onclick="district_submit()">-->
-              <!--<img src="{% static 'stemp/img/icons_custom/Enavi_Save_1_ungültig.svg' %}" alt="Speichern" title="Als Szenario speichern">-->
-            <!--</a>-->
-          <!--</div>-->
-          <div class="icon-load">
-            <a data-open="load_modal">
-              <img src="{% static 'stemp/img/icons_custom/Enavi_Upload_ungültig.svg' %}" alt="Gespeichertes Viertel laden" title="Gespeichertes Szenario laden">
-            </a>
-          </div>
-        </div>
-
-        <div class="cell large-10 large-offset-1 card-medium">
-          <div class="grid-container">
-            <div class="grid-x grid-padding-x small-up-1 medium-up-2">
-              {% for field in district_form %}
-                {{field}}
-              {% endfor %}
+          <div class="cell scen-create__form u-text--center">
+            <h3>{{demand_name|default:"Neues Viertel"}}</h3>
+            <div class="icon-load">
+              <a data-open="load_modal">
+                <img src="{% static 'stemp/img/icons_custom/Enavi_Upload_ungültig.svg' %}" alt="Gespeichertes Viertel laden" title="Gespeichertes Szenario laden">
+              </a>
             </div>
           </div>
-        </div>
+
+          <form class="grid-x" method="post" id="district">
+            {% csrf_token %}
+            <input type="hidden" name="district_name" id="district_name" value="">
+            <input type="hidden" name="district_status" id="district_status" value="{{district_status}}">
+
+            <div class="cell large-10 large-offset-1 card-medium">
+              <div class="grid-container">
+                <div class="grid-x grid-padding-x small-up-1 medium-up-2">
+                  {% for field in district_form %}
+                    {{field}}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </main>
+        <!-- STEPS TASKS END -->
 
         {% url 'stemp:demand_selection' as back_url%}
 
         {% if district_status == 'unchanged' %}
-          {% include 'includes/button_section.html' with back_url=back_url %}
+          {% include 'includes/button_section.html' with back_url=back_url function="$('#district').submit();" %}
         {% else %}
-          {% include 'includes/button_section.html' with back_url=back_url modal="true" done_id="district_modal"%}
+          {% include 'includes/button_section.html' with back_url=back_url modal="true" done_id="district_modal" function="$('#district').submit();" %}
         {% endif %}
-
-        <div class="reveal" id="district_modal" data-reveal>
-          {% if district_status == 'changed' %}
-            Das Viertel wurde geändert - was soll passieren?<br>
-            <input type="button" onclick="district_save()" class="btn btn-cta btn-submit" value="Änderungen speichern"><br>
-            Viertel unter neuem Namen speichern:
-          {% else %}
-            Wie soll das neue Viertel heißen?
-          {% endif %}
-          <input type="text" name="district_name" id="district_name_modal">
-          <input type="button" onclick="district_submit()" class="btn btn-cta btn-submit" value="Neues Viertel anlegen">
-        </div>
-
-      </form>
+      </div>
     </div>
-    <!-- STEPS TASKS END -->
+
+    <div class="reveal" id="district_modal" data-reveal>
+      {% if district_status == 'changed' %}
+        Das Viertel wurde geändert - was soll passieren?<br>
+        <input type="button" onclick="district_save()" class="btn btn-cta btn-submit" value="Änderungen speichern"><br>
+        Viertel unter neuem Namen speichern:
+      {% else %}
+        Wie soll das neue Viertel heißen?
+      {% endif %}
+      <input type="text" name="district_name" id="district_name_modal">
+      <input type="button" onclick="district_submit()" class="btn btn-cta btn-submit" value="Neues Viertel anlegen">
+    </div>
 
     <!-- LOAD MODAL START -->
     <div class="reveal" id="load_modal" data-reveal>
