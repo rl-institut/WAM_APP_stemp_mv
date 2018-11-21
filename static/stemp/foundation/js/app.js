@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 45);
+/******/ 	return __webpack_require__(__webpack_require__.s = 44);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -14584,8 +14584,6 @@ __webpack_require__(42);
 
 __webpack_require__(43);
 
-__webpack_require__(44);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 window.$ = _jquery2.default;
@@ -22368,41 +22366,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 /***/ }),
 /* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _jquery = __webpack_require__(0);
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// ------------------- START ----------------------//
-// Makes btn div position fixed or relative according to the window and form div height
-function compareHeight() {
-
-  console.log('compareHeight()');
-
-  var windowHeight = (0, _jquery2.default)(window).height();
-  var windowWidth = (0, _jquery2.default)(window).width();
-  var formHeight = (0, _jquery2.default)('.scen-create__form').height();
-
-  console.log("windowHeight = " + windowHeight);
-  console.log("windowWidth = " + windowWidth);
-  console.log("formHeight = " + formHeight);
-
-  if (windowHeight <= formHeight - 200 && windowWidth >= 1024 || windowHeight - 300 <= formHeight && windowWidth >= 640 && windowWidth < 1024 || windowHeight - 300 <= formHeight && windowWidth < 640) {
-    (0, _jquery2.default)('.scen-create__btn').css({ 'position': 'relative', 'width': '100%' });
-  }
-}
-
-// compareHeight();
-// ------------------- END ----------------------//
-
-/***/ }),
-/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40220,7 +40183,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 });
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40240,6 +40203,7 @@ function onSmallScreen() {
 
   var windowWidth = (0, _jquery2.default)(window).width();
 
+  // display all navigation items vertically
   if (windowWidth < 640) {
     (0, _jquery2.default)('#nav-list-vertical').addClass('vertical');
   }
@@ -40249,7 +40213,7 @@ onSmallScreen();
 // ------------------- END ----------------------//
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40301,7 +40265,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 });
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40327,7 +40291,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 });
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40361,7 +40325,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 });
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(20);
