@@ -176,7 +176,7 @@ class TechnologyView(TemplateView):
 
     def get_context_data(self, session, **kwargs):
         context = super(TechnologyView, self).get_context_data(**kwargs)
-        choices = (
+        choices = tuple(
             (sc, params['LABELS']['name'])
             for sc, params in app_settings.SCENARIO_PARAMETERS.items()
         )
@@ -203,6 +203,7 @@ class TechnologyView(TemplateView):
             'technology',
             'Technology',
             choices=choices,
+            initial=[choice[0] for choice in choices],
             information=technology_information
         )
         context['demand_type'] = session.demand_type.suffix()

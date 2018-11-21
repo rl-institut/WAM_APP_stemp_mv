@@ -12,7 +12,7 @@
         {% else %}
           {{option.label}}
         {% endif %}
-        <input type="checkbox" name="{{option.name}}" value="{{option.value}}" id="{{option.name}}_{{option.index}}">
+        <input type="checkbox" name="{{option.name}}" value="{{option.value}}" id="{{option.name}}_{{option.index}}"{% if option.selected %} checked {% endif %}>
         <span class="checkmark"></span>
       </label>
       <span class="has-tip--no-border">
