@@ -1,3 +1,4 @@
+<!doctype html>
 
 {% load static %}
 
@@ -13,9 +14,11 @@
   </head>
   <body>
     <div class="{% block body-class %}l-bg-color u-vh--100{% endblock %}">
-      {% include 'stemp/navigation.html' %}
+      <div class="grid-y large-grid-frame">
+        {% include 'stemp/navigation.html' %}
 
-      {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+      </div>
     </div>
     <script src="{% static 'stemp/foundation/js/app.js' %}"></script>
     {% block scripts %}{% endblock %}

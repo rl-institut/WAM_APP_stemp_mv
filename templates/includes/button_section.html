@@ -1,13 +1,13 @@
 <!-- BUTTONS SECTION START -->
-<div class="cell large-8 u-text--center scen-create__btn scen-create__btn--fixed">
+<div class="cell shrink footer footer-btns">
   <div class="grid-x">
-    <div class="u-text--center btn-left">
-      <a href={{back_url}} class="btn btn--hollow">
+    <div class="cell footer-btns__left small-6">
+      <a href={{back_url}} class="btn btn--hollow btn--small">
         <i class ="icon ion-chevron-left icon--small"></i>
         Zurück
       </a>
     </div>
-    <div class="u-text--center btn-right">
+    <div class="cell footer-btns__right small-6">
       {% if modal %}
         <button type="button" class="btn btn-cta" data-open={{done_id|default:"done"}}>
           Weiter
@@ -28,11 +28,14 @@
       {% endif %}
     </div>
   </div>
-  <a href="{% url 'stemp:index' %}">
-    <span class="anchor-text">
-    <i class ="icon ion-close icon--small"></i>
-    Abbrechen
-    </span>
-  </a>
+
+  <div class="cell u-text--center">
+    <a href="{% url 'stemp:index' %}">
+      <span class="anchor-text">
+      <i class ="icon ion-close icon--small"></i>
+      Abbrechen
+      </span>
+    </a>
+  </div>
 </div>
 <!-- BUTTONS SECTION END -->
