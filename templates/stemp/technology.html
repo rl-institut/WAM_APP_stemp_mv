@@ -6,11 +6,11 @@
 
 {% block content %}
 
-<div class="grid-container fluid u-no-padding">
-  <div class="grid-x">
+<div class="cell large-auto large-cell-block-container">
+  <div class="grid-x" style="height:100%">
 
     <!-- STEPS INFO START (LEFT) -->
-    <div class="cell large-4 l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
+    <aside class="cell large-4 large-cell-block-y l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
       <div class="cell"><h1>{{demand_label}}</h1></div>
       <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
         <li>1</li>
@@ -24,34 +24,47 @@
         <h2 class="scen-create__header">Heizungsoptionen</h2>
         <p class="scen-create__text show-for-large">Wählen Sie eine Heizung aus, mit der Sie das Viertelszenario berechnen können.</p>
       </div>
-    </div>
+    </aside>
     <!-- STEPS INFO END -->
 
     <!-- STEPS TASKS START (RIGHT) -->
-    <div class="cell large-8 large-offset-4 l-bg-color-w scen-create__wrapper u-text--center">
+    <div class="cell large-8 large-cell-block-y">
+      <div class="grid-y large-grid-frame main-content">
+        <main class="cell large-auto large-cell-block-y main-content-wrap">
 
-      <form class="grid-x scen-create__form" action="{% url 'stemp:technology' %}" method="post">
-        {% csrf_token %}
-        <div class="cell">
-          <h3>{{demand_name}}</h3>
-        </div>
+          <form class="grid-x scen-create__form" action="{% url 'stemp:technology' %}" method="post" id="technology_form">
+            {% csrf_token %}
+            <div class="cell scen-create__form u-text--center">
+              <h3>{{demand_name}}</h3>
+            </div>
 
-        {% for field in technology %}
-          {{field}}
-        {% endfor %}
+            {% for field in technology %}
+              {{field}}
+            {% endfor %}
+
+          </form>
+        </main>
 
         {% if demand_type == 'single' %}
-          {% url 'stemp:demand_single' as back_url %}
-        {% else %}
-          {% url 'stemp:demand_district' as back_url %}
-        {% endif %}
-        {% include 'includes/button_section.html' with back_url=back_url %}
+              {% url 'stemp:demand_single' as back_url %}
+            {% else %}
+              {% url 'stemp:demand_district' as back_url %}
+            {% endif %}
+        {% include 'includes/button_section.html' with back_url=back_url function="done();" %}
 
-      </form>
+      </div>
     </div>
     <!-- STEPS TASKS END -->
 
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+  <script language="JavaScript">
+  function done() {
+    $("#technology_form").submit();
+  };
+  </script>
 {% endblock %}

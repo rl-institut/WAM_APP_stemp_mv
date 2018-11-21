@@ -79,7 +79,7 @@
         <!-- FORM END -->
 
         {% url 'stemp:demand_selection' as back_url%}
-        {% include 'includes/button_section.html' with back_url=back_url %}
+        {% include 'includes/button_section.html' with back_url=back_url function='done();' %}
       </div>
     </div>
   </div>
@@ -91,16 +91,13 @@
 
 {% block scripts %}
   <script language="JavaScript">
-  $(document).ready(function() {
-    // Allows one submit button for forms in both tabs:
-    $("#done").click(function() {
-      if ($("#tabs-1").attr("aria-hidden") == "true") {
-        $("#list").submit();
-      } else {
-        $("#household_form").submit();
-      }
-    });
-  });
+  function done() {
+    if ($("#tabs-1").attr("aria-hidden") == "true") {
+      $("#list").submit();
+    } else {
+      $("#household_form").submit();
+    }
+  };
   </script>
   {{household_form.media}}
 {% endblock %}
