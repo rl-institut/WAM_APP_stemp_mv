@@ -1,6 +1,7 @@
 {% extends "stemp/base.html" %}
 
 {% load staticfiles %}
+{% load labels %}
 {% load crispy_forms_tags %}
 
 {% block body-class %}u-vh--100{% endblock %}
@@ -36,6 +37,10 @@
           <div class="grid-x scen-create__form">
             <div class="cell scen-create__form u-text--center">
               <h3>{{demand_name}}</h3>
+            </div>
+
+            <div class="panel">
+              {% label 'parameter:note' safe=True %}
             </div>
 
             <form class="cell medium-10 medium-offset-1 large-8 large-offset-2" id="parameter_form" action="{% url 'stemp:parameter' %}" method="post">
