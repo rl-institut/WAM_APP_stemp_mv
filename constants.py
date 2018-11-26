@@ -13,7 +13,21 @@ ENERGY_PER_QM_PER_YEAR = {'EFH': 90, 'MFH': 70}
 LOCATION = (11.181475, 53.655119)  # Lützow (lon,lat)
 
 DEFAULT_NUMBER_OF_PERSONS = 2
-DEFAULT_LITER_PER_DAY = 44
+DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER = 22
+
+
+class WarmwaterConsumption(Enum):
+    Low = 0
+    Medium = 1
+    High = 2
+
+    def in_liters(self):
+        return {
+            WarmwaterConsumption.Low: 30,
+            WarmwaterConsumption.Medium: 44,
+            WarmwaterConsumption.High: 60,
+        }.get(self)
+
 
 EFH = ('EFH', 'Heat Demand EFH')
 MFH = ('MFH', 'Heat Demand MFH')
@@ -33,20 +47,16 @@ class DemandType(IntEnum):
     District = 1
 
     def label(self):
-        if self.value == 0:
-            return 'Haushalt erstellen'
-        elif self.value == 1:
-            return 'Viertel erstellen'
-        else:
-            raise AttributeError(f'No label given for value={self.value}')
+        return {
+            DemandType.Single: 'Haushalt erstellen',
+            DemandType.District: 'Viertel erstellen'
+        }.get(self)
 
     def suffix(self):
-        if self.value == 0:
-            return 'single'
-        elif self.value == 1:
-            return 'district'
-        else:
-            raise AttributeError(f'No suffix given for value={self.value}')
+        return {
+            DemandType.Single: 'single',
+            DemandType.District: 'district'
+        }.get(self)
 
 
 class DistrictStatus(Enum):

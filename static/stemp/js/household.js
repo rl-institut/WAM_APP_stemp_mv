@@ -84,7 +84,16 @@ $("#energy_hand").change(function() {
   update_energy();
 });
 
-$("#id_warm_water_per_day").change(function() {
+$("#number_of_persons_slider").on('changed.zf.slider', function() {
+  update_energy();
+  set_square_meters($('#number_of_persons').val());
+  update_roof_area();
+  set_energy(
+    'person',
+    $('#number_of_persons').val(),
+    $('#id_house_type').val(),
+    true
+  );
   update_warm_water();
 });
 
@@ -115,22 +124,6 @@ function adapt_square_meters(value) {
   $('#id_square_meters').val(value);
   $('#square_update').html('');
   update_energy();
-};
-
-function update_warm_water() {
-  $.ajax({
-    url : "/stemp/ajax/get_warm_water_energy/",
-    type : "GET",
-    data : {
-      persons: $('#number_of_persons').val(),
-      liter: $('#id_warm_water_per_day').val()
-    },
-
-    // handle a successful response
-    success : function(json) {
-      $("#warm_water").val(json.energy);
-    }
-  });
 };
 
 function set_energy(choice, value, house_type, virtual=false) {
@@ -169,6 +162,31 @@ function set_square_meters(value) {
       } else {
         $('#square_update').html('');
       }
+    }
+  });
+};
+
+$("#warmwater_consumption").on('changed.zf.slider', function() {
+  update_warm_water();
+});
+
+function update_warm_water() {
+  warmwater_consumption = $("#warmwater_consumption").children('.slider-handle').attr('aria-valuenow')
+  if (isNaN(warmwater_consumption)) {
+    warmwater_consumption = 1;
+  }
+  $.ajax({
+    url : "/stemp/ajax/get_warm_water_energy/",
+    type : "GET",
+    data : {
+      persons: $('#number_of_persons').val(),
+      warmwater_consumption: warmwater_consumption
+    },
+
+    // handle a successful response
+    success : function(json) {
+      $("#id_warm_water_per_day").val(json.daily_warm_water);
+      $("#warm_water").val(json.energy);
     }
   });
 };

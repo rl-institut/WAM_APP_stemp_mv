@@ -177,7 +177,8 @@ class HouseholdForm(ModelForm):
         fields = '__all__'
         widgets = {
             'heat_demand': NumberInput(attrs={'readonly': True}),
-            'roof_area': NumberInput(attrs={'readonly': True})
+            'roof_area': NumberInput(attrs={'readonly': True}),
+            'warm_water_per_day': NumberInput(attrs={'readonly': True})
         }
 
     class Media:
@@ -188,7 +189,10 @@ class HouseholdForm(ModelForm):
             'square_meters': (
                 constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON
             ),
-            'warm_water_per_day': constants.DEFAULT_LITER_PER_DAY
+            'warm_water_per_day': (
+                constants.WarmwaterConsumption.Medium.in_liters() +
+                constants.DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER
+            )
         }
         super(HouseholdForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()

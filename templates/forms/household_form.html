@@ -1,5 +1,7 @@
 {% load staticfiles %}
 
+{% load labels %}
+
 <div class="grid-x">
   <div class="cell medium-10 medium-offset-1">
     <label for="{{form.number_of_persons.id_for_label}}" class="form__label">{{form.number_of_persons.label}}</label>
@@ -60,9 +62,40 @@
     </label>
   </div>
   Warmwasser:
+  <div class="cell medium-8">
+    <label for="warmwater_consumption" class="accordion-label">Wie hoch ist ihr Warmwasserverbrauch?</label>
+    <div class="small-2 medium-1 left">Gering</div>
+    <div class="small-2 medium-1 center">Mittel</div>
+    <div class="small-2 medium-1 right">Hoch</div>
+    <div class="slider slider-- accordion-slider" id="warmwater_consumption" data-slider data-start="0" data-initial-start="1" data-end="2" data-step="1" data-decimal="0">
+      <span class="slider-handle" data-slider-handle role="slider" tabindex="1"></span>
+      <span class="slider-fill" data-slider-fill></span>
+    </div>
+  </div>
+  <div>
   {{form.warm_water_per_day.label}}
+  <span class="has-tip--no-border">
+    <i data-open="modal-warmwater" class ="icon ion-information-circled icon--small info-box" title="Hier klicken um mehr Informationen zum Warmwasserverbrauch zu erhalten"></i>
+  </span>
   {{form.warm_water_per_day.errors}}
   {{form.warm_water_per_day}}
+  </div>
+  <div class="reveal" id="modal-warmwater" data-reveal>
+    <div class="grid-x technology">
+      <div class="cell technology__header">
+        <h2 style="font-size: 1.2rem">Warmwasserverbrauch</h2>
+      </div>
+      <div class="cell technology__img">
+        <img src="{% static 'stemp/img/Warmwasserverbrauch.svg' %}">
+      </div>
+      <div class="cell technology__text">
+        {% label 'demand:warmwater' app='stemp' %}
+      </div>
+    </div>
+    <button class="close-button" data-close aria-label="Schließen" type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
   <label class="form__label" for="warm_water">Jährlicher Energiebedarf durch Warmwasser:</label>
   <input type="number" id="warm_water">
   <div class="cell medium-10 medium-offset-1">
