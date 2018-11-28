@@ -13,7 +13,7 @@ from stemp import oep_models
 
 ACTIVATED_VISUALIZATIONS = list(filter(None, os.environ.get(
     'STEMP_ACTIVATED_VISUALIZATIONS', "").split(',')))
-STORE_LP_FILE = True
+STORE_LP_FILE = False
 
 ADDITIONAL_PARAMETERS = ConfigObj(
     os.path.join(settings.BASE_DIR, 'stemp', 'attributes.cfg'))
