@@ -3,6 +3,7 @@ from collections import namedtuple
 
 from stemp.results import aggregations as agg
 from stemp.results import highcharts
+from stemp.results import rankings
 
 Visualization = namedtuple(
     'Visualization',
@@ -10,6 +11,14 @@ Visualization = namedtuple(
 )
 
 VISUALIZATIONS = [
+    Visualization(
+        'ranked_invest',
+        agg.InvestmentAggregation,
+        rankings.Ranking(
+            'Anfangsinvestitionen',
+            ['Szenario', 'Investitionskosten']
+        )
+    ),
     Visualization(
         'lcoe',
         agg.LCOEAggregation,
