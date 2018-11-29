@@ -23,8 +23,7 @@
       <div class="grid-x grid-padding-x">
         {% for visualization in visualizations %}
           <div class="cell medium-6" style="margin-top: 2rem">
-            {{visualization.div|safe}}
-            {{visualization.script|safe}}
+            {{visualization}}
           </div>
         {% endfor %}
       </div>
