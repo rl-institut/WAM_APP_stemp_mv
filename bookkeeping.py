@@ -1,6 +1,6 @@
 
 from pathos.helpers import mp
-from stemp.scenarios import get_simulation_function
+from stemp.scenarios.simulation import get_simulation_function
 
 
 def simulate_energysystem(session):

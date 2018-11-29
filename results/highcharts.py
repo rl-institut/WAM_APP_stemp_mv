@@ -1,4 +1,3 @@
-
 from utils.highcharts import Highchart, RLI_THEME
 
 

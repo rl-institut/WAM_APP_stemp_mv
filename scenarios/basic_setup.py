@@ -4,7 +4,6 @@ import transaction
 import pandas
 import logging
 from collections import namedtuple
-from django.core.exceptions import AppRegistryNotReady
 
 from oemof.solph import (
     EnergySystem, Bus, Flow, Sink
@@ -13,13 +12,8 @@ from oemof.solph import (
 from stemp import app_settings
 from stemp import constants
 from stemp.oep_models import OEPScenario
-try:
-    from stemp.models import District, Household
-except AppRegistryNotReady:
-    logging.warning(
-        'Could not find django models. '
-        'Maybe you have to start django application first.'
-    )
+from stemp.models import District, Household
+
 
 DEFAULT_PERIODS = 8760
 

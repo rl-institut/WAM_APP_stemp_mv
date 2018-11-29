@@ -3,7 +3,7 @@ import sqlahelper
 
 from stemp.constants import DemandType, DistrictStatus
 from stemp.app_settings import SCENARIO_MODULES
-from stemp.scenarios import create_energysystem
+from stemp.scenarios.simulation import create_energysystem
 from stemp.bookkeeping import simulate_energysystem
 from stemp.models import Scenario, Parameter, Simulation, Household, District
 from db_apps.oemof_results import store_results

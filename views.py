@@ -7,7 +7,9 @@ from wam.settings import SESSION_DATA
 from stemp import app_settings
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
-from stemp import results, models, forms, visualizations
+from stemp import models, forms
+from stemp.results import highcharts
+from stemp.results import results
 
 
 def check_session(func):
@@ -295,9 +297,13 @@ class ResultView(TemplateView):
     def get_context_data(self, session, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
         context['save'] = forms.SaveSimulationForm()
-        visualization = results.ResultAnalysisVisualization(session.scenarios)
+
+        aggregated_results = results.ResultAggregations(
+            session.scenarios,
+            app_settings.ACTIVATED_VISUALIZATIONS
+        )
         context['visualizations'] = [
-            visualization.visualize(vis)
+            aggregated_results.visualize(vis.name)
             for vis in app_settings.ACTIVATED_VISUALIZATIONS
         ]
         return context
@@ -327,7 +333,7 @@ class HighchartTestView(TemplateView):
         context = {'visualizations': []}
 
         context['visualizations'].append(
-            visualizations.HCCosts(
+            highcharts.HCCosts(
                 pandas.DataFrame(
                     {
                         'Investitionskosten': [5.2, 5, 3.2, 2.8],
@@ -347,7 +353,7 @@ class HighchartTestView(TemplateView):
             )
         )
 
-        emissions = visualizations.HCEmissions(
+        emissions = highcharts.HCEmissions(
             pandas.Series(
                 [140, 140, 280, 220],
                 index=['BHKW', 'PV + Wärmepumpe', 'Ölheizung', 'Gasheizung'],
@@ -375,7 +381,7 @@ class HighchartTestView(TemplateView):
         )
 
         context['visualizations'].append(
-            visualizations.HCScatter(
+            highcharts.HCScatter(
                 pandas.DataFrame(
                     {
                         'BHKW': [11.6, 140],
