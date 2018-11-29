@@ -53,6 +53,21 @@ class CO2Analyzer(an.Analyzer):
         self.total += result
 
 
+class LCOEAutomatedDemandAnalyzer(an.LCOEAnalyzer):
+    def __init__(self):
+        super(LCOEAutomatedDemandAnalyzer, self).__init__([])
+
+    def init_analyzer(self):
+        # Find all demands:
+        for nodes in self.analysis.param_results:
+            try:
+                if nodes[1].tags is not None and 'demand' in nodes[1].tags:
+                    self.load_sinks.append(nodes[1])
+            except AttributeError:
+                pass
+        super(LCOEAutomatedDemandAnalyzer, self).init_analyzer()
+
+
 class ResultAnalysisVisualization(object):
     """
     Scenarios are loaded, analyzed and visualized within this class
@@ -86,18 +101,7 @@ class ResultAnalysisVisualization(object):
             result.analysis.add_analyzer(an.InvestAnalyzer())
             result.analysis.add_analyzer(an.VariableCostAnalyzer())
             result.analysis.add_analyzer(an.NodeBalanceAnalyzer())
-            result.analysis.analyze()
-
-            # Find all demands:
-            demands = []
-            for nodes in result.data[0]:
-                try:
-                    if nodes[1].tags is not None and 'demand' in nodes[1].tags:
-                        demands.append(nodes[1])
-                except AttributeError:
-                    pass
-
-            result.analysis.add_analyzer(an.LCOEAnalyzer(demands))
+            result.analysis.add_analyzer(LCOEAutomatedDemandAnalyzer())
             result.analysis.analyze()
 
     def __prepare_result_data(self, visualization):
@@ -182,7 +186,7 @@ class Strategy(object):
 
 class LCOEStrategy(Strategy):
     name = 'LCOE'
-    analyzer = an.LCOEAnalyzer
+    analyzer = LCOEAutomatedDemandAnalyzer
 
     def _get_data(self, result):
         data = result.analysis.get_analyzer(self.analyzer).result
