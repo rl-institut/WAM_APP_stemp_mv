@@ -1,6 +1,7 @@
 
 import pandas
 from collections import namedtuple
+from abc import ABC
 import sqlahelper
 
 from oemof.solph import analyzer as an
@@ -105,7 +106,7 @@ class ResultAnalysisVisualization(object):
             result.analysis.analyze()
 
     def __prepare_result_data(self, visualization):
-        return visualization.strategy.algorithm(self.results)
+        return visualization.strategy.aggregate(self.results)
 
     def visualize(self, name):
         visualization = VISUALIZATIONS[name]
@@ -119,12 +120,12 @@ class ResultAnalysisVisualization(object):
         pass
 
 
-class Strategy(object):
-    name = 'Strategy'
+class Aggregation(ABC):
+    name = 'Aggregation'
     analyzer = None
 
     @staticmethod
-    def _get_label(scenario, nodes):
+    def _get_label(nodes):
         # TODO: Export label mappings into cfg or scenario
         if isinstance(nodes, str):
             return nodes
@@ -132,9 +133,16 @@ class Strategy(object):
             return 'BHKW'
         elif nodes[0].name.endswith('chp'):
             return 'BHKW (Stromgutschrift)'
-        elif nodes[0].name.startswith('b_bhkw_el') and nodes[1] is not None and nodes[1].name.startswith('transformer_from'):
+        elif (
+                nodes[0].name.startswith('b_bhkw_el') and
+                nodes[1] is not None and
+                nodes[1].name.startswith('transformer_from')
+        ):
             return 'BHKW (Stromgutschrift)'
-        elif nodes[1] is not None and nodes[1].name.startswith('transformer_from'):
+        elif (
+                nodes[1] is not None and
+                nodes[1].name.startswith('transformer_from')
+        ):
             return 'PV (Stromgutschrift)'
         elif nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
             return 'Ölkessel'
@@ -160,15 +168,15 @@ class Strategy(object):
 
     def _get_data(self, result):
         data = result.analysis.get_analyzer(self.analyzer).result
-        return self._set_label(result.scenario.name, data)
+        return self._set_label(data)
 
-    def _set_label(self, scenario, data):
+    def _set_label(self, data):
         return {
-            self._get_label(scenario, k): v
+            self._get_label(k): v
             for k, v in data.items()
         }
 
-    def algorithm(self, results):
+    def aggregate(self, results):
         series = pandas.DataFrame(
             {
                 result.scenario.name: self._get_data(result)
@@ -184,7 +192,7 @@ class Strategy(object):
         return data.transpose()
 
 
-class LCOEStrategy(Strategy):
+class LCOEAggregation(Aggregation):
     name = 'LCOE'
     analyzer = LCOEAutomatedDemandAnalyzer
 
@@ -192,17 +200,17 @@ class LCOEStrategy(Strategy):
         data = result.analysis.get_analyzer(self.analyzer).result
         filtered_data = {}
         for k, v in data.items():
-            new_label = self._get_label(result.scenario.name, k)
+            new_label = self._get_label(k)
             if abs(v.investment) > 0.001:
                 filtered_data[new_label + ' (Investment)'] = v.investment
             if abs(v.variable_costs) > 0.001:
                 filtered_data[
-                    new_label + self._get_suffix(result.scenario.name, k)
+                    new_label + self._get_suffix(k)
                 ] = v.variable_costs
         return filtered_data
 
     @staticmethod
-    def _get_suffix(scenario, nodes):
+    def _get_suffix(nodes):
         if isinstance(nodes, str):
             return nodes
         if nodes[1] is not None and nodes[1].name.endswith('chp'):
@@ -224,7 +232,7 @@ class LCOEStrategy(Strategy):
         return ''
 
 
-class TotalDemandStrategy(Strategy):
+class TotalDemandAggregation(Aggregation):
     name = 'Wärmeverbrauch'
     analyzer = an.SequenceFlowSumAnalyzer
 
@@ -239,12 +247,12 @@ class TotalDemandStrategy(Strategy):
         ))
 
 
-class SizeStrategy(Strategy):
+class SizeAggregation(Aggregation):
     name = 'Sizes'
     analyzer = an.SizeAnalyzer
 
 
-class ProfileStrategy(Strategy):
+class ProfileAggregation(Aggregation):
     name = 'Profile'
 
     def _get_data(self, result):
@@ -274,12 +282,12 @@ class ProfileStrategy(Strategy):
         }
 
 
-class InvestmentStrategy(Strategy):
+class InvestmentAggregation(Aggregation):
     name = 'Investment'
     analyzer = TotalInvestmentAnalyzer
 
 
-class CO2Strategy(Strategy):
+class CO2Aggregation(Aggregation):
     name = 'CO2'
     analyzer = CO2Analyzer
 
@@ -291,21 +299,21 @@ Visualization = namedtuple(
 
 VISUALIZATIONS = {
     'lcoe': Visualization(
-        LCOEStrategy(),
+        LCOEAggregation(),
         visualizations.HCCosts(
             title='Wärmekosten',
             subtitle='Euro pro Kilowattstunde'
         )
     ),
     'invest': Visualization(
-        InvestmentStrategy(),
+        InvestmentAggregation(),
         visualizations.HCCosts(
             title='Investition',
             subtitle='Euro'
         )
     ),
     'size': Visualization(
-        SizeStrategy(),
+        SizeAggregation(),
         visualizations.HCStemp(
             title='Installierte Leistungen',
             subtitle='kW',
@@ -313,11 +321,11 @@ VISUALIZATIONS = {
         )
     ),
     'demand': Visualization(
-        TotalDemandStrategy(),
+        TotalDemandAggregation(),
         visualizations.HCStemp(title='Verbrauch', stacked=True)
     ),
     'co2': Visualization(
-        CO2Strategy(),
+        CO2Aggregation(),
         visualizations.HCStemp(
             title='CO2-Verbrauch',
             subtitle='g/kWh',
@@ -325,7 +333,7 @@ VISUALIZATIONS = {
         )
     ),
     'profile': Visualization(
-        ProfileStrategy(),
+        ProfileAggregation(),
         visualizations.HCStemp(title='Profile', style='line')
     )
 }
