@@ -16,7 +16,18 @@ VISUALIZATIONS = [
         agg.InvestmentAggregation,
         rankings.Ranking(
             'Anfangsinvestitionen',
-            ['Szenario', 'Investitionskosten']
+            ['Szenario', 'Investitionskosten'],
+            unit='€'
+        )
+    ),
+    Visualization(
+        'ranked_co2',
+        agg.CO2Aggregation,
+        rankings.Ranking(
+            'CO2 Verbrauch',
+            ['Szenario', 'CO2 Verbrauch'],
+            unit='g/kWh',
+            precision=2
         )
     ),
     Visualization(

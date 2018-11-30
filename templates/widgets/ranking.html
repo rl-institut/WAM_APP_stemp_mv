@@ -8,7 +8,7 @@
     {% endfor %}
     {% for index, value in data.iteritems %}
       <tr>
-        <td>{{forloop.counter}}</td><td>{{index}}</td><td>{{value}}</td>
+        <td>{{forloop.counter}}</td><td>{{index}}</td><td>{{value}} {{unit}}</td>
       </tr>
     {% endfor %}
   </table>
