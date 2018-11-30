@@ -31,10 +31,7 @@ def get_scenario_config(scenario):
 
 def create_energysystem(scenario_module, **parameters):
     # Check if all needed parameters are given:
-    needed = getattr(
-        scenario_module,
-        NEEDED_PARAMETERS
-    )
+    needed = scenario_module.Scenario.needed_parameters
     missing_components = [key for key in needed if key not in parameters]
     if len(missing_components) > 0:
         raise KeyError(
@@ -53,11 +50,8 @@ def create_energysystem(scenario_module, **parameters):
             )
 
     # Create energysystem:
-    create = getattr(
-        scenario_module,
-        CREATE_ENERGYSYSTEM_FCT
-    )
-    return create(**parameters)
+    scenario = scenario_module.Scenario(**parameters)
+    return scenario.energysystem
 
 
 def get_param_results(energysystem):
