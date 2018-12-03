@@ -136,3 +136,10 @@ class Scenario(basic_setup.BaseScenario):
             t_pv_net,
             t_net_el
         )
+
+    def get_data_label(cls, nodes):
+        if (
+                nodes[1] is not None and
+                nodes[1].name.startswith('transformer_from')
+        ):
+            return 'PV (Stromgutschrift)'

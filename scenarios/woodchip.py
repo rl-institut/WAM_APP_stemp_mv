@@ -56,3 +56,26 @@ class Scenario(basic_setup.BaseScenario):
                 sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
         self.energysystem.add(woodchip_heating)
+
+    @classmethod
+    def get_data_label(cls, nodes, suffix=False):
+        if not suffix:
+            if nodes[1] is not None and nodes[1].name.endswith('woodchip_heating'):
+                return 'Holzhackschnetzel'
+            elif (
+                    nodes[0] is not None and
+                    nodes[0].name.endswith('woodchip_heating')
+            ):
+                return 'Holzhackschnetzel'
+            else:
+                return super(Scenario, cls).get_data_label(nodes)
+        else:
+            if nodes[1] is not None and nodes[1].name.endswith('woodchip_heating'):
+                return ' (Holz)'
+            elif (
+                    nodes[0] is not None and
+                    nodes[0].name.endswith('woodchip_heating')
+            ):
+                return ' (OPEX)'
+            else:
+                return super(Scenario, cls).get_data_label(nodes, suffix=True)

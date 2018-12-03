@@ -10,58 +10,18 @@ class Aggregation(ABC):
     name = 'Aggregation'
     analyzer = None
 
-    @staticmethod
-    def _get_label(nodes):
-        # TODO: Export label mappings into cfg or scenario
-        if isinstance(nodes, str):
-            return nodes
-        if nodes[1] is not None and nodes[1].name.endswith('chp'):
-            return 'BHKW'
-        elif nodes[0].name.endswith('chp'):
-            return 'BHKW (Stromgutschrift)'
-        elif (
-                nodes[0].name.startswith('b_bhkw_el') and
-                nodes[1] is not None and
-                nodes[1].name.startswith('transformer_from')
-        ):
-            return 'BHKW (Stromgutschrift)'
-        elif (
-                nodes[1] is not None and
-                nodes[1].name.startswith('transformer_from')
-        ):
-            return 'PV (Stromgutschrift)'
-        elif nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
-            return 'Ölkessel'
-        elif (
-                nodes[0] is not None and
-                nodes[0].name.endswith('oil_heating')
-        ):
-            return 'Ölkessel'
-        elif nodes[1] is not None and nodes[1].name.endswith('gas_heating'):
-            return 'Gasheizung'
-        elif (
-                nodes[0] is not None and
-                nodes[0].name.endswith('gas_heating')
-        ):
-            return 'Gasheizung'
-        elif nodes[1] is not None and nodes[1].name.endswith('heat_pump'):
-            return 'Wärmepumpe'
-        elif nodes[0] is not None and nodes[0].name.endswith('pv'):
-            return 'PV'
-        elif nodes[0] is not None and nodes[0].name.endswith('net'):
-            return 'Stromkosten'
-        return '-'.join(map(str, nodes))
-
     @classmethod
     def _get_data(cls, result):
         data = result.analysis.get_analyzer(cls.analyzer).result
-        return cls._set_label(data)
+        return cls._set_label(data, result)
 
     @classmethod
-    def _set_label(cls, data):
+    def _set_label(cls, data, result):
+        scenario = result.scenario.module.Scenario
         return {
-            cls._get_label(k): v
+            scenario.get_data_label(k): v
             for k, v in data.items()
+            if not isinstance(k, str)
         }
 
     @classmethod
@@ -90,36 +50,22 @@ class LCOEAggregation(Aggregation):
         data = result.analysis.get_analyzer(cls.analyzer).result
         filtered_data = {}
         for k, v in data.items():
-            new_label = cls._get_label(k)
+            new_label = result.scenario.module.Scenario.get_data_label(k)
             if abs(v.investment) > 0.001:
                 filtered_data[new_label + ' (Investment)'] = v.investment
             if abs(v.variable_costs) > 0.001:
                 filtered_data[
-                    new_label + cls._get_suffix(k)
+                    new_label + cls._get_suffix(k, result)
                     ] = v.variable_costs
         return filtered_data
 
     @staticmethod
-    def _get_suffix(nodes):
+    def _get_suffix(nodes, result):
         if isinstance(nodes, str):
             return nodes
-        if nodes[1] is not None and nodes[1].name.endswith('chp'):
-            return ' (Gas)'
-        elif nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
-            return ' (Öl)'
-        elif (
-                nodes[0] is not None and
-                nodes[0].name.endswith('oil_heating')
-        ):
-            return ' (OPEX)'
-        elif nodes[1] is not None and nodes[1].name.endswith('gas_heating'):
-            return ' (Gas)'
-        elif (
-                nodes[0] is not None and
-                nodes[0].name.endswith('gas_heating')
-        ):
-            return ' (OPEX)'
-        return ''
+        else:
+            return result.scenario.module.Scenario.get_data_label(
+                nodes, suffix=True)
 
 
 class TotalDemandAggregation(Aggregation):

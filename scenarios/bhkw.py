@@ -171,3 +171,39 @@ class Scenario(basic_setup.BaseScenario):
                 {'value': str(int(eff))}
             )
         )
+
+    @classmethod
+    def get_data_label(cls, nodes, suffix=False):
+        if not suffix:
+            if nodes[1] is not None and nodes[1].name.endswith('chp'):
+                return 'BHKW'
+            elif nodes[0].name.endswith('chp'):
+                return 'BHKW (Stromgutschrift)'
+            elif (
+                    nodes[0].name.startswith('b_bhkw_el') and
+                    nodes[1] is not None and
+                    nodes[1].name.startswith('transformer_from')
+            ):
+                return 'BHKW (Stromgutschrift)'
+            elif (
+                    nodes[1] is not None and
+                    nodes[1].name.endswith('gas_heating')
+            ):
+                return 'Gasheizung'
+            elif (
+                    nodes[0] is not None and
+                    nodes[0].name.endswith('gas_heating')
+            ):
+                return 'Gasheizung'
+            else:
+                return super(Scenario, cls).get_data_label(nodes)
+        else:
+            if nodes[1] is not None and nodes[1].name.endswith('chp'):
+                return ' (Gas)'
+            elif (
+                    nodes[1] is not None and
+                    nodes[1].name.endswith('gas_heating')
+            ):
+                return ' (Gas)'
+            else:
+                return super(Scenario, cls).get_data_label(nodes, suffix=True)

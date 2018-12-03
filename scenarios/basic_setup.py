@@ -144,3 +144,11 @@ class BaseScenario(ABC):
             return District.objects.get(id=demand_id)
         else:
             raise ValueError('Unknown customer case "' + demand_type + '"')
+
+    @classmethod
+    @abstractmethod
+    def get_data_label(cls, nodes, suffix=False):
+        if suffix:
+            return ''
+        else:
+            return '-'.join(map(str, nodes))
