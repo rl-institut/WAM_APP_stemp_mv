@@ -1,7 +1,4 @@
 
-from django.utils.safestring import mark_safe
-from django.forms.renderers import get_default_renderer
-
 from utils.visualizations import VisualizationTemplate
 
 
@@ -32,19 +29,12 @@ class Ranking(VisualizationTemplate):
         self.data = self.data_handler.handle(self.data)
 
     def get_context(self, **kwargs):
-        return {
-            'div_id': kwargs.get('div_id', f'rank_{self.id}'),
-            'div_kwargs': kwargs.get('div_kwargs', {}),
-            'title': self.title,
-            'headers': self.headers,
-            'data': self.data,
-            'unit': self.unit
-        }
-
-    def render(self, **kwargs):
-        renderer = get_default_renderer()
-        context = self.get_context(**kwargs)
-        return mark_safe(renderer.render(self.template_name, context))
+        context = super(Ranking, self).get_context(**kwargs)
+        context['title'] = self.title
+        context['headers'] = self.headers
+        context['data'] = self.data
+        context['unit'] = self.unit
+        return context
 
 
 class InvestmentRanking(Ranking):

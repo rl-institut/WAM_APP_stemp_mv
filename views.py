@@ -8,7 +8,8 @@ from stemp import app_settings
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
 from stemp import models, forms
-from stemp.results import results, highcharts, rankings
+from stemp.results import results
+from stemp.visualizations import highcharts, rankings, comparisons
 from stemp.results import aggregations as agg
 
 
