@@ -1,25 +1,30 @@
 import sqlahelper
-from typing import Dict
+from typing import Dict, List
 
 from oemof.solph import analyzer as an
 from db_apps.oemof_results import restore_results
 
 from stemp.scenarios import basic_setup
+from stemp.user_data import SessionSimulation
 from stemp.results.aggregations import Aggregation
 
 
 class Result(object):
     def __init__(self, scenario):
-        self.scenario = scenario
+        self.scenario: SessionSimulation = scenario
         self.data = None
-        self.analysis = None
+        self.analysis: an.Analysis = None
 
 
 class ResultAggregations(object):
     """
     Scenarios are loaded, analyzed and aggregated within this class
     """
-    def __init__(self, scenarios, aggregations: Dict[str, Aggregation]):
+    def __init__(
+            self,
+            scenarios: List[SessionSimulation],
+            aggregations: Dict[str, Aggregation]
+    ):
         self.results = [Result(scenario) for scenario in scenarios]
         self.aggregations = aggregations
         self.init_scenarios()
