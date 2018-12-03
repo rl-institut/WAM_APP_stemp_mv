@@ -1,11 +1,11 @@
 import sqlahelper
-from typing import List
+from typing import Dict
 
 from oemof.solph import analyzer as an
 from db_apps.oemof_results import restore_results
 
 from stemp.scenarios import basic_setup
-from stemp.results.visualizations import Visualization
+from stemp.results.aggregations import Aggregation
 
 
 class Result(object):
@@ -19,9 +19,9 @@ class ResultAggregations(object):
     """
     Scenarios are loaded, analyzed and aggregated within this class
     """
-    def __init__(self, scenarios, visualizations: List[Visualization]):
+    def __init__(self, scenarios, aggregations: Dict[str, Aggregation]):
         self.results = [Result(scenario) for scenario in scenarios]
-        self.visualizations = visualizations
+        self.aggregations = aggregations
         self.init_scenarios()
         self.analyze()
 
@@ -39,14 +39,10 @@ class ResultAggregations(object):
     def analyze(self):
         for result in self.results:
             result.analysis = an.Analysis(result.data[1], result.data[0])
-            for visualization in self.visualizations:
+            for aggregation in self.aggregations.values():
                 result.analysis.add_analyzer(
-                    visualization.aggregation.analyzer())
+                    aggregation.analyzer())
             result.analysis.analyze()
 
-    def visualize(self, name):
-        visualization = next(
-            vis for vis in self.visualizations if vis.name == name)
-        aggregated_data = visualization.aggregation.aggregate(self.results)
-        visualization.template.set_data(aggregated_data)
-        return visualization.template
+    def aggregate(self, name):
+        return self.aggregations[name].aggregate(self.results)

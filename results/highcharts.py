@@ -174,3 +174,12 @@ class HCScatter(Highchart):
     def __init__(self, data):
         super(HCScatter, self).__init__(
             data, style='scatter', theme=RLI_THEME, setup=self.setup)
+
+
+class LCOEHighchart(HCCosts):
+    def __init__(self, data):
+        super(LCOEHighchart, self).__init__(
+            data=data,
+            title='Wärmekosten',
+            subtitle='Euro pro Kilowattstunde'
+        )

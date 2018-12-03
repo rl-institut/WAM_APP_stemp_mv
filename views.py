@@ -8,8 +8,8 @@ from stemp import app_settings
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
 from stemp import models, forms
-from stemp.results import highcharts
-from stemp.results import results
+from stemp.results import results, highcharts, rankings
+from stemp.results import aggregations as agg
 
 
 def check_session(func):
@@ -298,13 +298,17 @@ class ResultView(TemplateView):
         context = super(ResultView, self).get_context_data(**kwargs)
         context['save'] = forms.SaveSimulationForm()
 
+        aggregations = {
+            'invest': agg.InvestmentAggregation(),
+            'lcoe': agg.LCOEAggregation()
+        }
         aggregated_results = results.ResultAggregations(
             session.scenarios,
-            app_settings.ACTIVATED_VISUALIZATIONS
+            aggregations
         )
         context['visualizations'] = [
-            aggregated_results.visualize(vis.name)
-            for vis in app_settings.ACTIVATED_VISUALIZATIONS
+            rankings.InvestmentRanking(aggregated_results.aggregate('invest')),
+            highcharts.LCOEHighchart(aggregated_results.aggregate('lcoe'))
         ]
         return context
 

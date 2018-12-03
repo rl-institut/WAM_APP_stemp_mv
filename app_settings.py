@@ -8,18 +8,10 @@ from importlib import import_module
 import oedialect as _
 
 from wam import settings
-from utils.shortcuts import get_list_from_env
 from db_apps import oemof_results
 from stemp import oep_models
-from stemp.results import visualizations
 
 STORE_LP_FILE = False
-
-ACTIVATED_VISUALIZATIONS = [
-    vis
-    for vis in visualizations.VISUALIZATIONS
-    if vis.name in get_list_from_env('STEMP_ACTIVATED_VISUALIZATIONS')
-]
 
 ADDITIONAL_PARAMETERS = ConfigObj(
     os.path.join(settings.BASE_DIR, 'stemp', 'attributes.cfg'))

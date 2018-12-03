@@ -45,3 +45,24 @@ class Ranking(VisualizationTemplate):
         renderer = get_default_renderer()
         context = self.get_context(**kwargs)
         return mark_safe(renderer.render(self.template_name, context))
+
+
+class InvestmentRanking(Ranking):
+    def __init__(self, data):
+        super(InvestmentRanking, self).__init__(
+            'Anfangsinvestitionen',
+            ['Szenario', 'Investitionskosten'],
+            unit='€',
+            data=data
+        )
+
+
+class CO2Ranking(Ranking):
+    def __init__(self, data):
+        super(CO2Ranking, self).__init__(
+            'CO2 Verbrauch',
+            ['Szenario', 'CO2 Verbrauch'],
+            unit='g/kWh',
+            precision=2,
+            data=data
+        )
