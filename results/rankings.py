@@ -20,12 +20,12 @@ class Ranking(VisualizationTemplate):
     template_name = 'widgets/ranking.html'
 
     def __init__(self, title, headers, unit, data=None, **kwargs):
-        super(Ranking, self).__init__(data)
         self.title = title
         self.headers = headers
         self.unit = unit
         self.data = None
         self.data_handler = RankingDataHandler(**kwargs)
+        super(Ranking, self).__init__(data)
 
     def set_data(self, data):
         self.data = data.sum(axis=1)
