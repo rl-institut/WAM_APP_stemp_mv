@@ -3,59 +3,54 @@ from abc import ABC
 import pandas
 from oemof.solph import analyzer as an
 
-from stemp.results import analyzer
+from stemp.results import analyzer as stemp_an
 
 
 class Aggregation(ABC):
     name = 'Aggregation'
     analyzer = None
 
-    @classmethod
-    def _get_data(cls, result):
-        data = result.analysis.get_analyzer(cls.analyzer).result
-        return cls._set_label(data, result)
+    def _get_data(self, result):
+        data = result.analysis.get_analyzer(self.analyzer).result
+        return self._set_label(data, result)
 
-    @classmethod
-    def _set_label(cls, data, result):
-        scenario = result.scenario.module.Scenario
+    @staticmethod
+    def _set_label(data, result):
+        scenario = result.scenario.Scenario
         return {
             scenario.get_data_label(k): v
             for k, v in data.items()
             if not isinstance(k, str)
         }
 
-    @classmethod
-    def aggregate(cls, results):
-        series = pandas.DataFrame(
-            {
-                result.scenario.name: cls._get_data(result)
-                for result in results
-            }
-        )
-        series.name = cls.name
-        finalized = cls._finalize_data(series)
+    def aggregate(self, results):
+        aggregated_data = {
+            result.scenario.Scenario.name: self._get_data(result)
+            for result in results
+        }
+        df = pandas.DataFrame(aggregated_data)
+        df.name = self.name
+        finalized = self._finalize_data(df)
         return finalized
 
-    @staticmethod
-    def _finalize_data(data):
+    def _finalize_data(self, data):
         return data.transpose()
 
 
 class LCOEAggregation(Aggregation):
     name = 'LCOE'
-    analyzer = analyzer.LCOEAutomatedDemandAnalyzer
+    analyzer = stemp_an.LCOEAutomatedDemandAnalyzer
 
-    @classmethod
-    def _get_data(cls, result):
-        data = result.analysis.get_analyzer(cls.analyzer).result
+    def _get_data(self, result):
+        data = result.analysis.get_analyzer(self.analyzer).result
         filtered_data = {}
         for k, v in data.items():
-            new_label = result.scenario.module.Scenario.get_data_label(k)
+            new_label = result.scenario.Scenario.get_data_label(k)
             if abs(v.investment) > 0.001:
                 filtered_data[new_label + ' (Investment)'] = v.investment
             if abs(v.variable_costs) > 0.001:
                 filtered_data[
-                    new_label + cls._get_suffix(k, result)
+                    new_label + self._get_suffix(k, result)
                     ] = v.variable_costs
         return filtered_data
 
@@ -64,7 +59,7 @@ class LCOEAggregation(Aggregation):
         if isinstance(nodes, str):
             return nodes
         else:
-            return result.scenario.module.Scenario.get_data_label(
+            return result.scenario.Scenario.get_data_label(
                 nodes, suffix=True)
 
 
@@ -72,8 +67,7 @@ class TotalDemandAggregation(Aggregation):
     name = 'Wärmeverbrauch'
     analyzer = an.SequenceFlowSumAnalyzer
 
-    @classmethod
-    def _get_data(cls, result):
+    def _get_data(self, result):
         return dict(filter(
             lambda dct: (
                 dct[0][1].tags is not None and
@@ -92,8 +86,7 @@ class SizeAggregation(Aggregation):
 class ProfileAggregation(Aggregation):
     name = 'Profile'
 
-    @classmethod
-    def _get_data(cls, result):
+    def _get_data(self, result):
         demand = [
             v['sequences']['flow'][:100]
             for k, v in result.analysis.results.items()
@@ -120,11 +113,43 @@ class ProfileAggregation(Aggregation):
         }
 
 
-class InvestmentAggregation(Aggregation):
+class Ranking(Aggregation):
+    def __init__(self, ascending=True, precision=0):
+        self.ascending = ascending
+        self.precision = precision
+
+    def _finalize_data(self, data):
+        data = data.sum(axis=1)
+        data.sort_values(ascending=self.ascending, inplace=True)
+        data = data.round(decimals=self.precision)
+        return data.to_frame(self.name)
+
+
+class InvestmentRanking(Ranking):
     name = 'Investment'
-    analyzer = analyzer.TotalInvestmentAnalyzer
+    analyzer = stemp_an.TotalInvestmentAnalyzer
 
 
-class CO2Aggregation(Aggregation):
+class CO2Ranking(Ranking):
     name = 'CO2'
-    analyzer = analyzer.CO2Analyzer
+    analyzer = stemp_an.CO2Analyzer
+
+
+class TechnologieComparison(Aggregation):
+    name = 'Technologievergleich'
+    analyzer = {
+        'invest': stemp_an.TotalInvestmentAnalyzer,
+        'co2': stemp_an.CO2Analyzer
+    }
+
+    def aggregate(self, results):
+        df = pandas.DataFrame()
+        for result in results:
+            series = pandas.Series(name=result.scenario.Scenario.name)
+            for category, analyzer in self.analyzer.items():
+                data = result.analysis.get_analyzer(analyzer).result
+                data = self._set_label(data, result)
+                series[category] = '<br>'.join(
+                    f'{key}: {value}' for key, value in data.items())
+            df = df.append(series)
+        return df.transpose()

@@ -9,7 +9,7 @@ from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
 from stemp import models, forms
 from stemp.results import results
-from stemp.visualizations import highcharts, rankings, comparisons
+from stemp.visualizations import highcharts, dataframe
 from stemp.results import aggregations as agg
 
 
@@ -286,7 +286,8 @@ class ParameterView(TemplateView):
             scenario.parameter.update(
                 parameter_form.prepared_data(scenario.name))
             scenario.load_or_simulate()
-        return redirect('stemp:result')
+        return redirect(
+            'stemp:result', results=[sc.result_id for sc in session.scenarios])
 
 
 class ResultView(TemplateView):
@@ -295,28 +296,31 @@ class ResultView(TemplateView):
     def __init__(self, **kwargs):
         super(ResultView, self).__init__(**kwargs)
 
-    def get_context_data(self, session, **kwargs):
+    def get_context_data(self, result_ids, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
         context['save'] = forms.SaveSimulationForm()
 
         aggregations = {
-            'invest': agg.InvestmentAggregation(),
-            'lcoe': agg.LCOEAggregation()
+            'invest': agg.InvestmentRanking(),
+            'lcoe': agg.LCOEAggregation(),
+            'tech': agg.TechnologieComparison()
         }
         aggregated_results = results.ResultAggregations(
-            session.scenarios,
+            result_ids,
             aggregations
         )
         context['visualizations'] = [
-            rankings.InvestmentRanking(aggregated_results.aggregate('invest')),
-            highcharts.LCOEHighchart(aggregated_results.aggregate('lcoe'))
+            dataframe.InvestmentDataframe(
+                aggregated_results.aggregate('invest')),
+            dataframe.InvestmentDataframe(
+                aggregated_results.aggregate('tech')),
+            highcharts.LCOEHighchart(aggregated_results.aggregate('lcoe')),
         ]
         return context
 
-    @check_session
     def get(self, request, *args, **kwargs):
-        session = kwargs['session']
-        context = self.get_context_data(session)
+        result_ids = kwargs.get('results', [])
+        context = self.get_context_data(result_ids)
         return self.render_to_response(context)
 
     @check_session

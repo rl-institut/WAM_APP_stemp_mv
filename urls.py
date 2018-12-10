@@ -1,5 +1,6 @@
 
-from django.urls import path
+from django.urls import path, register_converter
+import cursive_re
 
 from wam.admin import wam_admin_site
 from stemp.views import (
@@ -9,6 +10,29 @@ from stemp.views import (
 )
 from stemp import views_dynamic
 from stemp import views_admin
+
+
+def get_list_regex():
+    number = cursive_re.one_or_more(
+        cursive_re.any_of(cursive_re.in_range('0', '9')))
+    regex = number + cursive_re.zero_or_more(cursive_re.text(',') + number)
+    return str(regex)
+
+
+class ListConverter:
+    regex = get_list_regex()
+
+    @staticmethod
+    def to_python(value):
+        return [int(v) for v in value.split(',')]
+
+    @staticmethod
+    def to_url(value):
+        return ','.join(map(str, value))
+
+
+register_converter(ListConverter, 'list')
+
 
 app_name = 'stemp'
 
@@ -37,7 +61,7 @@ urlpatterns = [
     ),
     path('technology/', TechnologyView.as_view(), name='technology'),
     path('parameter/', ParameterView.as_view(), name='parameter'),
-    path('result/', ResultView.as_view(), name='result'),
+    path('result/<list:results>', ResultView.as_view(), name='result'),
     path(
         'ajax/get_next_household_name/',
         views_dynamic.get_next_household_name,

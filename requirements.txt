@@ -10,5 +10,6 @@ sqlalchemy
 sqlahelper
 geoalchemy2
 celery
+cursive_re
 -e git://github.com/henhuy/oemof.git@oemof_kopy#egg=oemof
 -e git://github.com/oemof/demandlib#egg=demandlib
