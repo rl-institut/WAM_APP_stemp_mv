@@ -2,6 +2,7 @@
 import pandas
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
+from django.urls import reverse
 
 from wam.settings import SESSION_DATA
 from stemp import app_settings
@@ -11,6 +12,7 @@ from stemp import models, forms
 from stemp.results import results
 from stemp.visualizations import highcharts, dataframe
 from stemp.results import aggregations as agg
+from utils.widgets import Wizard
 
 
 def check_session(func):
@@ -35,9 +37,6 @@ class DemandSingleView(TemplateView):
     template_name = 'stemp/demand_single.html'
     is_district_hh = False
 
-    def __init__(self, **kwargs):
-        super(DemandSingleView, self).__init__(**kwargs)
-
     def get_labels(self):
         if self.is_district_hh:
             labels = app_settings.LABELS['demand_single']['District']
@@ -51,6 +50,7 @@ class DemandSingleView(TemplateView):
         context['list_form'] = forms.HouseholdSelectForm()
         context['labels'] = self.get_labels()
         context['is_district_hh'] = self.is_district_hh
+        context['wizard'] = Wizard([None] * 4, current=1)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -105,6 +105,7 @@ class DemandDistrictView(TemplateView):
         context['district_form'] = forms.DistrictListForm(
             session.current_district)
         context['labels'] = app_settings.LABELS['demand_district']
+        context['wizard'] = Wizard([None] * 4, current=1)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -174,9 +175,6 @@ class DemandDistrictView(TemplateView):
 class TechnologyView(TemplateView):
     template_name = 'stemp/technology.html'
 
-    def __init__(self, **kwargs):
-        super(TechnologyView, self).__init__(**kwargs)
-
     def get_context_data(self, session, **kwargs):
         context = super(TechnologyView, self).get_context_data(**kwargs)
         choices = tuple(
@@ -223,25 +221,11 @@ class TechnologyView(TemplateView):
     def post(self, request, session):
         scenarios = request.POST.getlist('technology')
         session.init_scenarios(scenarios)
-        if 'continue' in request.POST:
-            for scenario in session.scenarios:
-                # Load default parameters:
-                parameters = OEPScenario.get_scenario_parameters(
-                    scenario.name, session.demand_type)
-                parameter_form = forms.ParameterForm(
-                    [(scenario.name, parameters)])
-                scenario.parameter.update(parameter_form.prepared_data())
-                scenario.load_or_simulate()
-            return redirect('stemp:result')
-        else:
-            return redirect('stemp:parameter')
+        return redirect('stemp:parameter')
 
 
 class ParameterView(TemplateView):
     template_name = 'stemp/parameter.html'
-
-    def __init__(self, **kwargs):
-        super(ParameterView, self).__init__(**kwargs)
 
     @staticmethod
     def get_scenario_parameters(session, data=None):
@@ -292,9 +276,6 @@ class ParameterView(TemplateView):
 
 class ResultView(TemplateView):
     template_name = 'stemp/result.html'
-
-    def __init__(self, **kwargs):
-        super(ResultView, self).__init__(**kwargs)
 
     def get_context_data(self, result_ids, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)

@@ -3,11 +3,7 @@ from django.urls import path, register_converter
 import cursive_re
 
 from wam.admin import wam_admin_site
-from stemp.views import (
-    IndexView, ResultView, ParameterView, DemandSingleView,
-    DemandDistrictView, TechnologyView,
-    DemandSelectionView
-)
+from stemp import views
 from stemp import views_dynamic
 from stemp import views_admin
 
@@ -37,31 +33,36 @@ register_converter(ListConverter, 'list')
 app_name = 'stemp'
 
 urlpatterns = [
-    path('', IndexView.as_view(), name='index'),
+    path('', views.IndexView.as_view(), name='index'),
     path(
         'demand_selection/',
-        DemandSelectionView.as_view(),
+        views.DemandSelectionView.as_view(),
         name='demand_selection'
     ),
-    path('demand/single/', DemandSingleView.as_view(), name='demand_single'),
+    path(
+        'demand/single/',
+        views.DemandSingleView.as_view(),
+        name='demand_single'
+    ),
     path(
         'demand/district/household/',
-        DemandSingleView.as_view(is_district_hh=True),
+        views.DemandSingleView.as_view(is_district_hh=True),
         name='demand_district_household'
     ),
     path(
         'demand/district/empty',
-        DemandDistrictView.as_view(),
+        views.DemandDistrictView.as_view(),
         name='demand_district_empty',
     ),
     path(
         'demand/district/',
-        DemandDistrictView.as_view(new_district=False),
+        views.DemandDistrictView.as_view(new_district=False),
         name='demand_district',
     ),
-    path('technology/', TechnologyView.as_view(), name='technology'),
-    path('parameter/', ParameterView.as_view(), name='parameter'),
-    path('result/<list:results>', ResultView.as_view(), name='result'),
+    path('technology/', views.TechnologyView.as_view(), name='technology'),
+    path('parameter/', views.ParameterView.as_view(), name='parameter'),
+    path('summary/', views.SummaryView.as_view(), name='summary'),
+    path('result/<list:results>', views.ResultView.as_view(), name='result'),
     path(
         'ajax/get_next_household_name/',
         views_dynamic.get_next_household_name,

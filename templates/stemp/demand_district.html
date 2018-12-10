@@ -7,12 +7,8 @@
 {% block left_side %}
 
 <div class="cell"><h1>{{labels.index}}</h1></div>
-<ul class="wizard wizard-circular" role="steps" aria-label="Steps">
-  <li class="current"><span class="show-for-sr">{{labels.index_tip}}</span> 1</li>
-  <li>2</li>
-  <li>3</li>
-  <li>4</li>
-</ul>
+
+{{wizard}}
 
 <div class="scen-create__description">
   <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Enavi_Viertel.svg' %}"></div>
