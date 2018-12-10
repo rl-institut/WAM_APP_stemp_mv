@@ -50,7 +50,7 @@ class DemandSingleView(TemplateView):
         context['list_form'] = forms.HouseholdSelectForm()
         context['labels'] = self.get_labels()
         context['is_district_hh'] = self.is_district_hh
-        context['wizard'] = Wizard([None] * 4, current=1)
+        context['wizard'] = Wizard([None] * 4, current=0)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -105,7 +105,7 @@ class DemandDistrictView(TemplateView):
         context['district_form'] = forms.DistrictListForm(
             session.current_district)
         context['labels'] = app_settings.LABELS['demand_district']
-        context['wizard'] = Wizard([None] * 4, current=1)
+        context['wizard'] = Wizard([None] * 4, current=0)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -210,6 +210,17 @@ class TechnologyView(TemplateView):
         context['demand_type'] = session.demand_type.suffix()
         context['demand_label'] = session.demand_type.label()
         context['demand_name'] = demand.name
+        context['wizard'] = Wizard(
+            urls=[
+                (reverse('stemp:demand_selection'), 'Zurück zu Schritt 1'),
+                None,
+                None,
+                None,
+            ],
+            current=1,
+            screen_reader_for_current=(
+                'Sie sind auf der Seite Technologie-Auswahl')
+        )
         return context
 
     @check_session
@@ -254,6 +265,17 @@ class ParameterView(TemplateView):
         context['parameter_form'] = self.get_scenario_parameters(session)
         context['demand_label'] = session.demand_type.label()
         context['demand_name'] = session.get_demand().name
+        context['wizard'] = Wizard(
+            urls=[
+                (reverse('stemp:demand_selection'), 'Zurück zu Schritt 1'),
+                (reverse('stemp:technology'), 'Zurück zu Schritt 2'),
+                None,
+                None
+            ],
+            current=2,
+            screen_reader_for_current=(
+                'Hier können Parameter optional angepasst werden')
+        )
         return context
 
     @check_session
@@ -280,8 +302,8 @@ class SummaryView(TemplateView):
         context['wizard'] = Wizard(
             urls=[
                 (reverse('stemp:demand_selection'), 'Zurück zu Schritt 1'),
-                (reverse('stemp:technology'), 'Zurück zu Schritt 1'),
-                (reverse('stemp:parameter'), 'Zurück zu Schritt 1'),
+                (reverse('stemp:technology'), 'Zurück zu Schritt 2'),
+                (reverse('stemp:parameter'), 'Zurück zu Schritt 3'),
                 None
             ],
             current=3,

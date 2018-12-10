@@ -7,12 +7,8 @@
 {% block left_side %}
 
 <div class="cell"><h1>{{demand_label}}</h1></div>
-<ul class="wizard wizard-circular" role="steps" aria-label="Steps">
-  <li>1</li>
-  <li class="current"><span class="show-for-sr">Sie sind auf der Seite Heizungsoptionen des Haushalts</span> 2</li>
-  <li>3</li>
-  <li>4</li>
-</ul>
+
+{{wizard}}
 
 <div class="scen-create__description">
   <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}" alt="Icon Heizung"></div>

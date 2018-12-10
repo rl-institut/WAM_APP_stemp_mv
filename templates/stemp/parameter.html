@@ -9,18 +9,14 @@
 {% block left_side %}
 
 <div class="cell"><h1>{{demand_label}}</h1></div>
-  <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
-    <li>1</li>
-    <li>2</li>
-    <li class="current"><span class="show-for-sr">Sie sind auf der Seite Technologie- und Kostenparameter des Viertels</span> 3</li>
-    <li>4</li>
-  </ul>
 
-  <div class="scen-create__description">
-    <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Enavi_Parameter.svg' %}" alt="Icon Parameter"></div>
-    <h2 class="scen-create__header">Parameter</h2>
-    <p class="scen-create__text show-for-large">Optional können Sie auch Kosten- sowie Technologieparameter einzeln ändern.</p>
-  </div>
+{{wizard}}
+
+<div class="scen-create__description">
+  <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Enavi_Parameter.svg' %}" alt="Icon Parameter"></div>
+  <h2 class="scen-create__header">Parameter</h2>
+  <p class="scen-create__text show-for-large">Optional können Sie auch Kosten- sowie Technologieparameter einzeln ändern.</p>
+</div>
 
 {% endblock %}
 
