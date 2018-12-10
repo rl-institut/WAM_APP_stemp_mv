@@ -1,60 +1,52 @@
-{% extends "stemp/base.html" %}
+{% extends "stemp/base_side.html" %}
 
 {% load staticfiles %}
 
 {% block body-class %}u-vh--100{% endblock %}
 
-{% block content %}
+{% block left_side %}
 
-<div class="cell large-auto large-cell-block-container">
-  <div class="grid-x" style="height:100%">
+<div class="cell"><h1>{{demand_label}}</h1></div>
+<ul class="wizard wizard-circular" role="steps" aria-label="Steps">
+  <li>1</li>
+  <li class="current"><span class="show-for-sr">Sie sind auf der Seite Heizungsoptionen des Haushalts</span> 2</li>
+  <li>3</li>
+  <li>4</li>
+</ul>
 
-    <!-- STEPS INFO START (LEFT) -->
-    <aside class="cell large-4 large-cell-block-y l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
-      <div class="cell"><h1>{{demand_label}}</h1></div>
-      <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
-        <li>1</li>
-        <li class="current"><span class="show-for-sr">Sie sind auf der Seite Heizungsoptionen des Haushalts</span> 2</li>
-        <li>3</li>
-        <li>4</li>
-      </ul>
+<div class="scen-create__description">
+  <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}" alt="Icon Heizung"></div>
+  <h2 class="scen-create__header">Heizungsoptionen</h2>
+  <p class="scen-create__text show-for-large">Wählen Sie eine Heizung aus, mit der Sie das Viertelszenario berechnen können.</p>
+</div>
 
-      <div class="scen-create__description">
-        <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}" alt="Icon Heizung"></div>
-        <h2 class="scen-create__header">Heizungsoptionen</h2>
-        <p class="scen-create__text show-for-large">Wählen Sie eine Heizung aus, mit der Sie das Viertelszenario berechnen können.</p>
-      </div>
-    </aside>
-    <!-- STEPS INFO END -->
+{% endblock %}
 
-    <!-- STEPS TASKS START (RIGHT) -->
-    <div class="cell large-8 large-cell-block-y">
-      <div class="grid-y large-grid-frame main-content">
-        <main class="cell large-auto large-cell-block-y main-content-wrap">
+{% block right_side %}
 
-          <form class="grid-x scen-create__form" action="{% url 'stemp:technology' %}" method="post" id="technology_form">
-            {% csrf_token %}
-            <div class="cell scen-create__form u-text--center">
-              <h3>{{demand_name}}</h3>
-            </div>
+<div class="cell large-8 large-cell-block-y">
+  <div class="grid-y large-grid-frame main-content">
+    <main class="cell large-auto large-cell-block-y main-content-wrap">
 
-            {% for field in technology %}
-              {{field}}
-            {% endfor %}
+      <form class="grid-x scen-create__form" action="{% url 'stemp:technology' %}" method="post" id="technology_form">
+        {% csrf_token %}
+        <div class="cell scen-create__form u-text--center">
+          <h3>{{demand_name}}</h3>
+        </div>
 
-          </form>
-        </main>
+        {% for field in technology %}
+          {{field}}
+        {% endfor %}
 
-        {% if demand_type == 'single' %}
-              {% url 'stemp:demand_single' as back_url %}
-            {% else %}
-              {% url 'stemp:demand_district' as back_url %}
-            {% endif %}
-        {% include 'includes/button_section.html' with back_url=back_url function="done();" %}
+      </form>
+    </main>
 
-      </div>
-    </div>
-    <!-- STEPS TASKS END -->
+    {% if demand_type == 'single' %}
+          {% url 'stemp:demand_single' as back_url %}
+        {% else %}
+          {% url 'stemp:demand_district' as back_url %}
+        {% endif %}
+    {% include 'includes/button_section.html' with back_url=back_url function="done();" %}
 
   </div>
 </div>
