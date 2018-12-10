@@ -1,0 +1,36 @@
+
+{% extends "stemp/base_side.html" %}
+
+{% block body-class %}u-vh--100{% endblock %}
+
+{% block left_side %}
+
+<div class="cell">
+  <h1>Haushalt erstellen</h1>
+</div>
+
+{{wizard}}
+
+<!-- START Page description -->
+<div class="scen-create__description">
+  <div class="scen-create__icon"><img src="../assets/img/icons_custom/Enavi_Zusammenfassung.svg" alt="Icon Zusammenfassung"></div>
+  <h2 class="scen-create__header">Zusammenfassung</h2>
+  <p class="scen-create__text show-for-large">Überprüfen Sie Ihre Eingaben, bevor Sie das Szenario berechnen lassen.</p>
+</div>
+<!-- START Page description -->
+
+{% endblock %}
+
+{% block right_side %}
+
+<div class="cell large-8 large-cell-block-y">
+  <div class="grid-y large-grid-frame">
+
+    <main class="cell large-auto large-cell-block-y main-content-wrap">
+      <div class="grid-x scen-create__form">
+
+        <div class="cell scen-create__form u-text--center">
+          <h3>{{demand_name}}</h3>
+        </div>
+
+{% endblock %}

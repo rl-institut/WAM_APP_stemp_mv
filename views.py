@@ -269,9 +269,42 @@ class ParameterView(TemplateView):
         for scenario in session.scenarios:
             scenario.parameter.update(
                 parameter_form.prepared_data(scenario.name))
-            scenario.load_or_simulate()
-        return redirect(
-            'stemp:result', results=[sc.result_id for sc in session.scenarios])
+        return redirect('stemp:summary')
+
+
+class SummaryView(TemplateView):
+    template_name = 'stemp/summary.html'
+
+    def get_context_data(self, session, **kwargs):
+        context = super(SummaryView, self).get_context_data(**kwargs)
+        context['wizard'] = Wizard(
+            urls=[
+                (reverse('stemp:demand_selection'), 'Zurück zu Schritt 1'),
+                (reverse('stemp:technology'), 'Zurück zu Schritt 1'),
+                (reverse('stemp:parameter'), 'Zurück zu Schritt 1'),
+                None
+            ],
+            current=3,
+            screen_reader_for_current=(
+                'Sie sind auf der Seite Zusammenfassung des Haushalts')
+        )
+        return context
+
+    @check_session
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(kwargs['session'])
+        return self.render_to_response(context)
+
+    @check_session
+    def post(self, request, session):
+        if 'done' in request.POST:
+            for scenario in session.scenarios:
+                scenario.load_or_simulate()
+            return redirect(
+                'stemp:result',
+                results=[sc.result_id for sc in session.scenarios])
+        else:
+            return redirect('stemp:parameters')
 
 
 class ResultView(TemplateView):
