@@ -165,7 +165,10 @@ class Scenario(basic_setup.BaseScenario):
             eff = 29.627
     
         parameters[cls.name]['capex'] = (
-            parameters[cls.name]['capex'].new_child({'value': str(capex)}))
+            parameters[cls.name]['capex'].new_child(
+                {'value': str(round(capex))}
+            )
+        )
         parameters[cls.name]['conversion_factor_el'] = (
             parameters[cls.name]['conversion_factor_el'].new_child(
                 {'value': str(int(eff))}

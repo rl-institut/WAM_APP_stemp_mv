@@ -16,6 +16,7 @@ class SessionSimulation(object):
         self.module = SCENARIO_MODULES[name]
         self.energysystem = None
         self.parameter = {}
+        self.changed_parameters = None
         self.result_id = None
 
     def check_for_result(self):

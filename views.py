@@ -239,7 +239,7 @@ class ParameterView(TemplateView):
     template_name = 'stemp/parameter.html'
 
     @staticmethod
-    def get_scenario_parameters(session, data=None):
+    def get_scenario_parameters(session):
         scenarios = session.scenarios
         if not scenarios:
             raise KeyError('No scenarios found')
@@ -258,11 +258,12 @@ class ParameterView(TemplateView):
                     scenario_parameters
                 )
             )
-        return forms.ParameterForm(parameters, data)
+        return parameters
 
     def get_context_data(self, session, **kwargs):
         context = super(ParameterView, self).get_context_data(**kwargs)
-        context['parameter_form'] = self.get_scenario_parameters(session)
+        context['parameter_form'] = forms.ParameterForm(
+            self.get_scenario_parameters(session))
         context['demand_label'] = session.demand_type.label()
         context['demand_name'] = session.get_demand().name
         context['wizard'] = Wizard(
@@ -285,12 +286,20 @@ class ParameterView(TemplateView):
 
     @check_session
     def post(self, request, session):
-        parameter_form = self.get_scenario_parameters(session, request.POST)
+        parameters = self.get_scenario_parameters(session)
+        parameter_form = forms.ParameterForm(parameters, request.POST)
         if not parameter_form.is_valid():
             raise ValueError('Invalid scenario parameters')
+
         for scenario in session.scenarios:
             scenario.parameter.update(
                 parameter_form.prepared_data(scenario.name))
+
+        session.changed_parameters = (
+            forms.ParameterForm.get_changed_parameters(
+                parameters, request.POST
+            )
+        )
         return redirect('stemp:summary')
 
 

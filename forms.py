@@ -158,6 +158,54 @@ class ParameterForm(Form):
             data[component][parameter] = value
         return data
 
+    @staticmethod
+    def get_changed_parameters(parameters, data):
+        """Compare original parameters with user entries and return diffs"""
+
+        # Transform parameters and data into comparable shapes
+        # original-shape (to get unit as well):
+        # Dict['category', DICT['parameter', ('value', 'unit')]]
+        # posted-shape:
+        # Dict['category', DICT['parameter', 'value']]
+
+        # parameters-shape:
+        # List[
+        #     Tuple[
+        #         'scenario', Dict[
+        #             'category', Dict[
+        #                 'parameter', Dict['attribute', 'value']
+        #             ]
+        #         ]
+        #     ]
+        # ]
+        original = defaultdict(dict)
+        for (_, scenario_params) in parameters:
+            for category, category_params in scenario_params.items():
+                for parameter, attributes in category_params.items():
+                    original[category][parameter] = (
+                        attributes['value'],
+                        attributes['unit']
+                    )
+
+        # posted-shape:
+        # Dict['category-parameter', 'value']
+        posted = defaultdict(dict)
+        skip = ['csrfmiddlewaretoken', 'scenario']
+        for cat_param, value in data.items():
+            if cat_param not in skip:
+                category, parameter = cat_param.split('-')
+                posted[category][parameter] = value
+
+        # Compare and return changed parameters by category
+        changed = defaultdict(dict)
+        for category, category_params in original.items():
+            for parameter, (value, unit) in category_params.items():
+                if value != posted[category][parameter]:
+                    val = posted[category][parameter]
+                    changed[category][parameter] = (val, unit)
+        changed.default_factory = None
+        return changed
+
 
 class HouseholdForm(ModelForm):
     number_of_persons = IntegerField(

@@ -54,7 +54,10 @@ class Scenario(bhkw.Scenario):
                 f'No BHKW-efficiency found for size {bhkw_size}kW')
     
         parameters[cls.name]['capex'] = (
-            parameters[cls.name]['capex'].new_child({'value': str(capex)}))
+            parameters[cls.name]['capex'].new_child(
+                {'value': str(round(capex))}
+            )
+        )
         parameters[cls.name]['conversion_factor_el'] = (
             parameters[cls.name]['conversion_factor_el'].new_child(
                 {'value': str(int(eff))}
