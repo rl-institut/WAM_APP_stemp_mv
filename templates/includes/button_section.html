@@ -21,7 +21,7 @@
           </button>
         {% else %}
           <button type="submit" class="btn btn-cta btn-submit" name="done" id={{done_id|default:"done"}}{% if function %} onclick="{{function}}"{% endif %}>
-            Weiter
+            {{done_label|default:"Weiter"}}
             <i class ="icon ion-chevron-right icon--small"></i>
           </button>
         {% endif %}

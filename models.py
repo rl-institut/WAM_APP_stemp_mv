@@ -3,6 +3,7 @@ import pandas
 import sqlahelper
 from django.utils import timezone
 from django.db import models
+from django.utils.safestring import mark_safe
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.postgres.fields import ArrayField, JSONField
 
@@ -125,6 +126,22 @@ class Household(models.Model):
     def max_pv_size(self):
         return self.roof_area / constants.QM_PER_PV_KW
 
+    def summary(self):
+        summary = [
+            (
+                f'{self.number_of_persons} Person' +
+                ('en' if self.number_of_persons > 1 else '')
+            ),
+            (
+                f'Jährlicher Wärmebedarf: ' +
+                f'{self.annual_heat_demand().sum():.0f} kWh'
+            ),
+            f'Heizung: {constants.HeatType[self.heat_type].value}',
+            f'Quadratmeter: {self.square_meters} qm'
+        ]
+        summary = ''.join(f'<p>{s}</p>' for s in summary)
+        return mark_safe(summary)
+
 
 class District(models.Model):
     name = models.CharField(max_length=255)
@@ -160,3 +177,10 @@ class District(models.Model):
     @property
     def max_pv_size(self):
         return sum([hh.max_pv_size for hh in self.households.all()])
+
+    def summary(self):
+        summary = [
+            f'Jährlicher Wärmebedarf: {self.annual_heat_demand().sum()} kWh',
+        ]
+        summary = ''.join(f'<p>{s}</p>' for s in summary)
+        return mark_safe(summary)

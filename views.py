@@ -319,6 +319,13 @@ class SummaryView(TemplateView):
             screen_reader_for_current=(
                 'Sie sind auf der Seite Zusammenfassung des Haushalts')
         )
+        context['demand_label'] = session.demand_type.label()
+        context['demand'] = session.get_demand()
+        context['technologies'] = [
+            app_settings.SCENARIO_PARAMETERS[scenario.name]['LABELS']['name']
+            for scenario in session.scenarios
+        ]
+        context['parameters'] = session.changed_parameters
         return context
 
     @check_session
