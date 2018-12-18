@@ -28,6 +28,9 @@ class ManageView(TemplateView):
         elif 'insert_pv_and_temp' in request.POST:
             queries.insert_pv_and_temp()
             info = 'PV and Temperature inserted.'
+        elif 'delete_stored_simulations' in request.POST:
+            queries.delete_stored_simulations()
+            info = 'Simulations cleared.'
         else:
             info = 'Did not found matching command...'
         context = self.get_context_data(info)
