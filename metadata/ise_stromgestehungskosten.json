@@ -1,0 +1,44 @@
+{
+  "title": "Stromgestehungskosten Erneuerbare Energien",
+  "identifier": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/DE2018_ISE_Studie_Stromgestehungskosten_Erneuerbare_Energien.pdf",
+  "description": "In der vorliegenden Studie werden die Stromgestehungskosten erneuerbarer Energien für das Jahr 2018 untersucht und deren weitere Kostenentwicklung auf Basis von technologiespezifischen Lernraten (LR) und Marktszenarien bis zum Jahr 2035 prognostiziert. ",
+  "language": "de-DE",
+  "keywords": [
+    "Erneuerbare Energien",
+    "Stromgestehungskosten"
+  ],
+  "spatial": {
+    "location": "",
+    "extent": "",
+    "resolution": ""
+  },
+  "temporal": {
+    "reference_date": "2018",
+    "start": "",
+    "end": "",
+    "resolution": ""
+  },
+  "sources": [
+    {
+      "name": "Fraunhofer ISE",
+      "description": "",
+      "url": "https://www.ise.fraunhofer.de/",
+      "license": "",
+      "copyright": ""
+    }
+  ],
+  "license": {
+    "id": "",
+    "name": "",
+    "url": "",
+    "instruction": "",
+    "copyright": ""
+  },
+  "contributors": [],
+  "resources": [],
+  "_comment": {
+    "_metadata_version": "1.4",
+    "_metadata_license": "Creative Commons Zero v1.0 Universal (CC0-1.0)",
+    "_metadata_license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+  }
+}

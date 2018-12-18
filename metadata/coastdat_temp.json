@@ -1,0 +1,58 @@
+{
+  "title": "Coasdat2, Air Temperature",
+  "identifier": "https://cera-www.dkrz.de/WDCC/ui/cerasearch/entry?acronym=coastDat-2_COSMO-CLM",
+  "description": "Air temperature at Lützow in year 2014",
+  "language": "en-GB",
+  "keywords": [
+    "climate simulation",
+    "coastdat"
+  ],
+  "spatial": {
+    "location": "Lützow (11.181475, 53.655119) [lon,loat]",
+    "extent": "",
+    "resolution": "grid point distance of 0.22 degrees"
+  },
+  "temporal": {
+    "reference_date": "2014-01-01",
+    "start": "2014-01-01",
+    "end": "2014-12-31",
+    "resolution": "1h"
+  },
+  "sources": [
+    {
+      "name": "coastDat-2 COSMO-CLM",
+      "description": "This is an atmospheric hourly hindcast for Western Europe and the North Atlantic using COSMO-CLM version 4.8_clm_11 with spectral nudging from 1948-2012. The model uses a rotated grid with 254 x 248 grid points and a grid point distance of 0.22 degrees, the rotated North pole is located at 170 W, 35 N. In rotated coordinates the model area extends from 30.44 W to 25.22 E, 25.72 S to 28.62 N, in geographical coordinates this corresponds to about 68 W to 82 E, 25.6 N to 81.4 N. ",
+      "url": "https://cera-www.dkrz.de/WDCC/ui/cerasearch/entry?acronym=coastDat-2_COSMO-CLM",
+      "license": "",
+      "copyright": ""
+    }
+  ],
+  "license": {
+    "id": "",
+    "name": "",
+    "url": "",
+    "instruction": "",
+    "copyright": ""
+  },
+  "contributors": [],
+  "resources": [
+    {
+      "name": "coastDat-2 COSMO-CLM",
+      "format": "NetCDF",
+      "encoding": "",
+      "fields": [
+        {
+          "name": "coastDat2_COSMO-CLM_T_2M",
+          "description": "air_temperature",
+          "type": "float",
+          "unit": "K"
+        }
+      ]
+    }
+  ],
+  "_comment": {
+    "_metadata_version": "1.4",
+    "_metadata_license": "Creative Commons Zero v1.0 Universal (CC0-1.0)",
+    "_metadata_license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+  }
+}

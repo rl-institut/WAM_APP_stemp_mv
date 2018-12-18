@@ -1,0 +1,64 @@
+{
+  "title": "Photovoltaik Einspeisezeitreihe",
+  "identifier": "http://openenergyplatform.org/dataedit/view/model_draft/oep_metadata_table_example_v14",
+  "description": "Stündliche PV-Einspeisezeitreihe für Standort Lützow für das Jahr 2014",
+  "language": "de-DE",
+  "keywords": [
+    "pv_feedin"
+  ],
+  "spatial": {
+    "location": "Lützow (11.181475, 53.655119) [lon,loat]",
+    "extent": "",
+    "resolution": ""
+  },
+  "temporal": {
+    "reference_date": "",
+    "start": "2014-01-01",
+    "end": "2014-12-31",
+    "resolution": "1h"
+  },
+  "sources": [
+    {
+      "name": "coastDat-2 COSMO-CLM",
+      "description": "This is an atmospheric hourly hindcast for Western Europe and the North Atlantic using COSMO-CLM version 4.8_clm_11 with spectral nudging from 1948-2012. The model uses a rotated grid with 254 x 248 grid points and a grid point distance of 0.22 degrees, the rotated North pole is located at 170 W, 35 N. In rotated coordinates the model area extends from 30.44 W to 25.22 E, 25.72 S to 28.62 N, in geographical coordinates this corresponds to about 68 W to 82 E, 25.6 N to 81.4 N. ",
+      "url": "https://cera-www.dkrz.de/WDCC/ui/cerasearch/entry?acronym=coastDat-2_COSMO-CLM",
+      "license": "",
+      "copyright": ""
+    },
+    {
+      "name": "pvlib",
+      "description": "PVLIB Python is a community supported tool that provides a set of functions and classes for simulating the performance of photovoltaic energy systems.",
+      "url": "https://pvlib-python.readthedocs.io/en/latest/",
+      "license": "BSD 3-Clause License",
+      "copyright": ""
+    }
+  ],
+  "license": {
+    "id": "",
+    "name": "",
+    "url": "",
+    "instruction": "",
+    "copyright": ""
+  },
+  "contributors": [],
+  "resources": [
+    {
+      "name": "",
+      "format": "",
+      "encoding": "",
+      "fields": [
+        {
+          "name": "module_name = LG_LG290N1C_G3__2013_ , inverter_name = ABB__MICRO_0_25_I_OUTD_US_208_208V__CEC_2014_, surface_azimuth = 180, surface_tilt = optimal, albedo = 0.2",
+          "description": "",
+          "type": "",
+          "unit": ""
+        }
+      ]
+    }
+  ],
+  "_comment": {
+    "_metadata_version": "1.4",
+    "_metadata_license": "Creative Commons Zero v1.0 Universal (CC0-1.0)",
+    "_metadata_license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+  }
+}

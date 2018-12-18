@@ -3,6 +3,7 @@ import os
 import logging
 import pandas
 import sqlahelper
+import json
 from geoalchemy2 import func
 import transaction
 
@@ -61,10 +62,10 @@ def insert_pv_and_temp():
         datatype='T_2M',
         location=constants.LOCATION
     )
-    meta = {
-        'name': 'Temperature from year 2014 at Lützow (in Kelvin)',
-        'source': 'Coastdat'
-    }
+    temp_meta_file = os.path.join(
+        os.path.dirname(__file__), 'metadata', 'coastdat_temp.json')
+    with open(temp_meta_file) as json_data:
+        meta = json.load(json_data)
     temp = oep_models.OEPTimeseries(
         name='Temperature',
         meta_data=meta,
@@ -73,15 +74,20 @@ def insert_pv_and_temp():
     session.add(temp)
 
     pv_feedin = pandas.read_csv(
-        os.path.join(os.path.dirname(__file__), 'scenarios', 'pv_feedin.csv'))
-    meta = {
-        'name': 'PV-Feedin from year 2014 at Lützow',
-        'source': 'RLI'
-    }
+        os.path.join(os.path.dirname(__file__), 'data', 'pv_normalized.csv'),
+        index_col=[0],
+        header=[0, 1]
+    )
+    pv_system = 'LG290G3_ABB_tlt34_az180_alb02'
+    pv_feedin = pv_feedin.swaplevel(axis=1)[pv_system]['2014']
+    pv_meta_file = os.path.join(
+        os.path.dirname(__file__), 'metadata', 'pv_feedin.json')
+    with open(pv_meta_file) as json_data:
+        meta = json.load(json_data)
     pv = oep_models.OEPTimeseries(
         name='PV',
         meta_data=meta,
-        data=pv_feedin['pv_feedin']
+        data=pv_feedin
     )
     session.add(pv)
     transaction.commit()
