@@ -3,6 +3,7 @@ from django.urls import path, register_converter
 import cursive_re
 
 from wam.admin import wam_admin_site
+from meta.views import SourcesView
 from stemp import views
 from stemp import views_dynamic
 from stemp import views_admin
@@ -34,6 +35,7 @@ app_name = 'stemp'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+    path('sources/', SourcesView.as_view(app_name='stemp'), name='sources'),
     path(
         'demand_selection/',
         views.DemandSelectionView.as_view(),
