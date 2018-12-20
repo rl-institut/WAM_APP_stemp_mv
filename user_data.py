@@ -1,10 +1,9 @@
 
 import sqlahelper
 
-from stemp.constants import DemandType, DistrictStatus
 from stemp.app_settings import SCENARIO_MODULES
-from stemp.scenarios.simulation import create_energysystem
-from stemp.bookkeeping import simulate_energysystem
+from stemp.constants import DemandType, DistrictStatus
+from .tasks import simulate_energysystem
 from stemp.models import Scenario, Parameter, Simulation, Household, District
 from db_apps.oemof_results import store_results
 
@@ -56,12 +55,9 @@ class SessionSimulation(object):
         if result_id is not None:
             self.result_id = result_id
         else:
-            energysystem = create_energysystem(
-                self.module,
-                **self.parameter
-            )
-            self.energysystem = energysystem
-            self.result_id = simulate_energysystem(self)
+            celery_task = simulate_energysystem.delay(
+                self.name, self.parameter)
+            self.result_id = str(celery_task.get())
 
     def store_results(self, results, param_results):
         # Store scenario, parameter and setup via Django ORM
