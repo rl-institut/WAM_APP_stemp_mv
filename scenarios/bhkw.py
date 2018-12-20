@@ -174,6 +174,7 @@ class Scenario(basic_setup.BaseScenario):
                 {'value': str(int(eff))}
             )
         )
+        return parameters
 
     @classmethod
     def get_data_label(cls, nodes, suffix=False):

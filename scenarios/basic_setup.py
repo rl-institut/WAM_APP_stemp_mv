@@ -123,7 +123,7 @@ class BaseScenario(ABC):
 
     @classmethod
     def add_dynamic_parameters(cls, scenario, parameters):
-        return
+        return parameters
 
     @abstractmethod
     def add_technology(self, demand, timeseries, parameters):

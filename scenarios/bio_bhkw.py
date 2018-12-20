@@ -63,3 +63,4 @@ class Scenario(bhkw.Scenario):
                 {'value': str(int(eff))}
             )
         )
+        return parameters
