@@ -5,6 +5,9 @@ from django.views.generic import TemplateView
 from django.urls import reverse
 
 from wam.settings import SESSION_DATA
+from utils.widgets import Wizard
+
+from stemp.utils import check_session_method
 from stemp import app_settings
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
@@ -12,17 +15,7 @@ from stemp import models, forms
 from stemp.results import results
 from stemp.visualizations import highcharts, dataframe
 from stemp.results import aggregations as agg
-from utils.widgets import Wizard
-
-
-def check_session(func):
-    def func_wrapper(self, request, *args, **kwargs):
-        try:
-            session = SESSION_DATA.get_session(request)
-        except KeyError:
-            return render(request, 'stemp/session_not_found.html')
-        return func(self, request, session=session, *args, **kwargs)
-    return func_wrapper
+from stemp.user_data import UserSession
 
 
 class IndexView(TemplateView):
@@ -55,7 +48,7 @@ class DemandSingleView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         # Start session (if no session yet):
-        SESSION_DATA.start_session(request)
+        SESSION_DATA.start_session(request, UserSession)
         session = SESSION_DATA.get_session(request)
         session.demand_type = (
             DemandType.District if self.is_district_hh else DemandType.Single)
@@ -63,7 +56,7 @@ class DemandSingleView(TemplateView):
         context = self.get_context_data()
         return self.render_to_response(context)
 
-    @check_session
+    @check_session_method
     def post(self, request, session):
         hh_id = None
         form = request.POST['form']
@@ -110,7 +103,7 @@ class DemandDistrictView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         # Start session (if no session yet):
-        SESSION_DATA.start_session(request)
+        SESSION_DATA.start_session(request, UserSession)
         session = SESSION_DATA.get_session(request)
         if self.new_district:
             session.reset_demand()
@@ -140,7 +133,7 @@ class DemandDistrictView(TemplateView):
         elif 'add_household' in request.POST:
             return redirect('stemp:demand_district_household')
 
-    @check_session
+    @check_session_method
     def post(self, request, session):
         if 'add_household' in request.POST or 'trash' in request.POST:
             return self.__change_district_list(request, session)
@@ -223,12 +216,12 @@ class TechnologyView(TemplateView):
         )
         return context
 
-    @check_session
+    @check_session_method
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(kwargs['session'])
         return self.render_to_response(context)
 
-    @check_session
+    @check_session_method
     def post(self, request, session):
         scenarios = request.POST.getlist('technology')
         session.init_scenarios(scenarios)
@@ -281,12 +274,12 @@ class ParameterView(TemplateView):
         )
         return context
 
-    @check_session
+    @check_session_method
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(kwargs['session'])
         return self.render_to_response(context)
 
-    @check_session
+    @check_session_method
     def post(self, request, session):
         parameters = self.get_scenario_parameters(session)
         parameter_form = forms.ParameterForm(parameters, request.POST)
@@ -330,12 +323,12 @@ class SummaryView(TemplateView):
         context['parameters'] = session.changed_parameters
         return context
 
-    @check_session
+    @check_session_method
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(kwargs['session'])
         return self.render_to_response(context)
 
-    @check_session
+    @check_session_method
     def post(self, request, session):
         if 'done' in request.POST:
             for scenario in session.scenarios:
@@ -377,7 +370,7 @@ class ResultView(TemplateView):
         context = self.get_context_data(result_ids)
         return self.render_to_response(context)
 
-    @check_session
+    @check_session_method
     def post(self, request):
         if 'save' in request.POST:
             simulation_name = request.POST['simulation_name']
