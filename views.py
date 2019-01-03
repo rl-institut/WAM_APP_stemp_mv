@@ -333,9 +333,18 @@ class SummaryView(TemplateView):
         if 'done' in request.POST:
             for scenario in session.scenarios:
                 scenario.load_or_simulate()
-            return redirect(
-                'stemp:result',
-                results=[sc.result_id for sc in session.scenarios])
+            result_ids = [
+                sc.result_id
+                for sc in session.scenarios
+                if sc.result_id is not None
+            ]
+            if len(result_ids) == 0:
+                return redirect('stemp:result')
+            else:
+                return redirect(
+                    'stemp:result_list',
+                    results=result_ids
+                )
         else:
             return redirect('stemp:parameters')
 
@@ -343,9 +352,10 @@ class SummaryView(TemplateView):
 class ResultView(TemplateView):
     template_name = 'stemp/result.html'
 
-    def get_context_data(self, result_ids, **kwargs):
+    def get_context_data(self, result_ids, pending, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
-        context['save'] = forms.SaveSimulationForm()
+
+        context['pending'] = pending
 
         aggregations = {
             'invest': agg.InvestmentRanking(),
@@ -366,8 +376,34 @@ class ResultView(TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
-        result_ids = kwargs.get('results', [])
-        context = self.get_context_data(result_ids)
+        try:
+            session = SESSION_DATA.get_session(request)
+        except KeyError:
+            session = None
+
+        # Check if pending results exist:
+        if session is None:
+            pending = False
+        else:
+            pending = any(
+                [
+                    scenario.is_pending()
+                    for scenario in session.scenarios
+                ]
+            )
+
+        result_ids = kwargs.get('results')
+        if result_ids is None:
+            if session is None:
+                result_ids = []
+            else:
+                result_ids = [
+                    sc.result_id
+                    for sc in session.scenarios
+                    if sc.result_id is not None
+                ]
+
+        context = self.get_context_data(result_ids, pending)
         return self.render_to_response(context)
 
     @check_session_method

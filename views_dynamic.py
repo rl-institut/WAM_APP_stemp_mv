@@ -3,7 +3,22 @@ from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
 from stemp import constants
+from stemp.utils import check_session
 from stemp.models import Household
+
+
+@check_session
+def check_pending(request, session):
+    """
+    Returns true if all results are ready
+    """
+    ready = all(
+        [
+            not scenario.is_pending()
+            for scenario in session.scenarios
+        ]
+    )
+    return JsonResponse({'ready': ready})
 
 
 def get_next_household_name(request):

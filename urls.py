@@ -12,7 +12,10 @@ from stemp import views_admin
 def get_list_regex():
     number = cursive_re.one_or_more(
         cursive_re.any_of(cursive_re.in_range('0', '9')))
-    regex = number + cursive_re.zero_or_more(cursive_re.text(',') + number)
+    regex = cursive_re.alternative(
+        number +
+        cursive_re.zero_or_more(cursive_re.text(',') + number)
+    )
     return str(regex)
 
 
@@ -64,7 +67,12 @@ urlpatterns = [
     path('technology/', views.TechnologyView.as_view(), name='technology'),
     path('parameter/', views.ParameterView.as_view(), name='parameter'),
     path('summary/', views.SummaryView.as_view(), name='summary'),
-    path('result/<list:results>', views.ResultView.as_view(), name='result'),
+    path('result/', views.ResultView.as_view(), name='result'),
+    path(
+        'result/<list:results>',
+        views.ResultView.as_view(),
+        name='result_list'
+    ),
     path(
         'ajax/get_next_household_name/',
         views_dynamic.get_next_household_name,
@@ -85,6 +93,10 @@ urlpatterns = [
     path(
         'ajax/get_roof_area/',
         views_dynamic.get_roof_area,
+    ),
+    path(
+        'ajax/check_pending/',
+        views_dynamic.check_pending,
     ),
 ]
 

@@ -17,6 +17,7 @@ class SessionSimulation(object):
         self.parameter = {}
         self.changed_parameters = None
         self.result_id = None
+        self.pending = None
 
     def check_for_result(self):
         """
@@ -55,9 +56,17 @@ class SessionSimulation(object):
         if result_id is not None:
             self.result_id = result_id
         else:
-            celery_task = simulate_energysystem.delay(
-                self.name, self.parameter)
-            self.result_id = str(celery_task.get())
+            self.pending = (
+                simulate_energysystem.delay(self.name, self.parameter)
+            )
+
+    def is_pending(self):
+        if self.pending is None:
+            return False
+        if self.pending.ready():
+            self.result_id = self.pending.get()
+            return False
+        return True
 
     def store_results(self, results, param_results):
         # Store scenario, parameter and setup via Django ORM
