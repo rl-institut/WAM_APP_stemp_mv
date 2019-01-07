@@ -205,7 +205,8 @@ def create_oep_tables():
 
 
 def delete_stored_simulations():
-    Simulation.objects.all().delete()
+    Parameter.objects.all().delete()
+    Scenario.objects.all().delete()
     session = sqlahelper.get_session()
     session.query(oemof_results.OemofInputResult).delete()
     session.query(oemof_results.OemofScalar).delete()
