@@ -253,6 +253,9 @@ class HouseholdSelectForm(Form):
         initial=0,
     )
 
+    class Media:
+        js = ('stemp/js/household_select.js',)
+
     def __init__(self, *args, **kwargs):
         super(HouseholdSelectForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)

@@ -1,5 +1,5 @@
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 
 from stemp import constants
@@ -74,3 +74,8 @@ def get_roof_area(request):
     house_type = request.GET['house_type']
     constants.get_roof_square_meters(sm, house_type)
     return JsonResponse({'roof_area': sm})
+
+
+def get_household_summary(request):
+    hh_id = int(request.GET['hh_id'])
+    return HttpResponse(Household.objects.get(pk=hh_id).summary())

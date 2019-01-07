@@ -98,6 +98,10 @@ urlpatterns = [
         'ajax/check_pending/',
         views_dynamic.check_pending,
     ),
+    path(
+        'ajax/get_household_summary/',
+        views_dynamic.get_household_summary,
+    ),
 ]
 
 admin_url_patterns = [
