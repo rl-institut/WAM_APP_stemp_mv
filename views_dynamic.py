@@ -72,11 +72,5 @@ def get_roof_area(request):
     else:
         raise ValueError(f'Unknown heat option "{heat_option}"')
     house_type = request.GET['house_type']
-    if house_type == 'EFH':
-        sm /= 2
-    elif house_type == 'MFH':
-        sm /= 4
-    else:
-        raise ValueError(f'Unknown house type "{house_type}"')
-    sm *= 0.4
+    constants.get_roof_square_meters(sm, house_type)
     return JsonResponse({'roof_area': sm})

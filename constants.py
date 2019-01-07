@@ -94,3 +94,15 @@ class LoadProfile(Enum):
             if member.value == index:
                 return member.profile
         raise IndexError('Index "' + str(index) + '" not found in LoadProfile')
+
+
+def get_roof_square_meters(household_square_meters, house_type):
+    sm = household_square_meters
+    if house_type == 'EFH':
+        sm /= 2
+    elif house_type == 'MFH':
+        sm /= 4
+    else:
+        raise ValueError(f'Unknown house type "{house_type}"')
+    sm *= 0.4
+    return sm
