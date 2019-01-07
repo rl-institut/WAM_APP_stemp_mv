@@ -16,7 +16,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 application = get_wsgi_application()
 
 from stemp import constants
-from stemp.models import Simulation
+from stemp.models import Parameter, Scenario, Household, District
 
 from db_apps import coastdat, oemof_results
 from stemp import oep_models
@@ -166,34 +166,31 @@ def insert_dhw_timeseries():
     transaction.commit()
 
 
-def create_questions_and_households():
-    # Start django application
-    from django.core.wsgi import get_wsgi_application
-
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
-    _ = get_wsgi_application()
-    from stemp.models import Question, QuestionHousehold, Household
-
-    for num_person in range(1, 11):
-        for house_type in ('EFH', 'MFH'):
-            question = Question(
-                number_of_persons=num_person, house_type=house_type)
-            energy_per_year = (
-                    num_person * constants.QM_PER_PERSON *
-                    constants.ENERGY_PER_QM_PER_YEAR[house_type]
+def insert_default_households():
+    for house_type in constants.HOUSE_TYPES:
+        for num_persons in range(1, 11):
+            square_meters = num_persons * constants.QM_PER_PERSON
+            household = Household(
+                name=f'{house_type[0]}_{num_persons}',
+                number_of_persons=num_persons,
+                house_type=house_type[0],
+                square_meters=square_meters,
+                heat_demand=(
+                    square_meters *
+                    constants.ENERGY_PER_QM_PER_YEAR[house_type[0]]
+                ),
+                heat_type=constants.HeatType.radiator.name,
+                warm_water_per_day=(
+                    constants.WarmwaterConsumption.Medium.in_liters()),
+                roof_area=constants.get_roof_square_meters(
+                    square_meters, house_type[0])
             )
-            person_str = (
-                f'{num_person} Personen' if num_person > 1 else '1 Person')
-            name = house_type + ', ' + person_str
-            household = Household(name=name, heat_demand=energy_per_year)
-            question.save()
             household.save()
-            question_household = QuestionHousehold(
-                question_id=question.id,
-                household_id=household.id,
-                default=True
-            )
-            question_household.save()
+
+
+def delete_households():
+    Household.objects.all().delete()
+    District.objects.all().delete()
 
 
 def delete_oep_tables():
