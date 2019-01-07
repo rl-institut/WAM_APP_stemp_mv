@@ -238,8 +238,7 @@ class HouseholdForm(ModelForm):
                 constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON
             ),
             'warm_water_per_day': (
-                constants.WarmwaterConsumption.Medium.in_liters() +
-                constants.DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER
+                constants.WarmwaterConsumption.Medium.in_liters()
             )
         }
         super(HouseholdForm, self).__init__(*args, **kwargs)

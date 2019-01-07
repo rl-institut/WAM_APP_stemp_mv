@@ -23,9 +23,9 @@ class WarmwaterConsumption(Enum):
 
     def in_liters(self):
         return {
-            WarmwaterConsumption.Low: 30,
-            WarmwaterConsumption.Medium: 44,
-            WarmwaterConsumption.High: 60,
+            WarmwaterConsumption.Low: 43,
+            WarmwaterConsumption.Medium: 66,
+            WarmwaterConsumption.High: 109,
         }.get(self)
 
 

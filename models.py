@@ -8,6 +8,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.postgres.fields import ArrayField, JSONField
 
 from stemp import constants
+from stemp import oep_models
 
 
 class Parameter(models.Model):
@@ -86,9 +87,8 @@ class Household(models.Model):
 
     def get_oep_timeseries(self, name):
         if self.timeseries is None:
-            from stemp import oep_models
             session = sqlahelper.get_session()
-            keys = ('Hot Water Energy', constants.EFH[1], constants.MFH[1])
+            keys = (constants.EFH[1], constants.MFH[1])
             self.timeseries = {
                 name: pandas.Series(
                     session.query(
@@ -105,10 +105,16 @@ class Household(models.Model):
             return self.get_oep_timeseries(constants.MFH[1])
 
     def get_hot_water_profile(self):
-        return (
-            self.get_oep_timeseries('Hot Water Energy') *
-            self.number_of_persons
-        )
+        session = sqlahelper.get_session()
+        hot_water = session.query(oep_models.OEPHotWater).filter_by(
+                liter=self.warm_water_per_day * self.number_of_persons
+        ).first()
+        if hot_water is None:
+            raise KeyError(
+                f'No hot water profile found for '
+                f'liter={self.warm_water_per_day}'
+            )
+        return pandas.Series(hot_water.data)
 
     def __str__(self):
         return self.name

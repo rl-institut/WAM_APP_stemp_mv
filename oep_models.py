@@ -1,7 +1,8 @@
 
+import os
 from collections import defaultdict, OrderedDict, ChainMap
 from stemp import app_settings
-from sqlalchemy import Column, VARCHAR, BIGINT, JSON
+from sqlalchemy import Column, VARCHAR, BIGINT, JSON, INT
 from sqlalchemy.dialects.postgresql import ARRAY, FLOAT
 from sqlalchemy.ext.declarative import declarative_base
 import sqlahelper
@@ -67,4 +68,19 @@ class OEPTimeseries(Base):
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(50))
     meta_data = Column(JSON)
+    data = Column(ARRAY(FLOAT))
+
+
+temp_meta_file = os.path.join(
+    os.path.dirname(__file__), 'metadata', 'coastdat_temp.json')
+with open(temp_meta_file) as meta_file:
+    dhw_meta = meta_file.read()
+
+
+class OEPHotWater(Base):
+    __tablename__ = 'kopernikus_warmwasser'
+    __table_args__ = {'schema': SCHEMA, 'comment': dhw_meta}
+
+    id = Column(BIGINT, primary_key=True)
+    liter = Column(INT)
     data = Column(ARRAY(FLOAT))

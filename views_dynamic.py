@@ -43,10 +43,7 @@ def get_warm_water_energy(request):
     persons = float(request.GET['persons'])
     warmwater_consumption = constants.WarmwaterConsumption(
         int(request.GET['warmwater_consumption']))
-    liter = (
-        warmwater_consumption.in_liters() +
-        constants.DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER
-    )
+    liter = warmwater_consumption.in_liters()
     energy = liter * persons * constants.ENERGY_PER_LITER * 365
     return JsonResponse({'energy': energy, 'daily_warm_water': liter})
 

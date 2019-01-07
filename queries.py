@@ -142,36 +142,27 @@ def insert_heat_demand():
 
 
 def insert_dhw_timeseries():
-    hot_water_file = os.path.join(
-        os.path.dirname(__file__), 'data', 'Warmwasser_76_liter_DHW.txt')
-    hot_water_profile = pandas.read_csv(
-        hot_water_file, header=None, escapechar='\\')
-
-    meta = {
-        'name': 'Hot Water for 76l/person/day',
-        'source': 'DHWCalc'
-    }
-    hot_water = oep_models.OEPTimeseries(
-        name='Hot Water',
-        meta_data=meta,
-        data=hot_water_profile[0].values.tolist()
-    )
-
-    hot_water_energy_profile = hot_water_profile * constants.ENERGY_PER_LITER
-    meta = {
-        'name': 'Annual energy for hot water supply for 76l/person/day',
-        'source': 'DHWCalc',
-        'energy_factor': constants.ENERGY_PER_LITER
-    }
-    hot_water_energy = oep_models.OEPTimeseries(
-        name='Hot Water Energy',
-        meta_data=meta,
-        data=hot_water_energy_profile[0].values.tolist()
-    )
+    NUM_PERSONS = 10
 
     session = sqlahelper.get_session()
-    session.add(hot_water)
-    session.add(hot_water_energy)
+
+    for consumption in constants.WarmwaterConsumption:
+        for p in range(NUM_PERSONS):
+            hot_water_file = os.path.join(
+                os.path.dirname(__file__),
+                'data',
+                'hot_water',
+                f'Warmwasser_{consumption.in_liters()}l_{p + 1}_DHW.txt'
+            )
+            hot_water_profile = pandas.read_csv(
+                hot_water_file, header=None, escapechar='\\')
+            hot_water_energy_profile = (
+                hot_water_profile * constants.ENERGY_PER_LITER)
+            hot_water = oep_models.OEPHotWater(
+                liter=consumption.in_liters() * (p + 1),
+                data=hot_water_energy_profile[0].values.tolist()
+            )
+            session.add(hot_water)
     transaction.commit()
 
 
