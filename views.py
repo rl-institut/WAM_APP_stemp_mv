@@ -7,7 +7,7 @@ from django.urls import reverse
 from wam.settings import SESSION_DATA
 from utils.widgets import Wizard
 
-from stemp.utils import check_session_method
+from user_sessions.utils import check_session_method
 from stemp import app_settings
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario

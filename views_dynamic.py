@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 
 from stemp import constants
-from stemp.utils import check_session
+from user_sessions.utils import check_session
 from stemp.models import Household
 
 
