@@ -218,7 +218,9 @@ class TechnologyView(TemplateView):
 
     @check_session_method
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(kwargs['session'])
+        session = kwargs['session']
+        session.reset_scenarios()
+        context = self.get_context_data(session)
         return self.render_to_response(context)
 
     @check_session_method

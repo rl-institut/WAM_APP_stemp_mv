@@ -113,6 +113,9 @@ class UserSession(object):
         self.demand_id = None
         self.current_district = {}
 
+    def reset_scenarios(self):
+        self.scenarios = []
+
     def get_demand(self):
         if self.demand_type == DemandType.Single:
             return Household.objects.get(pk=self.demand_id)
