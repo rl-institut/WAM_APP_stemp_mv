@@ -12,21 +12,6 @@ from db_apps import oemof_results
 
 
 @app.task
-def add(x, y):
-    return x + y
-
-
-@app.task
-def mul(x, y):
-    return x * y
-
-
-@app.task
-def xsum(numbers):
-    return sum(numbers)
-
-
-@app.task
 def simulate_energysystem(scenario_module, parameters):
     module = SCENARIO_MODULES[scenario_module]
     energysystem = create_energysystem(
