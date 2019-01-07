@@ -1,14 +1,20 @@
 
-Please use following commands with care!
+<h2>Please use following commands with care!</h2>
 <form method="post">
   {% csrf_token %}
+  Create:
   <ul style="list-style-type:none">
-    <li><input type="submit" name="recreate_oep_tables" value="Recreate (empty!) OEP tables"></li>
-    <li><input type="submit" name="reload_scenarios" value="Reload scenarios"></li>
     <li><input type="submit" name="insert_dhw_timeseries" value="Insert DHW Timeseries"></li>
     <li><input type="submit" name="insert_heat_demand" value="Insert heat demand"></li>
     <li><input type="submit" name="insert_pv_and_temp" value="Insert PV and Temperature"></li>
+    <li><input type="submit" name="insert_households" value="Insert default households"></li>
+  </ul>
+  Delete:
+  <ul style="list-style-type:none">
+    <li><input type="submit" name="recreate_oep_tables" value="Recreate (empty!) OEP tables"></li>
+    <li><input type="submit" name="reload_scenarios" value="Reload scenarios"></li>
     <li><input type="submit" name="delete_stored_simulations" value="Clear simulations"></li>
+    <li><input type="submit" name="delete_households" value="Delete households and districts"></li>
   </ul>
 </form>
 
