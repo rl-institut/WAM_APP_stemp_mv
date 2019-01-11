@@ -1,19 +1,18 @@
+
+var $ = jQuery;
+
 $("#heat_by_option").change(function() {
-  $("#square").attr("hidden", !$("#heat_by_sm").prop("checked"));
-  if ($("#heat_by_hand").prop("checked")) {
-    $("#hand").attr("hidden", false);
-  } else {
-    $("#hand").attr("hidden", true);
-  }
   update_energy();
   update_roof_area();
 });
 
 $("#roof_by_option").change(function() {
   if ($("#roof_by_hand").prop("checked")) {
-    $("#id_roof_area").removeAttr('readonly');
+    $("#id_roof_area").val($("#roof_by_hand_input").val());
+    $("#show_roof_area").text($("#roof_by_hand_input").val());
   } else {
-    $("#id_roof_area").attr('readonly', 'true');
+    $("#id_roof_area").val($("#roof_by_auto_input").val());
+    $("#show_roof_area").text($("#roof_by_auto_input").val());
   }
 });
 
@@ -29,6 +28,7 @@ $("#id_house_type").change(function() {
 });
 
 function update_energy() {
+  alert($("input[name=heat_by]:checked").val());
   switch ($("input[name=heat_by]:checked").val()) {
     case 'person':
       set_energy(
@@ -45,7 +45,7 @@ function update_energy() {
       );
       break;
     case 'hand':
-      $("#id_heat_demand").val($("#energy_hand").val())
+      $("#id_heat_demand").val($("#heat_by_hand_input").val())
       break;
   }
 };
@@ -126,7 +126,7 @@ function adapt_square_meters(value) {
   update_energy();
 };
 
-function set_energy(choice, value, house_type, virtual=false) {
+function set_energy(choice, value, house_type) {
   $.ajax({
     url : "/stemp/ajax/get_energy/",
     type : "GET",
@@ -134,16 +134,7 @@ function set_energy(choice, value, house_type, virtual=false) {
 
     // handle a successful response
     success : function(json) {
-      if (virtual) {
-        if ($("#energy_hand").val() != json.energy) {
-          var href = "javascript:adapt_energy_hand(" + json.energy + ");";
-          $('#hand_update').html('<a href="' + href + '"><i class="icon ion-refresh"></i></a>');
-        } else {
-          $('#hand_update').html('');
-        }
-      } else {
-        $("#id_heat_demand").val(json.energy);
-      }
+      $("#id_heat_demand").val(json.energy);
     }
   });
 };

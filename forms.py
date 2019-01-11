@@ -5,7 +5,7 @@ from itertools import chain
 from django.forms import (
     Form, ChoiceField, IntegerField, Select, CharField, FloatField,
     BooleanField, MultipleChoiceField, CheckboxSelectMultiple, ModelForm,
-    ModelChoiceField, NumberInput
+    ModelChoiceField, NumberInput, HiddenInput
 )
 from crispy_forms.helper import FormHelper
 
@@ -224,8 +224,9 @@ class HouseholdForm(ModelForm):
         model = Household
         fields = '__all__'
         widgets = {
-            'heat_demand': NumberInput(attrs={'readonly': True}),
-            'roof_area': NumberInput(attrs={'readonly': True}),
+            'heat_demand': NumberInput(),
+            'roof_area': HiddenInput(),
+            'square_meters': HiddenInput(),
             'warm_water_per_day': NumberInput(attrs={'readonly': True})
         }
 

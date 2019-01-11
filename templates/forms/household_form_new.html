@@ -1,0 +1,208 @@
+
+{% load staticfiles %}
+
+<div class="grid-x align-middle">
+
+  <!-- 1. ROW -->
+  <div class="cell">
+    <div class="grid-x align-center">
+      <div class="cell medium-10 large-8 hh-component__form">
+        <h3>Haus</h3>
+        <label for="{{form.number_of_persons.id_for_label}}" class="form__label">{{form.number_of_persons.label}}
+          {{form.number_of_persons.errors}}
+          {{form.number_of_persons}}
+        </label>
+        <label class="form__label" for="{{form.house_type.id_for_label}}">{{form.house_type.label}}
+          {{form.house_type.errors}}
+          {{form.house_type}}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ROW -->
+  <div class="cell l-bg-color--light">
+    <div class="grid-x align-center">
+      <div class="cell medium-10 large-8">
+        <div class="grid-x align-middle">
+          <div class="cell medium-8 hh-component__form">
+            <h3>Dachfläche</h3>
+            <fieldset id="roof_by_option">
+              <legend>
+                Verfügbare Dachfläche für Photovoltaik
+              </legend>
+              {{form.roof_area.errors}}
+              <ul class="menu vertical" id="roof-area-form">
+                <li>
+                  <input type="radio" name="roof_by" checked="" value="auto" id="roof_by_auto" required>
+                  <label for="roof_by_auto" class="form__label">Standardwert</label>
+                  <div class="input-group">
+                    <input class="input-group-field input input--m" type="number" id="roof_by_auto_input" value="2" readonly step="any" required>
+                    <span class="input-group-label">qm</span>
+                  </div>
+                </li>
+                <li>
+                  <input type="radio" name="roof_by" value="hand" id="roof_by_hand">
+                  <label for="roof_by_hand" class="form__label">Manuell angeben</label>
+                  <div class="input-group">
+                    <input class="input-group-field input input--m" type="number" id="roof_by_hand_input" step="any">
+                    <span class="input-group-label">qm</span>
+                  </div>
+                </li>
+              </ul>
+            </fieldset>
+          </div>
+          {{form.roof_area}}
+
+          <div class="cell medium-4 hh-component__parameter hh-component__parameter--area">
+            <div class="grid-y">
+              <div class="cell small-8">
+                <img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}">
+              </div>
+              <div class="cell small-4 show-parameters">
+                <span id="show_roof_area">20</span><span>&nbsp;qm</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 3. ROW -->
+  <!-- Check if input IDs are correct -->
+  <div class="cell">
+    <div class="grid-x align-center">
+      <div class="cell medium-10 large-8">
+        <div class="grid-x align-middle">
+          <div class="cell medium-8 hh-component__form">
+            <h3>Heizung</h3>
+            <label for="id_heat_type" class="form__label">
+              {{form.heat_type.label}}
+              {{form.heat_type}}
+            </label>
+
+            <fieldset id="heat_by_option">
+              <legend>Jährlicher Energiebedarf durch Heizung</legend>
+              {{form.heat_demand.errors}}
+              <ul class="menu vertical">
+                <li>
+                  <input type="radio" name="heat_by" checked="" value="person" id="heat_by_persons" required>
+                  <label for="heat_by_persons" class="form__label">Nach Anzahl der Personen</label>
+                  <div class="input-group">
+                    <input class="input-group-field input input--s" type="number" name="heat_demand" readonly step="any" id="heat_by_persons_input">
+                    <span class="input-group-label">kWh</span>
+                  </div>
+                </li>
+                <li>
+                  <input type="radio" name="heat_by" value="square" id="heat_by_sm">
+                  <label for="heat_by_sm" class="form__label">Nach Quadratmetern</label>
+                  <div id="square">
+                    <label for="id_square_meters">
+                      <div class="input-group input-disabled">
+                        <input class="input-group-field input input--s" type="number" name="square_meters" value="88" step="any" id="heat_by_sm_input">
+                        <span class="input-group-label">qm</span>
+                      </div>
+                    </label>
+                    <div id="square_update"></div>
+                  </div>
+                </li>
+                <li>
+                  <input type="radio" name="heat_by" value="hand" id="heat_by_hand">
+                  <label for="heat_by_hand" class="form__label">Von Hand</label>
+                  <div id="hand">
+                    <label  for="energy_hand">
+                      <div class="input-group input-disabled">
+                        <input class="input-group-field input input--s" type="number" value="10" name="energy_hand" readonly step="any" required id="heat_by_hand_input">
+                        <span class="input-group-label">kWh</span>
+                      </div>
+                    </label>
+                    <div id="hand_update"></div>
+                  </div>
+                </li>
+              </ul>
+            </fieldset>
+          </div>
+          {{form.heat_demand}}
+
+          <div class="cell medium-4 hh-component__parameter hh-component__parameter--energy">
+            <div class="grid-y">
+              <div class="cell small-8">
+                <img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}">
+              </div>
+              <div class="cell small-4 show-parameters">
+                <span id="show-heat-consumption">7920</span><span>&nbsp;kWh</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 4. ROW -->
+  <!-- Check if input IDs are correct -->
+  <div class="cell l-bg-color--light">
+    <div class="grid-x align-center">
+      <div class="cell medium-10 large-8">
+        <div class="grid-x align-middle">
+          <div class="cell medium-8 hh-component__form">
+            <h3>Warmwasser</h3>
+            <fieldset id="warm_water_by_option">
+              <legend>
+                Warmwasserverbrauch
+              </legend>
+              <ul class="menu vertical">
+                <li>
+                  <input type="radio" name="warm_water_by" checked="" value="standard" id="warmwater_by_persons">
+                  <label class="form__label" for="warmwater_by_persons">Täglicher Verbrauch</label>
+                  <!-- input ID in ion-range-slider.js -->
+                  <div class="input-group" id="warmwater_by_standard_input">
+                    <input class="input-group-field input input--s" type="number" name="id_warmwater_slider" step="any" required id="id_warmwater_slider">
+                    <span class="input-group-label">Liter/Tag</span>
+                  </div>
+                </li>
+                <li>
+                  <input type="radio" name="warm_water_by" value="hand" id="warm_water_per_day">
+                  <label class="form__label" for="warm_water_per_day">Täglicher Verbrauch manuell angeben</label>
+                  <div class="input-group input-disabled" id="warmwater_by_hand_input">
+                    <input class="input-group-field input input--s" type="number" name="id_warm_water_per_day" step="any" id="id_warm_water_per_day">
+                    <span class="input-group-label">Liter/Tag</span>
+                  </div>
+                </li>
+              </ul>
+            </fieldset>
+          </div>
+
+          <div class="cell medium-4 hh-component__parameter hh-component__parameter--energy">
+            <div class="grid-y">
+              <div class="cell small-8">
+                <img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}">
+              </div>
+              <div class="cell small-4 show-parameters">
+                <span id="show-warmwater-consumption">2800</span><span>&nbsp;kWh</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 5. ROW -->
+  <div class="cell">
+    <div class="grid-x align-center">
+      <div class="cell medium-10 large-8 hh-component__form">
+        <h3>Szenario</h3>
+        <label class="form__label" for="id_name">
+          Name vom Szenario
+          <input type="text" name="name" maxlength="255" required id="id_name" placeholder="Geben Sie einen Namen ein">
+        </label>
+      </div>
+    </div>
+  </div>
+
+</div>
