@@ -28,6 +28,7 @@ class DemandSelectionView(TemplateView):
 
 class DemandSingleView(TemplateView):
     template_name = 'stemp/demand_single.html'
+    only_house_type = None
     is_district_hh = False
 
     def get_labels(self):
@@ -39,8 +40,8 @@ class DemandSingleView(TemplateView):
 
     def get_context_data(self):
         context = super(DemandSingleView, self).get_context_data()
-        context['household_form'] = forms.HouseholdForm()
-        context['list_form'] = forms.HouseholdSelectForm()
+        context['household_form'] = forms.HouseholdForm(self.only_house_type)
+        context['list_form'] = forms.HouseholdSelectForm(self.only_house_type)
         context['labels'] = self.get_labels()
         context['is_district_hh'] = self.is_district_hh
         context['wizard'] = Wizard([None] * 4, current=0)
@@ -61,7 +62,7 @@ class DemandSingleView(TemplateView):
         hh_id = None
         form = request.POST['form']
         if form == 'house':
-            hh_form = forms.HouseholdForm(request.POST)
+            hh_form = forms.HouseholdForm(None, request.POST)
             if hh_form.is_valid():
                 hh = hh_form.save()
                 hh_id = hh.id
@@ -70,7 +71,7 @@ class DemandSingleView(TemplateView):
                 context['household_form'] = hh_form
                 return self.render_to_response(context)
         elif form == 'list':
-            hh = forms.HouseholdSelectForm(request.POST)
+            hh = forms.HouseholdSelectForm(None, request.POST)
             if hh.is_valid():
                 hh_id = hh.cleaned_data['profile'].id
         else:

@@ -28,6 +28,7 @@
         </label>
         <label class="form__label" for="{{form.house_type.id_for_label}}">{{form.house_type.label}}
           {{form.house_type.errors}}
+          {% if form.house_type_fix %}{{form.house_type_fix.value}}{% endif %}
           {{form.house_type}}
         </label>
         <fieldset id="sm_option">

@@ -233,7 +233,7 @@ class HouseholdForm(ModelForm):
     class Media:
         js = ('stemp/js/household.js',)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, only_house_type=None, *args, **kwargs):
         kwargs['initial'] = {
             'square_meters': (
                 constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON
@@ -243,6 +243,14 @@ class HouseholdForm(ModelForm):
             )
         }
         super(HouseholdForm, self).__init__(*args, **kwargs)
+        if only_house_type is not None:
+            self.fields['house_type'] = CharField(
+                label='Haustyp',
+                widget=HiddenInput(
+                    attrs={'id': 'id_house_type', 'value': only_house_type}
+                )
+            )
+            self.house_type_fix = constants.HouseType[only_house_type]
         self.helper = FormHelper()
         self.helper.template = 'forms/household_form.html'
 
@@ -257,8 +265,11 @@ class HouseholdSelectForm(Form):
     class Media:
         js = ('stemp/js/household_select.js',)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, only_house_type=None, *args, **kwargs):
         super(HouseholdSelectForm, self).__init__(*args, **kwargs)
+        if only_house_type is not None:
+            self.fields['profile'].queryset = Household.objects.filter(
+                house_type=only_house_type).all()
         self.helper = FormHelper(self)
         self.helper.template = 'forms/household_list_form.html'
 
