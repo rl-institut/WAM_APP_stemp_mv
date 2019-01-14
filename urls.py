@@ -108,6 +108,6 @@ admin_url_patterns = [
     path(
         'stemp/manage',
         wam_admin_site.admin_view(views_admin.ManageView.as_view()),
-        name='manage'
+        name='manage_stemp'
     ),
 ]
