@@ -79,8 +79,8 @@ urlpatterns = [
         name='household_name'
     ),
     path(
-        'ajax/get_energy/',
-        views_dynamic.get_energy,
+        'ajax/get_heat_demand/',
+        views_dynamic.get_heat_demand,
     ),
     path(
         'ajax/get_square_meters/',

@@ -224,7 +224,7 @@ class HouseholdForm(ModelForm):
         model = Household
         fields = '__all__'
         widgets = {
-            'heat_demand': NumberInput(),
+            'heat_demand': HiddenInput(),
             'roof_area': HiddenInput(),
             'square_meters': HiddenInput(),
             'warm_water_per_day': NumberInput(attrs={'readonly': True})
