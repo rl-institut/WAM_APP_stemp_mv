@@ -29,14 +29,6 @@ class WarmwaterConsumption(Enum):
         }.get(self)
 
 
-EFH = ('EFH', 'Heat Demand EFH')
-MFH = ('MFH', 'Heat Demand MFH')
-HOUSE_TYPES = (
-    (EFH[0], 'Einfamilienhaus'),
-    (MFH[0], 'Mehrfamilienhaus')
-)
-
-
 class HouseType(Enum):
     EFH = 'Einfamilienhaus'
     MFH = 'Mehrfamilienhaus'

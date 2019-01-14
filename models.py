@@ -88,21 +88,18 @@ class Household(models.Model):
     def get_oep_timeseries(self, name):
         if self.timeseries is None:
             session = sqlahelper.get_session()
-            keys = (constants.EFH[1], constants.MFH[1])
             self.timeseries = {
                 name: pandas.Series(
                     session.query(
                         oep_models.OEPTimeseries
-                    ).filter_by(name=name).first().data)
-                for name in keys
+                    ).filter_by(name=house_type.value).first().data)
+                for house_type in constants.HouseType
             }
         return self.timeseries[name]
 
     def get_heat_demand_profile(self):
-        if self.house_type == constants.EFH[0]:
-            return self.get_oep_timeseries(constants.EFH[1])
-        elif self.house_type == constants.MFH[0]:
-            return self.get_oep_timeseries(constants.MFH[1])
+        house_type = constants.HouseType[self.house_type]
+        return self.get_oep_timeseries(house_type.value)
 
     def get_hot_water_profile(self):
         session = sqlahelper.get_session()

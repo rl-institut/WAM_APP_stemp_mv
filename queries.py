@@ -122,7 +122,7 @@ def insert_heat_demand():
     # Add to OEP
     session.add_all([
         oep_models.OEPTimeseries(
-            name='Heat Demand EFH',
+            name=constants.HouseType.EFH.value,
             meta_data={
                 'name': 'Heat demand for EFH',
                 'source': 'oemof/demandlib'
@@ -130,7 +130,7 @@ def insert_heat_demand():
             data=demand['efh'].values.tolist()
         ),
         oep_models.OEPTimeseries(
-            name='Heat Demand MFH',
+            name=constants.HouseType.MFH.value,
             meta_data={
                 'name': 'Heat demand for MFH',
                 'source': 'oemof/demandlib'
@@ -167,23 +167,23 @@ def insert_dhw_timeseries():
 
 
 def insert_default_households():
-    for house_type in constants.HOUSE_TYPES:
+    for house_type in constants.HouseType:
         for num_persons in range(1, 11):
             square_meters = num_persons * constants.QM_PER_PERSON
             household = Household(
-                name=f'{house_type[0]}_{num_persons}',
+                name=f'{house_type.value}_{num_persons}',
                 number_of_persons=num_persons,
-                house_type=house_type[0],
+                house_type=house_type.name,
                 square_meters=square_meters,
                 heat_demand=(
                     square_meters *
-                    constants.ENERGY_PER_QM_PER_YEAR[house_type[0]]
+                    constants.ENERGY_PER_QM_PER_YEAR[house_type.name]
                 ),
                 heat_type=constants.HeatType.radiator.name,
                 warm_water_per_day=(
                     constants.WarmwaterConsumption.Medium.in_liters()),
                 roof_area=constants.get_roof_square_meters(
-                    square_meters, house_type[0])
+                    square_meters, house_type)
             )
             household.save()
 
