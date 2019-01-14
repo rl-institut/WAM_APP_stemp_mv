@@ -37,6 +37,11 @@ HOUSE_TYPES = (
 )
 
 
+class HouseType(Enum):
+    EFH = 'Einfamilienhaus'
+    MFH = 'Mehrfamilienhaus'
+
+
 class HeatType(Enum):
     radiator = 'Heizkörper'
     floor = 'Fussbodenheizung'
@@ -98,11 +103,14 @@ class LoadProfile(Enum):
 
 def get_roof_square_meters(household_square_meters, house_type):
     sm = household_square_meters
-    if house_type == 'EFH':
+    if house_type == HouseType.EFH:
         sm /= 2
-    elif house_type == 'MFH':
+    elif house_type == HouseType.MFH:
         sm /= 4
     else:
-        raise ValueError(f'Unknown house type "{house_type}"')
+        raise KeyError(
+            f'Could not calculate roof area from household type '
+            f'"{house_type}"'
+        )
     sm *= 0.4
     return sm

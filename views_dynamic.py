@@ -57,7 +57,7 @@ def get_heat_demand(request):
 
 def get_roof_area(request):
     sm = int(request.GET['sm'])
-    house_type = request.GET['house_type']
+    house_type = constants.HouseType[request.GET['house_type']]
     sm = round(constants.get_roof_square_meters(sm, house_type))
     return JsonResponse({'roof_area': sm})
 

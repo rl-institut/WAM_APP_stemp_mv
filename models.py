@@ -66,7 +66,7 @@ class Household(models.Model):
     name = models.CharField(max_length=255, unique=True)
     house_type = models.CharField(
         max_length=3,
-        choices=constants.HOUSE_TYPES,
+        choices=((ht.name, ht.value) for ht in constants.HouseType),
         default='EFH',
         verbose_name='Haustyp'
     )
