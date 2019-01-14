@@ -1,5 +1,6 @@
 
 {% load staticfiles %}
+{% load labels %}
 
 <div class="grid-x align-middle">
 
@@ -9,8 +10,8 @@
       <div class="cell medium-10 large-8 hh-component__form">
         <h3>Name</h3>
         <label class="form__label" for="id_name">
-          Name des neuen Haushalts
-          <input type="text" name="name" maxlength="255" required id="id_name" placeholder="Geben Sie einen Namen ein">
+          {{form.name.errors}}
+          {{form.name}}
         </label>
       </div>
     </div>
@@ -120,30 +121,38 @@
         <div class="grid-x align-middle">
           <div class="cell medium-8 hh-component__form">
             <h3>Warmwasser</h3>
-            <fieldset id="warm_water_by_option">
-              <legend>
-                Warmwasserverbrauch
-              </legend>
-              <ul class="menu vertical">
-                <li>
-                  <input type="radio" name="warm_water_by" checked="" value="standard" id="warmwater_by_persons">
-                  <label class="form__label" for="warmwater_by_persons">Täglicher Verbrauch</label>
-                  <!-- input ID in ion-range-slider.js -->
-                  <div class="input-group" id="warmwater_by_standard_input">
-                    <input class="input-group-field input input--s" type="number" name="id_warmwater_slider" step="any" required id="id_warmwater_slider">
-                    <span class="input-group-label">Liter/Tag</span>
-                  </div>
-                </li>
-                <li>
-                  <input type="radio" name="warm_water_by" value="hand" id="warm_water_per_day">
-                  <label class="form__label" for="warm_water_per_day">Täglicher Verbrauch manuell angeben</label>
-                  <div class="input-group input-disabled" id="warmwater_by_hand_input">
-                    <input class="input-group-field input input--s" type="number" name="id_warm_water_per_day" step="any" id="id_warm_water_per_day">
-                    <span class="input-group-label">Liter/Tag</span>
-                  </div>
-                </li>
-              </ul>
-            </fieldset>
+              <label for="warmwater_consumption" class="accordion-label">Wie hoch ist ihr Warmwasserverbrauch?</label>
+              <div class="small-2 medium-1 left">Gering</div>
+              <div class="small-2 medium-1 center">Mittel</div>
+              <div class="small-2 medium-1 right">Hoch</div>
+              <div class="slider slider-- accordion-slider" id="warmwater_consumption" data-slider data-start="0" data-initial-start="1" data-end="2" data-step="1" data-decimal="0">
+                <span class="slider-handle" data-slider-handle role="slider" tabindex="1"></span>
+                <span class="slider-fill" data-slider-fill></span>
+              </div>
+            <div>
+            {{form.warm_water_per_day.label}}
+            <span class="has-tip--no-border">
+              <i data-open="modal-warmwater" class ="icon ion-information-circled icon--small info-box" title="Hier klicken um mehr Informationen zum Warmwasserverbrauch zu erhalten"></i>
+            </span>
+            {{form.warm_water_per_day.errors}}
+            {{form.warm_water_per_day}}
+            </div>
+            <div class="reveal" id="modal-warmwater" data-reveal>
+              <div class="grid-x technology">
+                <div class="cell technology__header">
+                  <h2 style="font-size: 1.2rem">Warmwasserverbrauch</h2>
+                </div>
+                <div class="cell technology__img">
+                  <img src="{% static 'stemp/img/Warmwasserverbrauch.svg' %}">
+                </div>
+                <div class="cell technology__text">
+                  {% label 'demand:warmwater' app='stemp' %}
+                </div>
+              </div>
+              <button class="close-button" data-close aria-label="Schließen" type="button">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
           </div>
 
           <div class="cell medium-4 hh-component__parameter hh-component__parameter--energy">

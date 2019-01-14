@@ -8,10 +8,10 @@ $("#id_house_type").change(function() {
 
 $("#number_of_persons_slider").on('changed.zf.slider', function() {
   set_default_square_meters();
-  set_default_heat_demand();
   update_warm_water();
 });
 
+// WARMWATER
 $("#warmwater_consumption").on('changed.zf.slider', function() {
   update_warm_water();
 });
@@ -32,7 +32,7 @@ function update_warm_water() {
     // handle a successful response
     success : function(json) {
       $("#id_warm_water_per_day").val(json.daily_warm_water);
-      $("#warm_water").val(json.energy);
+      $("#show_warmwater").text(json.energy);
     }
   });
 };
@@ -65,7 +65,7 @@ function set_default_heat_demand() {
 
     // handle a successful response
     success : function(json) {
-      $("#heat_auto").val(json.energy);
+      $("#heat_auto").val(json.heat_demand);
       update_heat_demand();
     }
   });
@@ -85,6 +85,7 @@ function update_square_meters() {
 
   // Fire depending tasks
   set_default_roof_area();
+  set_default_heat_demand();
 };
 
 function set_default_square_meters() {

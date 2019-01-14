@@ -35,7 +35,7 @@ def get_next_household_name(request):
 
 def get_square_meters(request):
     persons = float(request.GET['persons'])
-    sm = persons * constants.QM_PER_PERSON
+    sm = round(persons * constants.QM_PER_PERSON)
     return JsonResponse({'square_meters': sm})
 
 
@@ -44,21 +44,21 @@ def get_warm_water_energy(request):
     warmwater_consumption = constants.WarmwaterConsumption(
         int(request.GET['warmwater_consumption']))
     liter = warmwater_consumption.in_liters()
-    energy = liter * persons * constants.ENERGY_PER_LITER * 365
+    energy = round(liter * persons * constants.ENERGY_PER_LITER * 365)
     return JsonResponse({'energy': energy, 'daily_warm_water': liter})
 
 
 def get_heat_demand(request):
     sm = float(request.GET['sm'])
     house_type = request.GET['house_type']
-    energy = sm * constants.ENERGY_PER_QM_PER_YEAR[house_type]
-    return JsonResponse({'energy': energy})
+    heat_demand = round(sm * constants.ENERGY_PER_QM_PER_YEAR[house_type])
+    return JsonResponse({'heat_demand': heat_demand})
 
 
 def get_roof_area(request):
     sm = int(request.GET['sm'])
     house_type = request.GET['house_type']
-    sm = constants.get_roof_square_meters(sm, house_type)
+    sm = round(constants.get_roof_square_meters(sm, house_type))
     return JsonResponse({'roof_area': sm})
 
 
