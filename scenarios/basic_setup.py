@@ -41,8 +41,10 @@ def upload_scenario_parameters():
                     for parameter_name, parameter_data in parameters.items()
                 ]
                 session.add_all(scenarios)
-                transaction.commit()
                 logging.info(f'Scenario upload: {sc_setup} done.')
+
+    with transaction.manager as tm:
+        tm.commit()
 
 
 class BaseScenario(ABC):

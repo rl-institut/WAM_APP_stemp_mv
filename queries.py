@@ -90,7 +90,8 @@ def insert_pv_and_temp():
         data=pv_feedin
     )
     session.add(pv)
-    transaction.commit()
+    with transaction.manager as tm:
+        tm.commit()
 
 
 def insert_heat_demand():
@@ -138,7 +139,8 @@ def insert_heat_demand():
             data=demand['mfh'].values.tolist()
         ),
     ])
-    transaction.commit()
+    with transaction.manager as tm:
+        tm.commit()
 
 
 def insert_dhw_timeseries():
@@ -163,7 +165,8 @@ def insert_dhw_timeseries():
                 data=hot_water_energy_profile[0].values.tolist()
             )
             session.add(hot_water)
-    transaction.commit()
+    with transaction.manager as tm:
+        tm.commit()
 
 
 def insert_default_households():
@@ -212,4 +215,5 @@ def delete_stored_simulations():
     session.query(oemof_results.OemofScalar).delete()
     session.query(oemof_results.OemofSequence).delete()
     session.query(oemof_results.OemofData).delete()
-    transaction.commit()
+    with transaction.manager as tm:
+        tm.commit()
