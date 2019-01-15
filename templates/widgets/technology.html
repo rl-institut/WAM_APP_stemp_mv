@@ -5,7 +5,7 @@
   {% for option in options %}
     <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 u-text--left">
       <label class="container" for="{{option.name}}_{{option.index}}">
-        {% if option.attrs.warning %}
+        {% if option.attrs.grey_out %}
           <font color="grey">
             {{option.label}}
           </font>

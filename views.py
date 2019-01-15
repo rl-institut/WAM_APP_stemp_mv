@@ -193,6 +193,12 @@ class TechnologyView(TemplateView):
                     app_settings.SCENARIO_PARAMETERS[
                         'pv_heatpump']['LABELS']['warning']
                 )
+                technology_information['pv_heatpump']['grey_out'] = True
+        if 'bio_bhkw' in app_settings.ACTIVATED_SCENARIOS:
+            technology_information['bio_bhkw']['warning'] = (
+                app_settings.SCENARIO_PARAMETERS[
+                    'bio_bhkw']['LABELS']['warning']
+            )
 
         context['technology'] = forms.TechnologyForm(
             'technology',
