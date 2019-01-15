@@ -8,21 +8,31 @@
 
 {% block content %}
 
-<div class="grid-container fluid u-no-padding">
-  <div class="grid-x">
-
-    <!-- STEPS TASKS START (RIGHT) -->
-    <div class="cell l-bg-color-w scen-create__wrapper u-text--center">
-
-      <div class="grid-x grid-padding-x">
-        {% for visualization in visualizations %}
-          <div class="cell medium-6" style="margin-top: 2rem">
-            {{visualization}}
-          </div>
-        {% endfor %}
+{% if pending %}
+  <div class="cell shrink">
+    <div class="grid-x grid-padding-x">
+      <div class="cell" id="pending" style="color: white">
+        Simulation gestartet.<br>
+        Bitte warten...
       </div>
     </div>
   </div>
+{% endif %}
+
+<div class="cell l-bg-color-w scen-create__wrapper u-text--center">
+  <div class="grid-x grid-padding-x">
+    {% for visualization in visualizations %}
+      <div class="cell" style="margin-top: 2rem">
+        {{visualization}}
+      </div>
+    {% endfor %}
+  </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+  {% if pending %}
+    <script src="/static/stemp/js/pending.js"></script>
+  {% endif %}
 {% endblock %}

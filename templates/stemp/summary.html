@@ -1,0 +1,130 @@
+
+{% extends "stemp/base_side.html" %}
+
+{% load staticfiles %}
+
+{% block body-class %}u-vh--100{% endblock %}
+
+{% block left_side %}
+
+<div class="cell">
+  <h1>{{demand_label}}</h1>
+</div>
+
+{{wizard}}
+
+<!-- START Page description -->
+<div class="scen-create__description">
+  <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Enavi_Zusammenfassung.svg' %}" alt="Icon Zusammenfassung"></div>
+  <h2 class="scen-create__header">Zusammenfassung</h2>
+  <p class="scen-create__text show-for-large">Überprüfen Sie Ihre Eingaben, bevor Sie das Szenario berechnen lassen.</p>
+</div>
+<!-- START Page description -->
+
+{% endblock %}
+
+{% block right_side %}
+
+<div class="cell large-8 large-cell-block-y">
+  <div class="grid-y large-grid-frame">
+
+    <main class="cell large-auto large-cell-block-y main-content-wrap">
+      <div class="grid-x scen-create__form">
+
+        <div class="cell scen-create__form u-text--center">
+          <h3>{{demand.name}}</h3>
+        </div>
+
+        <!-- HOUSEHOLD STRUCTURE START -->
+        <div class="cell medium-10 medium-offset-1">
+
+          <div class="grid-x summary-header">
+            <div class="cell shrink summary-icon u-margin-right--m">
+              <img src="{% static 'stemp/img/icons_custom/Enavi_Einzelhaus_black.svg' %}" alt="Icon Einzelhaus">
+            </div>
+            <div class="cell shrink summary-txt u-margin-right--m">
+              <h4>Haushaltsstruktur</h4>
+            </div>
+            <div class="cell auto summary-border">
+            </div>
+          </div>
+
+          <div class="cell u-text--left u-padding-left--m">
+            {{demand.summary}}
+          </div>
+
+        </div>
+        <!-- HOUSEHOLD STRUCTURE END -->
+
+        <!-- HEATING OPTION START -->
+        <div class="cell medium-10 medium-offset-1">
+
+          <div class="grid-x summary-header">
+            <div class="cell shrink summary-icon u-margin-right--m">
+              <img src="{% static 'stemp/img/icons_custom/Heizung_black.svg' %}" alt="Icon Heizung">
+            </div>
+            <div class="cell shrink summary-txt u-margin-right--m">
+              <h4>Heizungsoptionen</h4>
+            </div>
+            <div class="cell auto summary-border">
+            </div>
+          </div>
+
+          <div class="cell u-text--left u-padding-left--m">
+            {% for tech in technologies %}
+              <p>{{tech}}</p>
+            {% endfor %}
+          </div>
+
+        </div>
+        <!-- HEATING OPTION END -->
+
+        <!-- PARAMETER OPTION START -->
+        <div class="cell medium-10 medium-offset-1 scen-padding-btm">
+
+          <div class="grid-x summary-header">
+            <div class="cell shrink summary-icon u-margin-right--m">
+              <img src="{% static 'stemp/img/icons_custom/Enavi_Parameter_black.svg' %}" alt="Icon Parameter">
+            </div>
+            <div class="cell shrink summary-txt u-margin-right--m">
+              <h4>Parameter (es werden nur geänderte Paramater angezeigt)</h4>
+            </div>
+            <div class="cell auto summary-border">
+            </div>
+          </div>
+
+          <div class="cell u-text--left u-padding-left--m">
+            {% for category, params in parameters.items %}
+              <p>{{category}}</p>
+              {% for parameter, value_unit in params.items %}
+                <p>{{parameter}}: {{value_unit.0}} {{value_unit.1}}</p>
+              {% endfor %}
+            {% empty %}
+              <p>Keine Parameter geändert</p>
+            {% endfor %}
+          </div>
+
+        </div>
+        <!-- PARAMETER OPTION END -->
+
+      </div>
+    </main>
+
+    <form action="" method="post" id="summary">
+      {% csrf_token %}
+      {% url 'stemp:parameter' as back_url%}
+      {% include 'includes/button_section.html' with back_url=back_url function="done();" done_label="Fertig" %}
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'jquery.js' %}"></script>
+  <script language="JavaScript">
+    function done() {
+      $("#summary").submit();
+    };
+  </script>
+{% endblock %}

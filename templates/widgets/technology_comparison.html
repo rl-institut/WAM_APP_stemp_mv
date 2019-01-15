@@ -3,12 +3,12 @@
   <label for="{{div_id}}">{{title}}</label>
   <table>
     <th>#</th>
-    {% for header in headers %}
+    {% for column in data.columns %}
       <th>{{header}}</th>
     {% endfor %}
     {% for index, value in data.iteritems %}
       <tr>
-        <td>{{forloop.counter}}</td><td>{{index}}</td><td>{{value}} {{unit}}</td>
+        <td>{{index}}</td><td>{{value}}</td>
       </tr>
     {% endfor %}
   </table>

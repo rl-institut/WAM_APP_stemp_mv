@@ -23,18 +23,15 @@ class WarmwaterConsumption(Enum):
 
     def in_liters(self):
         return {
-            WarmwaterConsumption.Low: 30,
-            WarmwaterConsumption.Medium: 44,
-            WarmwaterConsumption.High: 60,
+            WarmwaterConsumption.Low: 43,
+            WarmwaterConsumption.Medium: 66,
+            WarmwaterConsumption.High: 109,
         }.get(self)
 
 
-EFH = ('EFH', 'Heat Demand EFH')
-MFH = ('MFH', 'Heat Demand MFH')
-HOUSE_TYPES = (
-    (EFH[0], 'Einfamilienhaus'),
-    (MFH[0], 'Mehrfamilienhaus')
-)
+class HouseType(Enum):
+    EFH = 'Einfamilienhaus'
+    MFH = 'Mehrfamilienhaus'
 
 
 class HeatType(Enum):
@@ -94,3 +91,18 @@ class LoadProfile(Enum):
             if member.value == index:
                 return member.profile
         raise IndexError('Index "' + str(index) + '" not found in LoadProfile')
+
+
+def get_roof_square_meters(household_square_meters, house_type):
+    sm = household_square_meters
+    if house_type == HouseType.EFH:
+        sm /= 2
+    elif house_type == HouseType.MFH:
+        sm /= 4
+    else:
+        raise KeyError(
+            f'Could not calculate roof area from household type '
+            f'"{house_type}"'
+        )
+    sm *= 0.4
+    return sm

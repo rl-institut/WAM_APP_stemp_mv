@@ -1,4 +1,4 @@
-{% extends "stemp/base.html" %}
+{% extends "stemp/base_side.html" %}
 
 {% load staticfiles %}
 {% load labels %}
@@ -6,57 +6,45 @@
 
 {% block body-class %}u-vh--100{% endblock %}
 
-{% block content %}
+{% block left_side %}
 
-<div class="cell large-auto large-cell-block-container">
-  <div class="grid-x" style="height:100%">
+<div class="cell"><h1>{{demand_label}}</h1></div>
 
-    <!-- STEPS INFO START (LEFT) -->
-    <aside class="cell large-4 large-cell-block-y l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
-      <div class="cell"><h1>{{demand_label}}</h1></div>
-      <ul class="wizard wizard-circular" role="steps" aria-label="Steps">
-        <li>1</li>
-        <li>2</li>
-        <li class="current"><span class="show-for-sr">Sie sind auf der Seite Technologie- und Kostenparameter des Viertels</span> 3</li>
-        <li>4</li>
-      </ul>
+{{wizard}}
 
-      <div class="scen-create__description">
-        <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Enavi_Parameter.svg' %}" alt="Icon Parameter"></div>
-        <h2 class="scen-create__header">Parameter</h2>
-        <p class="scen-create__text show-for-large">Optional können Sie auch Kosten- sowie Technologieparameter einzeln ändern.</p>
+<div class="scen-create__description">
+  <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Enavi_Parameter.svg' %}" alt="Icon Parameter"></div>
+  <h2 class="scen-create__header">Parameter</h2>
+  <p class="scen-create__text show-for-large">Optional können Sie auch Kosten- sowie Technologieparameter einzeln ändern.</p>
+</div>
+
+{% endblock %}
+
+{% block right_side %}
+
+<div class="cell large-8 large-cell-block-y">
+  <div class="grid-y large-grid-frame">
+    <main class="cell large-auto large-cell-block-y main-content-wrap">
+
+      <div class="grid-x scen-create__form">
+        <div class="cell scen-create__form u-text--center">
+          <h3>{{demand_name}}</h3>
+        </div>
+
+        <div class="panel">
+          {% label 'parameter:note' safe=True %}
+        </div>
+
+        <form class="cell medium-10 medium-offset-1 large-8 large-offset-2" id="parameter_form" action="{% url 'stemp:parameter' %}" method="post">
+          {% csrf_token %}
+          {% crispy parameter_form %}
+          <input type="hidden" name="scenario" value="{{scenario}}">
+        </form>
+
       </div>
-    </aside>
-    <!-- STEPS INFO END -->
-
-    <!-- STEPS TASKS START (RIGHT) -->
-    <div class="cell large-8 large-cell-block-y">
-      <div class="grid-y large-grid-frame">
-        <main class="cell large-auto large-cell-block-y main-content-wrap">
-
-          <div class="grid-x scen-create__form">
-            <div class="cell scen-create__form u-text--center">
-              <h3>{{demand_name}}</h3>
-            </div>
-
-            <div class="panel">
-              {% label 'parameter:note' safe=True %}
-            </div>
-
-            <form class="cell medium-10 medium-offset-1 large-8 large-offset-2" id="parameter_form" action="{% url 'stemp:parameter' %}" method="post">
-              {% csrf_token %}
-              {% crispy parameter_form %}
-              <input type="hidden" name="scenario" value="{{scenario}}">
-            </form>
-
-          </div>
-        </main>
-        {% url 'stemp:technology' as back_url%}
-        {% include 'includes/button_section.html' with back_url=back_url function="done();" %}
-      </div>
-    </div>
-    <!-- STEPS TASKS END -->
-
+    </main>
+    {% url 'stemp:technology' as back_url%}
+    {% include 'includes/button_section.html' with back_url=back_url function="done();" %}
   </div>
 </div>
 

@@ -1,0 +1,43 @@
+{
+  "title": "Warmwasserprofile",
+  "identifier": "http://openenergyplatform.org/dataedit/view/sandbox/kopernikus_warmwasser",
+  "description": "Warmwasserprofile berechnet mit DHWCalc (Parameter: no. of categories=4, time step duration=60min, total duration=365days, propability distribution=DHW standard distributions, no holidays, default flow rates);  Multipliziert mit energie_pro_liter=0.058 kWh/liter",
+  "language": "de-DE",
+  "keywords": [
+    "warmwasser"
+  ],
+  "spatial": {
+    "location": "",
+    "extent": "",
+    "resolution": ""
+  },
+  "temporal": {
+    "reference_date": "",
+    "start": "",
+    "end": "",
+    "resolution": "1h"
+  },
+  "sources": [
+    {
+      "name": "DHWCalc Version 2.02",
+      "description": "Ulrike Jordan, Klaus Vajen, Universität Kassel Institut für Thermische Energietechnik Solar und Anlagentechnik D - 34109 Kassel solar@uni-kassel.de",
+      "url": "http://www.solar.uni-kassel.de",
+      "license": "",
+      "copyright": ""
+    }
+  ],
+  "license": {
+    "id": "",
+    "name": "",
+    "url": "",
+    "instruction": "",
+    "copyright": ""
+  },
+  "contributors": [],
+  "resources": [],
+  "_comment": {
+    "_metadata_version": "1.4",
+    "_metadata_license": "Creative Commons Zero v1.0 Universal (CC0-1.0)",
+    "_metadata_license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+  }
+}

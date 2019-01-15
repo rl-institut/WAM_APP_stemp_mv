@@ -1,10 +1,9 @@
 
 import sqlahelper
 
-from stemp.constants import DemandType, DistrictStatus
 from stemp.app_settings import SCENARIO_MODULES
-from stemp.scenarios.simulation import create_energysystem
-from stemp.bookkeeping import simulate_energysystem
+from stemp.constants import DemandType, DistrictStatus
+from .tasks import simulate_energysystem
 from stemp.models import Scenario, Parameter, Simulation, Household, District
 from db_apps.oemof_results import store_results
 
@@ -16,7 +15,9 @@ class SessionSimulation(object):
         self.module = SCENARIO_MODULES[name]
         self.energysystem = None
         self.parameter = {}
+        self.changed_parameters = None
         self.result_id = None
+        self.pending = None
 
     def check_for_result(self):
         """
@@ -55,12 +56,17 @@ class SessionSimulation(object):
         if result_id is not None:
             self.result_id = result_id
         else:
-            energysystem = create_energysystem(
-                self.module,
-                **self.parameter
+            self.pending = (
+                simulate_energysystem.delay(self.name, self.parameter)
             )
-            self.energysystem = energysystem
-            self.result_id = simulate_energysystem(self)
+
+    def is_pending(self):
+        if self.pending is None:
+            return False
+        if self.pending.ready():
+            self.result_id = self.pending.get()
+            return False
+        return True
 
     def store_results(self, results, param_results):
         # Store scenario, parameter and setup via Django ORM
@@ -106,6 +112,9 @@ class UserSession(object):
         self.demand_type = None
         self.demand_id = None
         self.current_district = {}
+
+    def reset_scenarios(self):
+        self.scenarios = []
 
     def get_demand(self):
         if self.demand_type == DemandType.Single:

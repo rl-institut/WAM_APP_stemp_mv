@@ -1,9 +1,24 @@
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 
 from stemp import constants
+from user_sessions.utils import check_session
 from stemp.models import Household
+
+
+@check_session
+def check_pending(request, session):
+    """
+    Returns true if all results are ready
+    """
+    ready = all(
+        [
+            not scenario.is_pending()
+            for scenario in session.scenarios
+        ]
+    )
+    return JsonResponse({'ready': ready})
 
 
 def get_next_household_name(request):
@@ -19,8 +34,8 @@ def get_next_household_name(request):
 
 
 def get_square_meters(request):
-    value = float(request.GET['value'])
-    sm = value * constants.QM_PER_PERSON
+    persons = float(request.GET['persons'])
+    sm = round(persons * constants.QM_PER_PERSON)
     return JsonResponse({'square_meters': sm})
 
 
@@ -28,43 +43,25 @@ def get_warm_water_energy(request):
     persons = float(request.GET['persons'])
     warmwater_consumption = constants.WarmwaterConsumption(
         int(request.GET['warmwater_consumption']))
-    liter = (
-        warmwater_consumption.in_liters() +
-        constants.DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER
-    )
-    energy = liter * persons * constants.ENERGY_PER_LITER * 365
+    liter = warmwater_consumption.in_liters()
+    energy = round(liter * persons * constants.ENERGY_PER_LITER * 365)
     return JsonResponse({'energy': energy, 'daily_warm_water': liter})
 
 
-def get_energy(request):
-    choice = request.GET['choice']
-    value = float(request.GET['value'])
+def get_heat_demand(request):
+    sm = float(request.GET['sm'])
     house_type = request.GET['house_type']
-    if choice == 'square':
-        sm = value
-    elif choice == 'person':
-        sm = value * constants.QM_PER_PERSON
-    else:
-        raise ValueError(f'Unknown choice "{choice}". Cannot calculate energy')
-    energy = sm * constants.ENERGY_PER_QM_PER_YEAR[house_type]
-    return JsonResponse({'energy': energy})
+    heat_demand = round(sm * constants.ENERGY_PER_QM_PER_YEAR[house_type])
+    return JsonResponse({'heat_demand': heat_demand})
 
 
 def get_roof_area(request):
-    heat_option = request.GET['heat_option']
-    value = int(request.GET['value'])
-    if heat_option == 'person':
-        sm = value * constants.QM_PER_PERSON
-    elif heat_option == 'square':
-        sm = value
-    else:
-        raise ValueError(f'Unknown heat option "{heat_option}"')
-    house_type = request.GET['house_type']
-    if house_type == 'EFH':
-        sm /= 2
-    elif house_type == 'MFH':
-        sm /= 4
-    else:
-        raise ValueError(f'Unknown house type "{house_type}"')
-    sm *= 0.4
+    sm = int(request.GET['sm'])
+    house_type = constants.HouseType[request.GET['house_type']]
+    sm = round(constants.get_roof_square_meters(sm, house_type))
     return JsonResponse({'roof_area': sm})
+
+
+def get_household_summary(request):
+    hh_id = int(request.GET['hh_id'])
+    return HttpResponse(Household.objects.get(pk=hh_id).summary())

@@ -3,10 +3,12 @@ import pandas
 import sqlahelper
 from django.utils import timezone
 from django.db import models
+from django.utils.safestring import mark_safe
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.postgres.fields import ArrayField, JSONField
 
 from stemp import constants
+from stemp import oep_models
 
 
 class Parameter(models.Model):
@@ -64,7 +66,7 @@ class Household(models.Model):
     name = models.CharField(max_length=255, unique=True)
     house_type = models.CharField(
         max_length=3,
-        choices=constants.HOUSE_TYPES,
+        choices=((ht.name, ht.value) for ht in constants.HouseType),
         default='EFH',
         verbose_name='Haustyp'
     )
@@ -85,29 +87,31 @@ class Household(models.Model):
 
     def get_oep_timeseries(self, name):
         if self.timeseries is None:
-            from stemp import oep_models
             session = sqlahelper.get_session()
-            keys = ('Hot Water Energy', constants.EFH[1], constants.MFH[1])
             self.timeseries = {
                 name: pandas.Series(
                     session.query(
                         oep_models.OEPTimeseries
-                    ).filter_by(name=name).first().data)
-                for name in keys
+                    ).filter_by(name=house_type.value).first().data)
+                for house_type in constants.HouseType
             }
         return self.timeseries[name]
 
     def get_heat_demand_profile(self):
-        if self.house_type == constants.EFH[0]:
-            return self.get_oep_timeseries(constants.EFH[1])
-        elif self.house_type == constants.MFH[0]:
-            return self.get_oep_timeseries(constants.MFH[1])
+        house_type = constants.HouseType[self.house_type]
+        return self.get_oep_timeseries(house_type.value)
 
     def get_hot_water_profile(self):
-        return (
-            self.get_oep_timeseries('Hot Water Energy') *
-            self.number_of_persons
-        )
+        session = sqlahelper.get_session()
+        hot_water = session.query(oep_models.OEPHotWater).filter_by(
+                liter=self.warm_water_per_day * self.number_of_persons
+        ).first()
+        if hot_water is None:
+            raise KeyError(
+                f'No hot water profile found for '
+                f'liter={self.warm_water_per_day}'
+            )
+        return pandas.Series(hot_water.data)
 
     def __str__(self):
         return self.name
@@ -124,6 +128,22 @@ class Household(models.Model):
     @property
     def max_pv_size(self):
         return self.roof_area / constants.QM_PER_PV_KW
+
+    def summary(self):
+        summary = [
+            (
+                f'{self.number_of_persons} Person' +
+                ('en' if self.number_of_persons > 1 else '')
+            ),
+            (
+                f'Jährlicher Wärmebedarf: ' +
+                f'{self.annual_heat_demand().sum():.0f} kWh'
+            ),
+            f'Heizung: {constants.HeatType[self.heat_type].value}',
+            f'Quadratmeter: {self.square_meters} qm'
+        ]
+        summary = ''.join(f'<p>{s}</p>' for s in summary)
+        return mark_safe(summary)
 
 
 class District(models.Model):
@@ -160,3 +180,10 @@ class District(models.Model):
     @property
     def max_pv_size(self):
         return sum([hh.max_pv_size for hh in self.households.all()])
+
+    def summary(self):
+        summary = [
+            f'Jährlicher Wärmebedarf: {self.annual_heat_demand().sum()} kWh',
+        ]
+        summary = ''.join(f'<p>{s}</p>' for s in summary)
+        return mark_safe(summary)

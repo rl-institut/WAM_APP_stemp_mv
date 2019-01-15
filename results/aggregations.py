@@ -3,131 +3,71 @@ from abc import ABC
 import pandas
 from oemof.solph import analyzer as an
 
-from stemp.results import analyzer
+from stemp.results import analyzer as stemp_an
 
 
 class Aggregation(ABC):
     name = 'Aggregation'
     analyzer = None
 
+    def _get_data(self, result):
+        data = result.analysis.get_analyzer(self.analyzer).result
+        return self._set_label(data, result)
+
     @staticmethod
-    def _get_label(nodes):
-        # TODO: Export label mappings into cfg or scenario
-        if isinstance(nodes, str):
-            return nodes
-        if nodes[1] is not None and nodes[1].name.endswith('chp'):
-            return 'BHKW'
-        elif nodes[0].name.endswith('chp'):
-            return 'BHKW (Stromgutschrift)'
-        elif (
-                nodes[0].name.startswith('b_bhkw_el') and
-                nodes[1] is not None and
-                nodes[1].name.startswith('transformer_from')
-        ):
-            return 'BHKW (Stromgutschrift)'
-        elif (
-                nodes[1] is not None and
-                nodes[1].name.startswith('transformer_from')
-        ):
-            return 'PV (Stromgutschrift)'
-        elif nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
-            return 'Ölkessel'
-        elif (
-                nodes[0] is not None and
-                nodes[0].name.endswith('oil_heating')
-        ):
-            return 'Ölkessel'
-        elif nodes[1] is not None and nodes[1].name.endswith('gas_heating'):
-            return 'Gasheizung'
-        elif (
-                nodes[0] is not None and
-                nodes[0].name.endswith('gas_heating')
-        ):
-            return 'Gasheizung'
-        elif nodes[1] is not None and nodes[1].name.endswith('heat_pump'):
-            return 'Wärmepumpe'
-        elif nodes[0] is not None and nodes[0].name.endswith('pv'):
-            return 'PV'
-        elif nodes[0] is not None and nodes[0].name.endswith('net'):
-            return 'Stromkosten'
-        return '-'.join(map(str, nodes))
-
-    @classmethod
-    def _get_data(cls, result):
-        data = result.analysis.get_analyzer(cls.analyzer).result
-        return cls._set_label(data)
-
-    @classmethod
-    def _set_label(cls, data):
+    def _set_label(data, result):
+        scenario = result.scenario.Scenario
         return {
-            cls._get_label(k): v
+            scenario.get_data_label(k): v
             for k, v in data.items()
+            if not isinstance(k, str)
         }
 
-    @classmethod
-    def aggregate(cls, results):
-        series = pandas.DataFrame(
-            {
-                result.scenario.name: cls._get_data(result)
-                for result in results
-            }
-        )
-        series.name = cls.name
-        finalized = cls._finalize_data(series)
+    def aggregate(self, results):
+        aggregated_data = {
+            result.scenario.Scenario.name: self._get_data(result)
+            for result in results
+        }
+        df = pandas.DataFrame(aggregated_data)
+        df.name = self.name
+        finalized = self._finalize_data(df)
         return finalized
 
-    @staticmethod
-    def _finalize_data(data):
+    def _finalize_data(self, data):
         return data.transpose()
 
 
 class LCOEAggregation(Aggregation):
     name = 'LCOE'
-    analyzer = analyzer.LCOEAutomatedDemandAnalyzer
+    analyzer = stemp_an.LCOEAutomatedDemandAnalyzer
 
-    @classmethod
-    def _get_data(cls, result):
-        data = result.analysis.get_analyzer(cls.analyzer).result
+    def _get_data(self, result):
+        data = result.analysis.get_analyzer(self.analyzer).result
         filtered_data = {}
         for k, v in data.items():
-            new_label = cls._get_label(k)
+            new_label = result.scenario.Scenario.get_data_label(k)
             if abs(v.investment) > 0.001:
                 filtered_data[new_label + ' (Investment)'] = v.investment
             if abs(v.variable_costs) > 0.001:
                 filtered_data[
-                    new_label + cls._get_suffix(k)
+                    new_label + self._get_suffix(k, result)
                     ] = v.variable_costs
         return filtered_data
 
     @staticmethod
-    def _get_suffix(nodes):
+    def _get_suffix(nodes, result):
         if isinstance(nodes, str):
             return nodes
-        if nodes[1] is not None and nodes[1].name.endswith('chp'):
-            return ' (Gas)'
-        elif nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
-            return ' (Öl)'
-        elif (
-                nodes[0] is not None and
-                nodes[0].name.endswith('oil_heating')
-        ):
-            return ' (OPEX)'
-        elif nodes[1] is not None and nodes[1].name.endswith('gas_heating'):
-            return ' (Gas)'
-        elif (
-                nodes[0] is not None and
-                nodes[0].name.endswith('gas_heating')
-        ):
-            return ' (OPEX)'
-        return ''
+        else:
+            return result.scenario.Scenario.get_data_label(
+                nodes, suffix=True)
 
 
 class TotalDemandAggregation(Aggregation):
     name = 'Wärmeverbrauch'
     analyzer = an.SequenceFlowSumAnalyzer
 
-    @classmethod
-    def _get_data(cls, result):
+    def _get_data(self, result):
         return dict(filter(
             lambda dct: (
                 dct[0][1].tags is not None and
@@ -146,8 +86,7 @@ class SizeAggregation(Aggregation):
 class ProfileAggregation(Aggregation):
     name = 'Profile'
 
-    @classmethod
-    def _get_data(cls, result):
+    def _get_data(self, result):
         demand = [
             v['sequences']['flow'][:100]
             for k, v in result.analysis.results.items()
@@ -174,11 +113,43 @@ class ProfileAggregation(Aggregation):
         }
 
 
-class InvestmentAggregation(Aggregation):
+class Ranking(Aggregation):
+    def __init__(self, ascending=True, precision=0):
+        self.ascending = ascending
+        self.precision = precision
+
+    def _finalize_data(self, data):
+        data = data.sum(axis=1)
+        data.sort_values(ascending=self.ascending, inplace=True)
+        data = data.round(decimals=self.precision)
+        return data.to_frame(self.name)
+
+
+class InvestmentRanking(Ranking):
     name = 'Investment'
-    analyzer = analyzer.TotalInvestmentAnalyzer
+    analyzer = stemp_an.TotalInvestmentAnalyzer
 
 
-class CO2Aggregation(Aggregation):
+class CO2Ranking(Ranking):
     name = 'CO2'
-    analyzer = analyzer.CO2Analyzer
+    analyzer = stemp_an.CO2Analyzer
+
+
+class TechnologieComparison(Aggregation):
+    name = 'Technologievergleich'
+    analyzer = {
+        'invest': stemp_an.TotalInvestmentAnalyzer,
+        'co2': stemp_an.CO2Analyzer
+    }
+
+    def aggregate(self, results):
+        df = pandas.DataFrame()
+        for result in results:
+            series = pandas.Series(name=result.scenario.Scenario.name)
+            for category, analyzer in self.analyzer.items():
+                data = result.analysis.get_analyzer(analyzer).result
+                data = self._set_label(data, result)
+                series[category] = '<br>'.join(
+                    f'{key}: {value}' for key, value in data.items())
+            df = df.append(series)
+        return df.transpose()

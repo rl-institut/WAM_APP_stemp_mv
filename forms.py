@@ -5,7 +5,7 @@ from itertools import chain
 from django.forms import (
     Form, ChoiceField, IntegerField, Select, CharField, FloatField,
     BooleanField, MultipleChoiceField, CheckboxSelectMultiple, ModelForm,
-    ModelChoiceField, NumberInput
+    ModelChoiceField, NumberInput, HiddenInput
 )
 from crispy_forms.helper import FormHelper
 
@@ -158,6 +158,54 @@ class ParameterForm(Form):
             data[component][parameter] = value
         return data
 
+    @staticmethod
+    def get_changed_parameters(parameters, data):
+        """Compare original parameters with user entries and return diffs"""
+
+        # Transform parameters and data into comparable shapes
+        # original-shape (to get unit as well):
+        # Dict['category', DICT['parameter', ('value', 'unit')]]
+        # posted-shape:
+        # Dict['category', DICT['parameter', 'value']]
+
+        # parameters-shape:
+        # List[
+        #     Tuple[
+        #         'scenario', Dict[
+        #             'category', Dict[
+        #                 'parameter', Dict['attribute', 'value']
+        #             ]
+        #         ]
+        #     ]
+        # ]
+        original = defaultdict(dict)
+        for (_, scenario_params) in parameters:
+            for category, category_params in scenario_params.items():
+                for parameter, attributes in category_params.items():
+                    original[category][parameter] = (
+                        attributes['value'],
+                        attributes['unit']
+                    )
+
+        # posted-shape:
+        # Dict['category-parameter', 'value']
+        posted = defaultdict(dict)
+        skip = ['csrfmiddlewaretoken', 'scenario']
+        for cat_param, value in data.items():
+            if cat_param not in skip:
+                category, parameter = cat_param.split('-')
+                posted[category][parameter] = value
+
+        # Compare and return changed parameters by category
+        changed = defaultdict(dict)
+        for category, category_params in original.items():
+            for parameter, (value, unit) in category_params.items():
+                if value != posted[category][parameter]:
+                    val = posted[category][parameter]
+                    changed[category][parameter] = (val, unit)
+        changed.default_factory = None
+        return changed
+
 
 class HouseholdForm(ModelForm):
     number_of_persons = IntegerField(
@@ -176,25 +224,33 @@ class HouseholdForm(ModelForm):
         model = Household
         fields = '__all__'
         widgets = {
-            'heat_demand': NumberInput(attrs={'readonly': True}),
-            'roof_area': NumberInput(attrs={'readonly': True}),
+            'heat_demand': HiddenInput(),
+            'roof_area': HiddenInput(),
+            'square_meters': HiddenInput(),
             'warm_water_per_day': NumberInput(attrs={'readonly': True})
         }
 
     class Media:
         js = ('stemp/js/household.js',)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, only_house_type=None, *args, **kwargs):
         kwargs['initial'] = {
             'square_meters': (
                 constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON
             ),
             'warm_water_per_day': (
-                constants.WarmwaterConsumption.Medium.in_liters() +
-                constants.DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER
+                constants.WarmwaterConsumption.Medium.in_liters()
             )
         }
         super(HouseholdForm, self).__init__(*args, **kwargs)
+        if only_house_type is not None:
+            self.fields['house_type'] = CharField(
+                label='Haustyp',
+                widget=HiddenInput(
+                    attrs={'id': 'id_house_type', 'value': only_house_type}
+                )
+            )
+            self.house_type_fix = constants.HouseType[only_house_type]
         self.helper = FormHelper()
         self.helper.template = 'forms/household_form.html'
 
@@ -206,8 +262,14 @@ class HouseholdSelectForm(Form):
         initial=0,
     )
 
-    def __init__(self, *args, **kwargs):
+    class Media:
+        js = ('stemp/js/household_select.js',)
+
+    def __init__(self, only_house_type=None, *args, **kwargs):
         super(HouseholdSelectForm, self).__init__(*args, **kwargs)
+        if only_house_type is not None:
+            self.fields['profile'].queryset = Household.objects.filter(
+                house_type=only_house_type).all()
         self.helper = FormHelper(self)
         self.helper.template = 'forms/household_list_form.html'
 

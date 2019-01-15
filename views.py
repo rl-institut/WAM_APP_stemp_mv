@@ -2,24 +2,20 @@
 import pandas
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
+from django.urls import reverse
 
 from wam.settings import SESSION_DATA
+from utils.widgets import Wizard
+
+from user_sessions.utils import check_session_method
 from stemp import app_settings
 from stemp.user_data import DemandType
 from stemp.oep_models import OEPScenario
 from stemp import models, forms
-from stemp.results import highcharts
 from stemp.results import results
-
-
-def check_session(func):
-    def func_wrapper(self, request, *args, **kwargs):
-        try:
-            session = SESSION_DATA.get_session(request)
-        except KeyError:
-            return render(request, 'stemp/session_not_found.html')
-        return func(self, request, session=session, *args, **kwargs)
-    return func_wrapper
+from stemp.visualizations import highcharts, dataframe
+from stemp.results import aggregations as agg
+from stemp.user_data import UserSession
 
 
 class IndexView(TemplateView):
@@ -32,10 +28,8 @@ class DemandSelectionView(TemplateView):
 
 class DemandSingleView(TemplateView):
     template_name = 'stemp/demand_single.html'
+    only_house_type = None
     is_district_hh = False
-
-    def __init__(self, **kwargs):
-        super(DemandSingleView, self).__init__(**kwargs)
 
     def get_labels(self):
         if self.is_district_hh:
@@ -46,15 +40,16 @@ class DemandSingleView(TemplateView):
 
     def get_context_data(self):
         context = super(DemandSingleView, self).get_context_data()
-        context['household_form'] = forms.HouseholdForm()
-        context['list_form'] = forms.HouseholdSelectForm()
+        context['household_form'] = forms.HouseholdForm(self.only_house_type)
+        context['list_form'] = forms.HouseholdSelectForm(self.only_house_type)
         context['labels'] = self.get_labels()
         context['is_district_hh'] = self.is_district_hh
+        context['wizard'] = Wizard([None] * 4, current=0)
         return context
 
     def get(self, request, *args, **kwargs):
         # Start session (if no session yet):
-        SESSION_DATA.start_session(request)
+        SESSION_DATA.start_session(request, UserSession)
         session = SESSION_DATA.get_session(request)
         session.demand_type = (
             DemandType.District if self.is_district_hh else DemandType.Single)
@@ -62,12 +57,12 @@ class DemandSingleView(TemplateView):
         context = self.get_context_data()
         return self.render_to_response(context)
 
-    @check_session
+    @check_session_method
     def post(self, request, session):
         hh_id = None
         form = request.POST['form']
         if form == 'house':
-            hh_form = forms.HouseholdForm(request.POST)
+            hh_form = forms.HouseholdForm(None, request.POST)
             if hh_form.is_valid():
                 hh = hh_form.save()
                 hh_id = hh.id
@@ -76,7 +71,7 @@ class DemandSingleView(TemplateView):
                 context['household_form'] = hh_form
                 return self.render_to_response(context)
         elif form == 'list':
-            hh = forms.HouseholdSelectForm(request.POST)
+            hh = forms.HouseholdSelectForm(None, request.POST)
             if hh.is_valid():
                 hh_id = hh.cleaned_data['profile'].id
         else:
@@ -104,11 +99,12 @@ class DemandDistrictView(TemplateView):
         context['district_form'] = forms.DistrictListForm(
             session.current_district)
         context['labels'] = app_settings.LABELS['demand_district']
+        context['wizard'] = Wizard([None] * 4, current=0)
         return context
 
     def get(self, request, *args, **kwargs):
         # Start session (if no session yet):
-        SESSION_DATA.start_session(request)
+        SESSION_DATA.start_session(request, UserSession)
         session = SESSION_DATA.get_session(request)
         if self.new_district:
             session.reset_demand()
@@ -138,7 +134,7 @@ class DemandDistrictView(TemplateView):
         elif 'add_household' in request.POST:
             return redirect('stemp:demand_district_household')
 
-    @check_session
+    @check_session_method
     def post(self, request, session):
         if 'add_household' in request.POST or 'trash' in request.POST:
             return self.__change_district_list(request, session)
@@ -172,9 +168,6 @@ class DemandDistrictView(TemplateView):
 
 class TechnologyView(TemplateView):
     template_name = 'stemp/technology.html'
-
-    def __init__(self, **kwargs):
-        super(TechnologyView, self).__init__(**kwargs)
 
     def get_context_data(self, session, **kwargs):
         context = super(TechnologyView, self).get_context_data(**kwargs)
@@ -211,39 +204,38 @@ class TechnologyView(TemplateView):
         context['demand_type'] = session.demand_type.suffix()
         context['demand_label'] = session.demand_type.label()
         context['demand_name'] = demand.name
+        context['wizard'] = Wizard(
+            urls=[
+                (reverse('stemp:demand_selection'), 'Zurück zu Schritt 1'),
+                None,
+                None,
+                None,
+            ],
+            current=1,
+            screen_reader_for_current=(
+                'Sie sind auf der Seite Technologie-Auswahl')
+        )
         return context
 
-    @check_session
+    @check_session_method
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(kwargs['session'])
+        session = kwargs['session']
+        session.reset_scenarios()
+        context = self.get_context_data(session)
         return self.render_to_response(context)
 
-    @check_session
+    @check_session_method
     def post(self, request, session):
         scenarios = request.POST.getlist('technology')
         session.init_scenarios(scenarios)
-        if 'continue' in request.POST:
-            for scenario in session.scenarios:
-                # Load default parameters:
-                parameters = OEPScenario.get_scenario_parameters(
-                    scenario.name, session.demand_type)
-                parameter_form = forms.ParameterForm(
-                    [(scenario.name, parameters)])
-                scenario.parameter.update(parameter_form.prepared_data())
-                scenario.load_or_simulate()
-            return redirect('stemp:result')
-        else:
-            return redirect('stemp:parameter')
+        return redirect('stemp:parameter')
 
 
 class ParameterView(TemplateView):
     template_name = 'stemp/parameter.html'
 
-    def __init__(self, **kwargs):
-        super(ParameterView, self).__init__(**kwargs)
-
     @staticmethod
-    def get_scenario_parameters(session, data=None):
+    def get_scenario_parameters(session):
         scenarios = session.scenarios
         if not scenarios:
             raise KeyError('No scenarios found')
@@ -254,67 +246,170 @@ class ParameterView(TemplateView):
             scenario_parameters = OEPScenario.get_scenario_parameters(
                 scenario.name, session.demand_type)
             # Load additional dynamic parameters from module:
-            scenario.module.add_dynamic_parameters(
-                scenario, scenario_parameters)
+            scenario_parameters = (
+                scenario.module.Scenario.add_dynamic_parameters(
+                    scenario, scenario_parameters)
+            )
             parameters.append(
                 (
                     scenario.name,
                     scenario_parameters
                 )
             )
-        return forms.ParameterForm(parameters, data)
+        return parameters
 
     def get_context_data(self, session, **kwargs):
         context = super(ParameterView, self).get_context_data(**kwargs)
-        context['parameter_form'] = self.get_scenario_parameters(session)
+        context['parameter_form'] = forms.ParameterForm(
+            self.get_scenario_parameters(session))
         context['demand_label'] = session.demand_type.label()
         context['demand_name'] = session.get_demand().name
+        context['wizard'] = Wizard(
+            urls=[
+                (reverse('stemp:demand_selection'), 'Zurück zu Schritt 1'),
+                (reverse('stemp:technology'), 'Zurück zu Schritt 2'),
+                None,
+                None
+            ],
+            current=2,
+            screen_reader_for_current=(
+                'Hier können Parameter optional angepasst werden')
+        )
         return context
 
-    @check_session
+    @check_session_method
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(kwargs['session'])
         return self.render_to_response(context)
 
-    @check_session
+    @check_session_method
     def post(self, request, session):
-        parameter_form = self.get_scenario_parameters(session, request.POST)
+        parameters = self.get_scenario_parameters(session)
+        parameter_form = forms.ParameterForm(parameters, request.POST)
         if not parameter_form.is_valid():
             raise ValueError('Invalid scenario parameters')
+
         for scenario in session.scenarios:
             scenario.parameter.update(
                 parameter_form.prepared_data(scenario.name))
-            scenario.load_or_simulate()
-        return redirect('stemp:result')
+
+        session.changed_parameters = (
+            forms.ParameterForm.get_changed_parameters(
+                parameters, request.POST
+            )
+        )
+        return redirect('stemp:summary')
+
+
+class SummaryView(TemplateView):
+    template_name = 'stemp/summary.html'
+
+    def get_context_data(self, session, **kwargs):
+        context = super(SummaryView, self).get_context_data(**kwargs)
+        context['wizard'] = Wizard(
+            urls=[
+                (reverse('stemp:demand_selection'), 'Zurück zu Schritt 1'),
+                (reverse('stemp:technology'), 'Zurück zu Schritt 2'),
+                (reverse('stemp:parameter'), 'Zurück zu Schritt 3'),
+                None
+            ],
+            current=3,
+            screen_reader_for_current=(
+                'Sie sind auf der Seite Zusammenfassung des Haushalts')
+        )
+        context['demand_label'] = session.demand_type.label()
+        context['demand'] = session.get_demand()
+        context['technologies'] = [
+            app_settings.SCENARIO_PARAMETERS[scenario.name]['LABELS']['name']
+            for scenario in session.scenarios
+        ]
+        context['parameters'] = session.changed_parameters
+        return context
+
+    @check_session_method
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(kwargs['session'])
+        return self.render_to_response(context)
+
+    @check_session_method
+    def post(self, request, session):
+        if 'done' in request.POST:
+            for scenario in session.scenarios:
+                scenario.load_or_simulate()
+            result_ids = [
+                sc.result_id
+                for sc in session.scenarios
+                if sc.result_id is not None
+            ]
+            if len(result_ids) == 0:
+                return redirect('stemp:result')
+            else:
+                return redirect(
+                    'stemp:result_list',
+                    results=result_ids
+                )
+        else:
+            return redirect('stemp:parameters')
 
 
 class ResultView(TemplateView):
     template_name = 'stemp/result.html'
 
-    def __init__(self, **kwargs):
-        super(ResultView, self).__init__(**kwargs)
-
-    def get_context_data(self, session, **kwargs):
+    def get_context_data(self, result_ids, pending, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
-        context['save'] = forms.SaveSimulationForm()
 
+        context['pending'] = pending
+
+        aggregations = {
+            'invest': agg.InvestmentRanking(),
+            'lcoe': agg.LCOEAggregation(),
+            'tech': agg.TechnologieComparison()
+        }
         aggregated_results = results.ResultAggregations(
-            session.scenarios,
-            app_settings.ACTIVATED_VISUALIZATIONS
+            result_ids,
+            aggregations
         )
         context['visualizations'] = [
-            aggregated_results.visualize(vis.name)
-            for vis in app_settings.ACTIVATED_VISUALIZATIONS
+            dataframe.InvestmentDataframe(
+                aggregated_results.aggregate('invest')),
+            dataframe.InvestmentDataframe(
+                aggregated_results.aggregate('tech')),
+            highcharts.LCOEHighchart(aggregated_results.aggregate('lcoe')),
         ]
         return context
 
-    @check_session
     def get(self, request, *args, **kwargs):
-        session = kwargs['session']
-        context = self.get_context_data(session)
+        try:
+            session = SESSION_DATA.get_session(request)
+        except KeyError:
+            session = None
+
+        # Check if pending results exist:
+        if session is None:
+            pending = False
+        else:
+            pending = any(
+                [
+                    scenario.is_pending()
+                    for scenario in session.scenarios
+                ]
+            )
+
+        result_ids = kwargs.get('results')
+        if result_ids is None:
+            if session is None:
+                result_ids = []
+            else:
+                result_ids = [
+                    sc.result_id
+                    for sc in session.scenarios
+                    if sc.result_id is not None
+                ]
+
+        context = self.get_context_data(result_ids, pending)
         return self.render_to_response(context)
 
-    @check_session
+    @check_session_method
     def post(self, request):
         if 'save' in request.POST:
             simulation_name = request.POST['simulation_name']
