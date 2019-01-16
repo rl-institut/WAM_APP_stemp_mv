@@ -1,6 +1,4 @@
 
-var $ = jQuery;
-
 $("#id_house_type").change(function() {
   set_default_roof_area();
   set_default_heat_demand();

@@ -1,5 +1,4 @@
 
-var $ = jQuery;
 var interval = setInterval(check_if_pending, 10000);
 
 function check_if_pending() {
