@@ -50,6 +50,7 @@ class Scenario(basic_setup.BaseScenario):
                 b_oil: Flow(
                     variable_costs=avg_oil_price,
                     investment=invest,
+                    is_fossil=True,
                     co2_emissions=parameters[self.name]['co2_emissions']
                 )
             },

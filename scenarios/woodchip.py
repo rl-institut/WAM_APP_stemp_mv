@@ -47,6 +47,7 @@ class Scenario(basic_setup.BaseScenario):
                 b_woodchip: Flow(
                     variable_costs=parameters['General']['woodchip_price'],
                     investment=invest,
+                    is_fossil=True,
                     co2_emissions=parameters[self.name]['co2_emissions']
                 )
             },

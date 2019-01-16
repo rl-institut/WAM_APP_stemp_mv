@@ -82,6 +82,7 @@ class Scenario(basic_setup.BaseScenario):
                             parameters[self.name]['minimal_load'] /
                             parameters[self.name]['conversion_factor_th']
                     ),
+                    is_fossil=True,
                     co2_emissions=parameters[self.name]['co2_emissions']
                 )
             },
@@ -112,6 +113,7 @@ class Scenario(basic_setup.BaseScenario):
                 b_gas: Flow(
                     variable_costs=avg_gas_price,
                     investment=invest,
+                    is_fossil=True,
                     co2_emissions=parameters['Gas']['co2_emissions']
                 )
             },

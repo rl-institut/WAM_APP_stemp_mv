@@ -50,3 +50,21 @@ class LCOEAutomatedDemandAnalyzer(an.LCOEAnalyzer):
             except AttributeError:
                 pass
         super(LCOEAutomatedDemandAnalyzer, self).init_analyzer()
+
+
+class FossilCostsAnalyzer(an.Analyzer):
+    depends_on = (an.VariableCostAnalyzer,)
+
+    def analyze(self, *args):
+        super(FossilCostsAnalyzer, self).analyze(*args)
+        vc_result = self._get_dep_result(an.VariableCostAnalyzer)
+        try:
+            psc = self.psc(args)
+            if psc['is_fossil']:
+                result = vc_result[args]
+            else:
+                return
+        except KeyError:
+            return
+        self.result[args] = result
+        self.total += result

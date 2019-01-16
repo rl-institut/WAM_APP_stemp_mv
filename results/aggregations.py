@@ -139,7 +139,8 @@ class TechnologieComparison(Aggregation):
     name = 'Technologievergleich'
     analyzer = {
         'invest': stemp_an.TotalInvestmentAnalyzer,
-        'co2': stemp_an.CO2Analyzer
+        'co2': stemp_an.CO2Analyzer,
+        'fuel': stemp_an.FossilCostsAnalyzer
     }
 
     def aggregate(self, results):
