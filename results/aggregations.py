@@ -147,9 +147,7 @@ class TechnologieComparison(Aggregation):
         for result in results:
             series = pandas.Series(name=result.scenario.Scenario.name)
             for category, analyzer in self.analyzer.items():
-                data = result.analysis.get_analyzer(analyzer).result
-                data = self._set_label(data, result)
-                series[category] = '<br>'.join(
-                    f'{key}: {value}' for key, value in data.items())
+                series[category] = int(
+                    result.analysis.get_analyzer(analyzer).total)
             df = df.append(series)
         return df.transpose()
