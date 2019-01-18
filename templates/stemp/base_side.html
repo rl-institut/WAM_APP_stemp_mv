@@ -3,11 +3,15 @@
 {% block content %}
 <div class="cell large-auto large-cell-block-container">
   <div class="grid-x" style="height:100%">
-    <aside class="cell large-4 large-cell-block-y l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
-      {% block left_side %}
-      {% endblock %}
-      {% include 'includes/footer_small.html' %}
-    </aside>
+    <div id="layout-aside" class="cell large-4 large-cell-block-y">
+      <aside class="cell large-cell-block-y l-bg-color scen-create__info u-text--center u-block--center" id="scen-create-wrapper">
+        {% block left_side %}
+        {% endblock %}
+        <div class="cell show-for-large footer-legal footer-legal--desktop">
+          {% include 'includes/footer_small.html' %}
+        </div>
+      </aside>
+    </div>
     {% block right_side %}
     {% endblock %}
   </div>

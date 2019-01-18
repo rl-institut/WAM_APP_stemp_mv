@@ -23926,10 +23926,9 @@ console.log('Ion.RangeSlider');
 // SLIDERS
 
 
-jquery__WEBPACK_IMPORTED_MODULE_0___default()("#warmwater_slider").ionRangeSlider({
-  grid: false,
-  from: 1,
-  values: ["wenig", "normal", "viel"]
+jquery__WEBPACK_IMPORTED_MODULE_0___default()("#warmWaterSlider").ionRangeSlider({
+  grid: true,
+  values: ["Gering", "Mittel", "Stark"]
 });
 
 /***/ }),
@@ -41827,7 +41826,7 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quarterListBtn').click(function 
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/hendrik/Dokumente/RLI/WAM/foundation/src/assets/js/app.js */"./src/assets/js/app.js");
+module.exports = __webpack_require__(/*! /home/local/RL-INSTITUT/bryan.lancien/Dokumente/foundation_new/src/assets/js/app.js */"./src/assets/js/app.js");
 
 
 /***/ })
