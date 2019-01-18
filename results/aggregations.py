@@ -147,8 +147,17 @@ class TechnologieComparison(Aggregation):
         df = pandas.DataFrame()
         for result in results:
             series = pandas.Series(name=result.scenario.Scenario.name)
+
+            # Add data from analyzers:
             for category, analyzer in self.analyzer.items():
                 series[category] = int(
                     result.analysis.get_analyzer(analyzer).total)
+
+            # Add primary energy:
+            pe = result.scenario.Scenario.calculate_primary_factor_and_energy(
+                result.analysis.param_results,
+                result.analysis.get_analyzer(an.NodeBalanceAnalyzer)
+            )
+
             df = df.append(series)
         return df.transpose()

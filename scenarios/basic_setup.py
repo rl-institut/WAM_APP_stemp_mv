@@ -22,6 +22,8 @@ AdvancedLabel = namedtuple(
     'AdvancedLabel', ('name', 'type', 'belongs_to', 'tags'))
 AdvancedLabel.__new__.__defaults__ = (None, None)
 
+pe = namedtuple('PrimaryEnergy', ('energy', 'factor'))
+
 
 def upload_scenario_parameters():
     session = sqlahelper.get_session()
@@ -152,3 +154,34 @@ class BaseScenario(ABC):
             return ''
         else:
             return '-'.join(map(str, nodes))
+
+    @classmethod
+    @abstractmethod
+    def calculate_primary_factor_and_energy(cls, param_results, results):
+        return pe(None, None)
+
+
+class PrimaryInputScenario(BaseScenario):
+    """
+    Scenario where one primary source provides demand
+    """
+
+    @abstractmethod
+    def add_technology(self, demand, timeseries, parameters):
+        pass
+
+    @classmethod
+    def calculate_primary_factor_and_energy(cls, param_results, node_results):
+        # Find primary source:
+        primary_source, node_result  = next(filter(
+            lambda x: x[0].tags is not None and 'primary_source' in x[0].tags,
+            node_results.result.items()
+        ))
+        # Calculate primary factor:
+        pf = param_results[(primary_source, None)]['scalars']['pf']
+        node_input = sum(node_result['input'].values())
+        node_output = sum(node_result['output'].values())
+        pf = pf * node_input / node_output
+
+        # TODO: Calculate primary energy:
+        return pe(energy=None, factor=pf)
