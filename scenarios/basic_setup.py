@@ -68,7 +68,7 @@ class BaseScenario(ABC):
         # Add subgrid busses
         sub_b_th = Bus(
             label=AdvancedLabel(
-                f"b_{customer.name}_th",
+                f"b_demand_th",
                 type='Bus',
                 belongs_to=customer.name,
             )
@@ -78,7 +78,7 @@ class BaseScenario(ABC):
         # Add heat demand
         demand_th = Sink(
             label=AdvancedLabel(
-                f"demand_{customer.name}_th",
+                f"demand_th",
                 type='Sink',
                 belongs_to=customer.name,
                 tags=('demand', )
@@ -96,7 +96,7 @@ class BaseScenario(ABC):
         # Add safety excess:
         ex_th = Sink(
             label=AdvancedLabel(
-                f"excess_{customer.name}_th",
+                f"excess_th",
                 type='Sink',
                 belongs_to=customer.name
             ),
@@ -172,16 +172,20 @@ class PrimaryInputScenario(BaseScenario):
 
     @classmethod
     def calculate_primary_factor_and_energy(cls, param_results, node_results):
-        # Find primary source:
-        primary_source, node_result  = next(filter(
-            lambda x: x[0].tags is not None and 'primary_source' in x[0].tags,
-            node_results.result.items()
+        # Find primary source & demand:
+        primary_source_node = next(filter(
+            lambda x: x.tags is not None and 'primary_source' in x.tags,
+            node_results.result
         ))
-        # Calculate primary factor:
-        pf = param_results[(primary_source, None)]['scalars']['pf']
-        node_input = sum(node_result['input'].values())
-        node_output = sum(node_result['output'].values())
-        pf = pf * node_input / node_output
+        demand_node = next(filter(
+            lambda x: x.tags is not None and 'demand' in x.tags,
+            node_results.result
+        ))
 
-        # TODO: Calculate primary energy:
-        return pe(energy=None, factor=pf)
+        # Get primary factor:
+        pf = param_results[(primary_source_node, None)]['scalars']['pf']
+
+        # Get demand:
+        demand = sum(node_results.result[demand_node]['input'].values())
+
+        return pe(energy=pf * demand, factor=pf)

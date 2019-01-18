@@ -158,6 +158,8 @@ class TechnologieComparison(Aggregation):
                 result.analysis.param_results,
                 result.analysis.get_analyzer(an.NodeBalanceAnalyzer)
             )
+            series['Primärfaktor'] = pe.factor
+            series['Primärenergie'] = pe.energy
 
             df = df.append(series)
         return df.transpose()

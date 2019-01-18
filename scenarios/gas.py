@@ -36,7 +36,7 @@ class Scenario(PrimaryInputScenario):
         )
     
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_{demand.name}_th')
+        sub_b_th = self.find_element_in_groups(f'b_demand_th')
         b_gas = self.find_element_in_groups('b_gas')
         invest = Investment(ep_costs=epc)
         invest.capex = capex
@@ -59,7 +59,7 @@ class Scenario(PrimaryInputScenario):
             conversion_factors={
                 sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
-        gas_heating.pf = 1.1  # FIXME: Dynamic value
+        gas_heating.pf = 1.1 / parameters[self.name]['efficiency'] * 100
         self.energysystem.add(gas_heating)
 
     @classmethod

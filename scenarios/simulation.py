@@ -22,6 +22,10 @@ NEEDED_PARAMETERS = 'NEEDED_PARAMETERS'
 SIMULATE_FCT = 'simulate'
 
 
+class SimulationError(Exception):
+    pass
+
+
 def get_scenario_config(scenario):
     if scenario is None:
         return None

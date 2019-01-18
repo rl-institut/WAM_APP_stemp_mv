@@ -7,7 +7,7 @@ from oemof.tools.economics import annuity
 
 from stemp.oep_models import OEPTimeseries
 from stemp.scenarios import basic_setup, heat
-from stemp.scenarios.basic_setup import AdvancedLabel
+from stemp.scenarios.basic_setup import AdvancedLabel, pe
 
 
 def get_timeseries():
@@ -42,7 +42,7 @@ class Scenario(basic_setup.BaseScenario):
 
     def add_technology(self, demand, timeseries, parameters):
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_{demand.name}_th')
+        sub_b_th = self.find_element_in_groups(f'b_demand_th')
 
         # Add electricity busses:
         sub_b_el = Bus(label=AdvancedLabel(
@@ -143,3 +143,7 @@ class Scenario(basic_setup.BaseScenario):
                 nodes[1].name.startswith('transformer_from')
         ):
             return 'PV (Stromgutschrift)'
+
+    @classmethod
+    def calculate_primary_factor_and_energy(cls, param_results, results):
+        return pe(None, None)

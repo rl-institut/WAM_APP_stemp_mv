@@ -3,7 +3,7 @@ from oemof.solph import Flow, Bus, Investment, Transformer
 from oemof.tools.economics import annuity
 
 from stemp.scenarios import basic_setup
-from stemp.scenarios.basic_setup import AdvancedLabel
+from stemp.scenarios.basic_setup import AdvancedLabel, pe
 
 
 BHKW_SIZE_PEAK_FACTOR = 3.33
@@ -32,7 +32,7 @@ class Scenario(basic_setup.BaseScenario):
     
     def add_technology(self, demand, timeseries, parameters):
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_{demand.name}_th')
+        sub_b_th = self.find_element_in_groups(f'b_demand_th')
         b_gas = self.find_element_in_groups('b_gas')
     
         # Add bus from bhkw to net:
@@ -70,9 +70,9 @@ class Scenario(basic_setup.BaseScenario):
     
         bhkw = Transformer(
             label=AdvancedLabel(
-                f'{demand.name}_chp', 
-                type='Transformer', 
-                belongs_to=demand.name
+                'bhkw',
+                type='Transformer',
+                tags=('bhkw',)
             ),
             inputs={
                 b_gas: Flow(
@@ -181,9 +181,9 @@ class Scenario(basic_setup.BaseScenario):
     @classmethod
     def get_data_label(cls, nodes, suffix=False):
         if not suffix:
-            if nodes[1] is not None and nodes[1].name.endswith('chp'):
+            if nodes[1] is not None and nodes[1].name == 'bhkw':
                 return 'BHKW'
-            elif nodes[0].name.endswith('chp'):
+            elif nodes[0].name == 'bhkw':
                 return 'BHKW (Stromgutschrift)'
             elif (
                     nodes[0].name.startswith('b_bhkw_el') and
@@ -204,7 +204,7 @@ class Scenario(basic_setup.BaseScenario):
             else:
                 return super(Scenario, cls).get_data_label(nodes)
         else:
-            if nodes[1] is not None and nodes[1].name.endswith('chp'):
+            if nodes[1] is not None and nodes[1].name == 'bhkw':
                 return ' (Gas)'
             elif (
                     nodes[1] is not None and
@@ -213,3 +213,27 @@ class Scenario(basic_setup.BaseScenario):
                 return ' (Gas)'
             else:
                 return super(Scenario, cls).get_data_label(nodes, suffix=True)
+
+    @classmethod
+    def calculate_primary_factor_and_energy(cls, param_results, node_results):
+        # Find bhkw node:
+        bhkw_node = next(filter(
+            lambda x: x[1] is None and x[0].name == 'bhkw',
+            param_results.keys()
+        ))
+        _, eff_el = next(filter(
+            lambda x: 'b_bhkw_el' in x[0],
+            param_results[bhkw_node]['scalars'].items()
+        ))
+        _, eff_th = next(filter(
+            lambda x: 'demand' in x[0],
+            param_results[bhkw_node]['scalars'].items()
+        ))
+        # # Calculate primary factor:
+        # pf = param_results[(primary_source, None)]['scalars']['pf']
+        # node_input = sum(node_result['input'].values())
+        # node_output = sum(node_result['output'].values())
+        # pf = pf * node_input / node_output
+
+        # TODO: Calculate primary energy:
+        return pe(energy=None, factor=None)

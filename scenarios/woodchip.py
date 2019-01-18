@@ -6,7 +6,7 @@ from stemp.scenarios import basic_setup
 from stemp.scenarios.basic_setup import AdvancedLabel
 
 
-class Scenario(basic_setup.BaseScenario):
+class Scenario(basic_setup.PrimaryInputScenario):
     name = 'Woodchip'
     needed_parameters = {
         'General': ['wacc', 'woodchip_price'],
@@ -34,14 +34,15 @@ class Scenario(basic_setup.BaseScenario):
         epc = annuity(capex, lifetime, wacc)
     
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_{demand.name}_th')
+        sub_b_th = self.find_element_in_groups(f'b_demand_th')
         b_woodchip = self.find_element_in_groups('b_woodchip')
         invest = Investment(ep_costs=epc)
         invest.capex = capex
         woodchip_heating = Transformer(
             label=AdvancedLabel(
                 f'{demand.name}_woodchip_heating',
-                type='Transformer'
+                type='Transformer',
+                tags=('primary_source',)
             ),
             inputs={
                 b_woodchip: Flow(
@@ -56,6 +57,7 @@ class Scenario(basic_setup.BaseScenario):
             conversion_factors={
                 sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
+        woodchip_heating.pf = 1.1 / parameters[self.name]['efficiency'] * 100
         self.energysystem.add(woodchip_heating)
 
     @classmethod
