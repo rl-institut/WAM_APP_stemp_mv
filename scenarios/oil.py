@@ -62,7 +62,10 @@ class Scenario(basic_setup.PrimaryInputScenario):
             conversion_factors={
                 sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
-        oil_heating.pf = 1.1 / parameters[self.name]['efficiency'] * 100
+        oil_heating.pf = (
+            parameters['General']['pf_oil'] /
+            parameters[self.name]['efficiency'] * 100
+        )
         self.energysystem.add(oil_heating)
 
     @classmethod

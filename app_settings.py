@@ -14,7 +14,7 @@ from stemp import oep_models
 STORE_LP_FILE = False
 
 ADDITIONAL_PARAMETERS = ConfigObj(
-    os.path.join(settings.BASE_DIR, 'stemp', 'attributes.cfg'))
+    os.path.join(settings.BASE_DIR, 'stemp', 'scenarios', 'attributes.cfg'))
 
 LABELS = ConfigObj(os.path.join(settings.BASE_DIR, 'stemp', 'labels.cfg'))
 

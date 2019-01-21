@@ -46,7 +46,7 @@ class Scenario(basic_setup.BaseScenario):
 
         # Add electricity busses:
         sub_b_el = Bus(label=AdvancedLabel(
-            f'b_{demand.name}_el', type='Bus', belongs_to=demand.name))
+            f'b_demand_el', type='Bus', belongs_to=demand.name))
         b_el_net = Bus(
             label=AdvancedLabel('b_el_net', type='Bus'), balanced=False)
         self.energysystem.add(sub_b_el, b_el_net)
@@ -104,22 +104,22 @@ class Scenario(basic_setup.BaseScenario):
         # Add transformer to get electricty from net for heat pump:
         t_net_el = Transformer(
             label=AdvancedLabel(
-                f'transformer_net_to_{demand.name}_el',
+                f'transformer_net_to_demand_el',
                 type='Transformer',
                 belongs_to=demand.name
             ),
             inputs={
                 b_el_net: Flow(
-                    variable_costs=parameters['General']['net_costs']
+                    variable_costs=parameters['General']['net_costs'],
                 )
             },
-            outputs={sub_b_el: Flow()},
+            outputs={sub_b_el: Flow(pf=parameters['General']['pf_net'])},
         )
 
         # Add transformer to feed in pv to net:
         t_pv_net = Transformer(
             label=AdvancedLabel(
-                f'transformer_from_{demand.name}_el',
+                f'transformer_from_demand_el',
                 type='Transformer',
                 belongs_to=demand.name
             ),
@@ -137,7 +137,8 @@ class Scenario(basic_setup.BaseScenario):
             t_net_el
         )
 
-    def get_data_label(cls, nodes):
+    @classmethod
+    def get_data_label(cls, nodes, suffix=False):
         if (
                 nodes[1] is not None and
                 nodes[1].name.startswith('transformer_from')
@@ -145,5 +146,29 @@ class Scenario(basic_setup.BaseScenario):
             return 'PV (Stromgutschrift)'
 
     @classmethod
-    def calculate_primary_factor_and_energy(cls, param_results, results):
-        return pe(None, None)
+    def calculate_primary_factor_and_energy(cls, param_results, node_results):
+        _, demand_node = next(filter(
+            lambda x: (
+                    x[1] is not None
+                    and x[1].name == 'demand_th'
+            ),
+            param_results.keys()
+        ))
+        net_transformer, b_demand_el = next(filter(
+            lambda x: (
+                x[0].name == 'transformer_net_to_demand_el' and
+                x[1] is not None
+                and x[1].name == 'b_demand_el'
+            ),
+            param_results.keys()
+        ))
+
+        demand = sum(
+            node_results.result[demand_node]['input'].values())
+        net_input = sum(
+            node_results.result[net_transformer]['input'].values())
+
+        pf_net = param_results[(net_transformer, b_demand_el)]['scalars']['pf']
+        pf = pf_net * (net_input / demand)
+        primary_energy = demand * pf
+        return pe(primary_energy, pf)

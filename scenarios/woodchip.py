@@ -57,13 +57,17 @@ class Scenario(basic_setup.PrimaryInputScenario):
             conversion_factors={
                 sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
-        woodchip_heating.pf = 1.1 / parameters[self.name]['efficiency'] * 100
+        woodchip_heating.pf = (
+            parameters['General']['pf_wood'] /
+            parameters[self.name]['efficiency'] * 100
+        )
         self.energysystem.add(woodchip_heating)
 
     @classmethod
     def get_data_label(cls, nodes, suffix=False):
         if not suffix:
-            if nodes[1] is not None and nodes[1].name.endswith('woodchip_heating'):
+            if nodes[1] is not None and nodes[1].name.endswith(
+                    'woodchip_heating'):
                 return 'Holzhackschnetzel'
             elif (
                     nodes[0] is not None and
@@ -73,7 +77,8 @@ class Scenario(basic_setup.PrimaryInputScenario):
             else:
                 return super(Scenario, cls).get_data_label(nodes)
         else:
-            if nodes[1] is not None and nodes[1].name.endswith('woodchip_heating'):
+            if nodes[1] is not None and nodes[1].name.endswith(
+                    'woodchip_heating'):
                 return ' (Holz)'
             elif (
                     nodes[0] is not None and

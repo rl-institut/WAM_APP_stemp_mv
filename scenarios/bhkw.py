@@ -67,6 +67,11 @@ class Scenario(basic_setup.BaseScenario):
             lifetime,
             parameters['General']['gas_rate']
         )
+
+        if self.name == 'BIO_BHKW':
+            pf_gas = parameters['General']['pf_biogas']
+        else:
+            pf_gas = parameters['General']['pf_gas']
     
         bhkw = Transformer(
             label=AdvancedLabel(
@@ -88,10 +93,9 @@ class Scenario(basic_setup.BaseScenario):
             },
             outputs={
                 b_bhkw_el: Flow(
-                    co2_emissions=-217.0,  # FIXME: MAKE IT A PARAMETER
-                    pf=-0.4  # FIXME: Parameter
+                    pf=parameters['General']['pf_bhkw_el']
                 ),
-                sub_b_th: Flow(pf=1.1)  # FIXME: Parameter
+                sub_b_th: Flow(pf=pf_gas)
             },
             conversion_factors={
                 b_bhkw_el: (

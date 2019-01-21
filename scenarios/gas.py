@@ -59,7 +59,10 @@ class Scenario(PrimaryInputScenario):
             conversion_factors={
                 sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
-        gas_heating.pf = 1.1 / parameters[self.name]['efficiency'] * 100
+        gas_heating.pf = (
+            parameters['General']['pf_gas'] /
+            parameters[self.name]['efficiency'] * 100
+        )
         self.energysystem.add(gas_heating)
 
     @classmethod
