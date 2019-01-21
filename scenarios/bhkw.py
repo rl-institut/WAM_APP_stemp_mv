@@ -88,9 +88,10 @@ class Scenario(basic_setup.BaseScenario):
             },
             outputs={
                 b_bhkw_el: Flow(
-                    co2_emissions=-217.0  # FIXME: MAKE IT A PARAMETER
+                    co2_emissions=-217.0,  # FIXME: MAKE IT A PARAMETER
+                    pf=-0.4  # FIXME: Parameter
                 ),
-                sub_b_th: Flow()
+                sub_b_th: Flow(pf=1.1)  # FIXME: Parameter
             },
             conversion_factors={
                 b_bhkw_el: (
@@ -216,24 +217,44 @@ class Scenario(basic_setup.BaseScenario):
 
     @classmethod
     def calculate_primary_factor_and_energy(cls, param_results, node_results):
-        # Find bhkw node:
-        bhkw_node = next(filter(
-            lambda x: x[1] is None and x[0].name == 'bhkw',
+        # Find nodes:
+        bhkw, b_bhkw_el = next(filter(
+            lambda x: (
+                x[0].name == 'bhkw' and
+                x[1] is not None and
+                x[1].name == 'b_bhkw_el'
+            ),
             param_results.keys()
         ))
+        b_demand_th, demand_node = next(filter(
+            lambda x: (
+                x[0].name == 'b_demand_th' and
+                x[1] is not None
+                and x[1].name == 'demand_th'
+            ),
+            param_results.keys()
+        ))
+        b_gas, _ = next(filter(
+            lambda x: x[0].name == 'b_gas',
+            param_results.keys()
+        ))
+
+        # Calculate electricity contribution to primary factor:
         _, eff_el = next(filter(
             lambda x: 'b_bhkw_el' in x[0],
-            param_results[bhkw_node]['scalars'].items()
+            param_results[(bhkw, None)]['scalars'].items()
         ))
-        _, eff_th = next(filter(
-            lambda x: 'demand' in x[0],
-            param_results[bhkw_node]['scalars'].items()
-        ))
-        # # Calculate primary factor:
-        # pf = param_results[(primary_source, None)]['scalars']['pf']
-        # node_input = sum(node_result['input'].values())
-        # node_output = sum(node_result['output'].values())
-        # pf = pf * node_input / node_output
+        pf_el_norm = param_results[(bhkw, b_bhkw_el)]['scalars']['pf']
+        pf_el = pf_el_norm * eff_el
 
-        # TODO: Calculate primary energy:
-        return pe(energy=None, factor=None)
+        # Calculate thermic contribution to primary factor:
+        demand = sum(
+            node_results.result[demand_node]['input'].values())
+        gas_input = sum(
+            node_results.result[b_gas]['output'].values())
+        pf_th_norm = param_results[(bhkw, b_demand_th)]['scalars']['pf']
+        pf_th = pf_th_norm * gas_input / demand
+
+        pf_total = pf_th + pf_el
+        primary_energy = demand * pf_total
+        return pe(energy=primary_energy, factor=pf_total)
