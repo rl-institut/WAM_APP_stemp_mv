@@ -21,21 +21,24 @@
 {% block right_side %}
 
 <div class="cell large-8 large-cell-block-y">
-  <div class="grid-y large-grid-frame main-content">
-    <main class="cell large-auto large-cell-block-y main-content-wrap">
+  <div id="layout-grid-y" class="grid-y">
+    <div id="layout-block" class="cell">
 
-      <form class="grid-x scen-create__form" action="{% url 'stemp:technology' %}" method="post" id="technology_form">
-        {% csrf_token %}
-        <div class="cell scen-create__form u-text--center">
-          <h3>{{demand_name}}</h3>
-        </div>
+      <main class="cell medium-10 main-content-wrap">
 
-        {% for field in technology %}
-          {{field}}
-        {% endfor %}
+        <form class="grid-x align-center" action="{% url 'stemp:technology' %}" method="post" id="technology_form">
+          {% csrf_token %}
+          <div class="cell scen-create__form u-text--center">
+            <h3>{{demand_name}}</h3>
+          </div>
 
-      </form>
-    </main>
+          {% for field in technology %}
+            {{field}}
+          {% endfor %}
+
+        </form>
+      </main>
+    </div>
 
     {% if demand_type == 'single' %}
           {% url 'stemp:demand_single' as back_url %}
