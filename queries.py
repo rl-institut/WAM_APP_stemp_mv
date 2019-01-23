@@ -6,6 +6,7 @@ import sqlahelper
 import json
 from geoalchemy2 import func
 import transaction
+import datetime as dt
 
 from demandlib import bdew
 import oedialect
@@ -56,20 +57,22 @@ def get_coastdat_data(session, year, datatype, location):
 def insert_pv_and_temp():
     session = sqlahelper.get_session()
 
-    temperature = get_coastdat_data(
-        session,
-        year=2014,
-        datatype='T_2M',
-        location=constants.LOCATION
-    )
+    temperature = pandas.read_csv(
+        os.path.join(os.path.dirname(__file__), 'data', 'temperature.txt'),
+        index_col=[1],
+        delimiter=';',
+        parse_dates=[1],
+        date_parser=lambda x: dt.datetime(int(x[:4]), int(x[4:6]), int(x[6:8]),
+                                          int(x[8:10]), 0, 0)
+    )['2017-01-01':'2017-12-31']
     temp_meta_file = os.path.join(
-        os.path.dirname(__file__), 'metadata', 'coastdat_temp.json')
+        os.path.dirname(__file__), 'metadata', 'dwd_temperature.json')
     with open(temp_meta_file) as json_data:
         meta = json.load(json_data)
     temp = oep_models.OEPTimeseries(
         name='Temperature',
         meta_data=meta,
-        data=temperature
+        data=temperature['TT_TU']
     )
     session.add(temp)
 

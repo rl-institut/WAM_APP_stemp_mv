@@ -1,0 +1,49 @@
+{
+  "title": "Historische stündliche Stationsmessungen der Lufttemperatur und Luftfeuchte für Deutschland",
+  "identifier": "ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/air_temperature/historical/",
+  "description": "Die Stationsbeobachtungen (produkt_*.txt) sind gemeinsam mit den Stationsmetadaten gezippt. Die Stationsmetadaten werden sowohl als *.txt als auch als *.html bereitgestellt. Die Datei Metadaten_Parameter* enthält eine Liste der an dieser Station gemessenen Parameter (das Parameterportfolio), mit Beginn, Ende, dazugehörigen Einheiten, Messvorschriften, Formeln, Terminen und Zeiteinheiten (z.B. MOZ oder UTC) , die der Stations_Id und dem aktuellen Stationsnamen zugeordnet werden. Die Gerätehistorie ist den meteorologischen Parametern entsprechend sortiert (siehe Datei Metadaten_Geraete*). Dort ist die zeitliche Geschichte der Sensor- bzw Geberhöhen, Gerätetypen und Messverfahren, gemeinsam mit der zeitlichen Geschichte der Stationsnamen enthalten. Die Stations_id ist unveränderlich. Um erfolgte Änderung der Stationsnamen bei einzelnen Stationen zu dokumentierten, gibt es zur Übersicht zusätzlich die Datei Metadaten_Stationsname*. Die geographische Metadaten der Station (geografische Länge und Breite, Stationshöhe) sind in Metadaten_Geographie*.txt erfasst, und der Stations_id und dem aktuellem Stationsnamen zugeordnet. Alle Informationen sind für jede Station in einem einzigen zip-File *_[Stations_id]_[von]_[bis]_hist.zip bereitgestellt. Eine Übersicht über alle Stationen, Startdatum und evtl.Enddatum der Station ist in der  Stationsliste  hinterlegt. Diese Liste umfasst der Vollständigkeit halber nicht nur die hier abgegebenen Stationen, sondern auch jene, deren Urheberrechte nicht beim DWD liegen. Beim angegebenen Kontakt können für Stationen, die in dieser Liste auftreten, für die aber kein *.zip veröffentlicht ist, die Nutzungsbedingungen erfragt werden.",
+  "language": "de-DE",
+  "keywords": [
+    "Lufttemperatur"
+  ],
+  "spatial": {
+    "location": "Schwerin",
+    "extent": "",
+    "resolution": ""
+  },
+  "temporal": {
+    "reference_date": "",
+    "start": "2017-01-01",
+    "end": "2017-12-31",
+    "resolution": "1h"
+  },
+  "sources": [],
+  "license": {
+    "id": "GeoNutzV",
+    "name": "Verordnung zur Festlegung der  Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes",
+    "url": "http://www.geodatenzentrum.de/docpdf/geonutzv.pdf",
+    "instruction": "",
+    "copyright": ""
+  },
+  "contributors": [],
+  "resources": [
+    {
+      "name": "ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/air_temperature/historical/stundenwerte_TU_04625_19500101_20171231_hist.zip",
+      "format": "*.txt",
+      "encoding": "UTF-8",
+      "fields": [
+        {
+          "name": "TT_TU",
+          "description": "Lufttemperatur",
+          "type": "float",
+          "unit": "Grad Celsius"
+        }
+      ]
+    }
+  ],
+  "_comment": {
+    "_metadata_version": "1.4",
+    "_metadata_license": "Creative Commons Zero v1.0 Universal (CC0-1.0)",
+    "_metadata_license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+  }
+}
