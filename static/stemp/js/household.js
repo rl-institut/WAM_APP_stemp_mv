@@ -4,7 +4,7 @@ $("#id_house_type").change(function() {
   set_default_heat_demand();
 });
 
-$("#number_of_persons_slider").on('changed.zf.slider', function() {
+$("#number_of_persons").change(function() {
   set_default_square_meters();
   update_warm_water();
 });
@@ -130,3 +130,8 @@ function set_default_roof_area() {
     }
   });
 };
+
+$(document).ready(function() {
+  set_default_square_meters();
+  update_warm_water();
+})

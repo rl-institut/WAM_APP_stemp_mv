@@ -85,10 +85,10 @@
                 </li>
                 <li>
                   <input type="radio" name="heat" value="hand" id="radio_heat_hand">
-                  <label for="radio_heat_hand" class="form__label">Manuell eingeben</label>
+                  <label for="radio_heat_hand" class="form__label">{{form.heat_demand_hand.label}}</label>
                   <div id="hand">
-                    <div class="input-group input-disabled">
-                      <input class="input-group-field input input--s" type="number" value="10" readonly step="any" required id="heat_hand">
+                    <div class="input-group">
+                      {{form.heat_demand_hand}}
                       <span class="input-group-label">kWh</span>
                     </div>
                   </div>
@@ -101,7 +101,7 @@
           <div class="cell medium-4 hh-component__parameter hh-component__parameter--energy">
             <div class="grid-y">
               <div class="cell small-8">
-                <img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}">
+                <img class="hh-img--medium" src="{% static 'stemp/img/icons_custom/mv_icon_heater.svg' %}">
               </div>
               <div class="cell small-4 show-parameters">
                 <span id="show_heat_demand">7920</span><span>&nbsp;kWh</span>
@@ -130,6 +130,18 @@
                 <span class="slider-handle" data-slider-handle role="slider" tabindex="1"></span>
                 <span class="slider-fill" data-slider-fill></span>
               </div>
+              <ul class="menu vertical">
+                <li>
+                  <div class="grid-x parameter-slider">
+                    <div class="cell large-8">
+                      <p class="parameter-slider__label">
+                        Täglicher Verbrauch
+                      </p>
+                      <input id="warmWaterSlider" value="" />
+                    </div>
+                  </div>
+                </li>
+              </ul>
             <div>
             {{form.warm_water_per_day.label}}
             <span class="has-tip--no-border">
@@ -159,7 +171,7 @@
           <div class="cell medium-4 hh-component__parameter hh-component__parameter--energy">
             <div class="grid-y">
               <div class="cell small-8">
-                <img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}">
+                <img class="hh-img--small" src="{% static 'stemp/img/icons_custom/mv_icon_hot_water.svg' %}">
               </div>
               <div class="cell small-4 show-parameters">
                 <span id="show_warmwater">2800</span><span>&nbsp;kWh</span>
@@ -189,15 +201,15 @@
                   <input type="radio" name="roof" checked="" value="auto" id="radio_roof_auto" required>
                   <label for="radio_roof_auto" class="form__label">Standardwert</label>
                   <div class="input-group">
-                    <input class="input-group-field input input--m" type="number" id="roof_auto" value="2" readonly step="any" required>
+                    <input class="input-group-field input input--m" type="number" id="roof_auto" readonly step="any" required>
                     <span class="input-group-label">qm</span>
                   </div>
                 </li>
                 <li>
                   <input type="radio" name="roof" value="hand" id="radio_roof_hand">
-                  <label for="radio_roof_hand" class="form__label">Manuell angeben</label>
+                  <label for="radio_roof_hand" class="form__label">{{form.roof_area_hand.label}}</label>
                   <div class="input-group">
-                    <input class="input-group-field input input--m" type="number" id="roof_hand" step="any">
+                    {{form.roof_area_hand}}
                     <span class="input-group-label">qm</span>
                   </div>
                 </li>
@@ -209,7 +221,7 @@
           <div class="cell medium-4 hh-component__parameter hh-component__parameter--area">
             <div class="grid-y">
               <div class="cell small-8">
-                <img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}">
+                <img class="hh-img--large" src="{% static 'stemp/img/icons_custom/mv_icon_roof_area.svg' %}">
               </div>
               <div class="cell small-4 show-parameters">
                 <span id="show_roof_area">20</span><span>&nbsp;qm</span>
