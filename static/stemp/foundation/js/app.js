@@ -21571,84 +21571,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var what_input__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! what-input */ "./node_modules/what-input/dist/what-input.js");
 /* harmony import */ var what_input__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(what_input__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var foundation_sites__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! foundation-sites */ "./node_modules/foundation-sites/dist/js/foundation.esm.js");
-/* harmony import */ var _lib_forms__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./lib/forms */ "./src/assets/js/lib/forms.js");
-/* harmony import */ var _lib_ion_range_slider__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lib/ion-range-slider */ "./src/assets/js/lib/ion-range-slider.js");
-/* harmony import */ var _lib_jquery_ui__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./lib/jquery-ui */ "./src/assets/js/lib/jquery-ui.js");
-/* harmony import */ var _lib_jquery_ui__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_lib_jquery_ui__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _lib_layout_components__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./lib/layout-components */ "./src/assets/js/lib/layout-components.js");
-/* harmony import */ var _lib_on_small_screen__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./lib/on-small-screen */ "./src/assets/js/lib/on-small-screen.js");
-/* harmony import */ var _lib_plus_minus__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./lib/plus-minus */ "./src/assets/js/lib/plus-minus.js");
-/* harmony import */ var _lib_sliders__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./lib/sliders */ "./src/assets/js/lib/sliders.js");
-/* harmony import */ var _lib_tabs_btn__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./lib/tabs-btn */ "./src/assets/js/lib/tabs-btn.js");
+/* harmony import */ var _lib_ion_range_slider__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./lib/ion-range-slider */ "./src/assets/js/lib/ion-range-slider.js");
+/* harmony import */ var _lib_jquery_ui__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lib/jquery-ui */ "./src/assets/js/lib/jquery-ui.js");
+/* harmony import */ var _lib_jquery_ui__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_lib_jquery_ui__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _lib_layout_components__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./lib/layout-components */ "./src/assets/js/lib/layout-components.js");
+/* harmony import */ var _lib_loader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./lib/loader */ "./src/assets/js/lib/loader.js");
 
 
 window.$ = jquery__WEBPACK_IMPORTED_MODULE_0___default.a;
+ //import './lib/forms';
 
 
 
 
-
-
-
-
- // If you want to pick and choose which modules to include, comment out the above and uncomment
+ //import './lib/on-small-screen';
+//import './lib/plus-minus';
+//import './lib/sliders';
+//import './lib/tabs-btn';
+// If you want to pick and choose which modules to include, comment out the above and uncomment
 // the line below
 //import './lib/foundation-explicit-pieces';
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).foundation();
-
-/***/ }),
-
-/***/ "./src/assets/js/lib/forms.js":
-/*!************************************!*\
-  !*** ./src/assets/js/lib/forms.js ***!
-  \************************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
- // change state and style of inputs when user clicks on radio buttons
-
-function disableInput(selected, notSelected, notSelected2) {
-  // add or remove class that makes input grey
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(selected).removeClass('input-disabled');
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(notSelected).addClass('input-disabled');
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(notSelected2).addClass('input-disabled'); // add or remove disabled attribute to input
-
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(selected + " input").prop('disabled', false);
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(notSelected + " input").prop('disabled', true);
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(notSelected2 + " input").prop('disabled', true);
-} // ROOF AREA
-
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()("input[name='roof_by']").change(function () {
-  if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val() === 'auto') {
-    disableInput('#roof_by_auto_input', '#roof_by_hand_input');
-  } else if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val() === 'hand') {
-    disableInput('#roof_by_hand_input', '#roof_by_auto_input');
-  }
-}); // HEATING
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()("input[name='heat_by']").change(function () {
-  if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val() === 'person') {
-    disableInput('#heat_by_persons_input', '#heat_by_sm_input', '#heat_by_hand_input');
-  } else if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val() === 'square') {
-    disableInput('#heat_by_sm_input', '#heat_by_persons_input', '#heat_by_hand_input');
-  } else if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val() === 'hand') {
-    disableInput('#heat_by_hand_input', '#heat_by_persons_input', '#heat_by_sm_input');
-  }
-}); // WARM WATER
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()("input[name='warm_water_by']").change(function () {
-  if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val() === 'standard') {
-    disableInput('#warmwater_by_standard_input', '#warmwater_by_hand_input');
-  } else if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val() === 'hand') {
-    disableInput('#warmwater_by_hand_input', '#warmwater_by_standard_input');
-  }
-});
 
 /***/ }),
 
@@ -23922,13 +23866,6 @@ console.log('Ion.RangeSlider');
       clearTimeout(id);
     };
   })();
-}); // =================================================================================================================
-// SLIDERS
-
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()("#warmWaterSlider").ionRangeSlider({
-  grid: true,
-  values: ["Gering", "Mittel", "Stark"]
 });
 
 /***/ }),
@@ -41677,10 +41614,10 @@ window.onresize = function () {
 
 /***/ }),
 
-/***/ "./src/assets/js/lib/on-small-screen.js":
-/*!**********************************************!*\
-  !*** ./src/assets/js/lib/on-small-screen.js ***!
-  \**********************************************/
+/***/ "./src/assets/js/lib/loader.js":
+/*!*************************************!*\
+  !*** ./src/assets/js/lib/loader.js ***!
+  \*************************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -41688,133 +41625,11 @@ window.onresize = function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
- // ------------------- START ----------------------//
-// Only for small screens
+ // change event
 
-function onSmallScreen() {
-  console.log('onSmallScreen()');
-  var windowWidth = jquery__WEBPACK_IMPORTED_MODULE_0___default()(window).width(); // display all navigation items vertically
-
-  if (windowWidth < 640) {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#nav-list-vertical').addClass('vertical');
-  }
-}
-
-onSmallScreen(); // ------------------- END ----------------------//
-
-/***/ }),
-
-/***/ "./src/assets/js/lib/plus-minus.js":
-/*!*****************************************!*\
-  !*** ./src/assets/js/lib/plus-minus.js ***!
-  \*****************************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).ready(function () {
-  // This button will increment the value
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()('[data-quantity="plus"]').click(function (e) {
-    var fieldName; // Stop acting like a button
-
-    e.preventDefault(); // Get the field name
-
-    fieldName = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).attr('data-field'); // Get its current value
-
-    var currentVal = parseInt(jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name=' + fieldName + ']').val()); // If is not undefined
-
-    if (!isNaN(currentVal)) {
-      // Increment
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name=' + fieldName + ']').val(currentVal + 1);
-    } else {
-      // Otherwise put a 0 there
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name=' + fieldName + ']').val(0);
-    }
-  }); // This button will decrement the value till 0
-
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()('[data-quantity="minus"]').click(function (e) {
-    var fieldName; // Stop acting like a button
-
-    e.preventDefault(); // Get the field name
-
-    fieldName = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).attr('data-field'); // Get its current value
-
-    var currentVal = parseInt(jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name=' + fieldName + ']').val()); // If it isn't undefined or its greater than 0
-
-    if (!isNaN(currentVal) && currentVal > 0) {
-      // Decrement one
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name=' + fieldName + ']').val(currentVal - 1);
-    } else {
-      // Otherwise put a 0 there
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name=' + fieldName + ']').val(0);
-    }
-  });
-});
-
-/***/ }),
-
-/***/ "./src/assets/js/lib/sliders.js":
-/*!**************************************!*\
-  !*** ./src/assets/js/lib/sliders.js ***!
-  \**************************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-
-/* update value of button by the numbers of households to add */
-
-/* List form */
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('#l-number-households').on('moved.zf.slider', function (e, handle) {
-  var listSliderValue = handle.attr('aria-valuenow');
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()('#btn-l-add-households').val(listSliderValue + " hinzufügen");
-});
-/* Questions form */
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('#q-number-households').on('moved.zf.slider', function (e, handle) {
-  var questionsSliderValue = handle.attr('aria-valuenow');
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()('#btn-q-add-households').val(questionsSliderValue + " hinzufügen");
-});
-
-/***/ }),
-
-/***/ "./src/assets/js/lib/tabs-btn.js":
-/*!***************************************!*\
-  !*** ./src/assets/js/lib/tabs-btn.js ***!
-  \***************************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
- // global jquery-ui function
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()(function () {
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()("#tabs").tabs();
-}); // custom function for viertel_struktur
-// only one tab can have the active class
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quarterCustomBtn').click(function () {
-  if (jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quarterListBtn').hasClass('active')) {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quarterCustomBtn').addClass('active');
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quarterListBtn').removeClass('active');
-  }
-});
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quarterListBtn').click(function () {
-  if (jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quarterCustomBtn').hasClass('active')) {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quarterListBtn').addClass('active');
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quarterCustomBtn').removeClass('active');
-  }
+jquery__WEBPACK_IMPORTED_MODULE_0___default()('#exampleSwitch').on('click', function () {
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('.loader-wrapper').toggleClass("loader-wrapper--hide");
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('body').toggleClass("body--nopointer");
 });
 
 /***/ }),
