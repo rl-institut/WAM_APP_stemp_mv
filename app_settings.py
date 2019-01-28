@@ -18,39 +18,37 @@ ADDITIONAL_PARAMETERS = ConfigObj(
 
 LABELS = ConfigObj(os.path.join(settings.BASE_DIR, 'stemp', 'labels.cfg'))
 
+stemp_config = settings.config['STEMP']
+
 # DB SETUP:
 DB_URL = '{ENGINE}://{USER}:{PASSWORD}@{HOST}:{PORT}'
 
 
-def build_db_url(db_name):
+def add_engine(engine_name):
+    db_name = stemp_config.get(engine_name, DB_DEFALUT_SETUP[engine_name])
     conf = settings.config['DATABASES'][db_name]
     db_url = DB_URL + '/{NAME}' if 'NAME' in conf else DB_URL
-    return db_url.format(**conf)
+    engine = sqlalchemy.create_engine(db_url.format(**conf))
+    sqlahelper.add_engine(engine, engine_name)
 
 
-DB_SETUP = {
-    'oemof_results': settings.config['STEMP'].get('DB_RESULTS', 'DEFAULT'),
-    'oep': settings.config['STEMP'].get('DB_SCENARIOS', 'OEP'),
-    'reiners_db': settings.config['STEMP'].get('DB_INTERNAL', 'reiners_db')
+DB_DEFALUT_SETUP = {
+    'DB_RESULTS': 'DEFAULT',
+    'DB_SCENARIOS': 'OEP',
+    'DB_INTERNAL': 'reiners_db'
 }
 
+for setup in DB_DEFALUT_SETUP:
+    add_engine(setup)
+
 # Add sqlalchemy for oemof_results:
-engine = sqlalchemy.create_engine(build_db_url(DB_SETUP['oemof_results']))
-sqlahelper.add_engine(engine, 'oemof_results')
-oemof_results.Base.metadata.bind = engine
+oemof_results.Base.metadata.bind = sqlahelper.get_engine('DB_RESULTS')
 
 # Add OEP:
-engine = sqlalchemy.create_engine(build_db_url(DB_SETUP['oep']))
-sqlahelper.add_engine(engine, 'oep')
-oep_models.Base.metadata.bind = engine
-
-# Add reiner:
-engine = sqlalchemy.create_engine(build_db_url(DB_SETUP['reiners_db']))
-sqlahelper.add_engine(engine, 'reiners_db')
-
+oep_models.Base.metadata.bind = sqlahelper.get_engine('DB_SCENARIOS')
 
 # SCENARIO SETUP:
-ACTIVATED_SCENARIOS = settings.config['STEMP'].get('ACTIVATED_SCENARIOS', [])
+ACTIVATED_SCENARIOS = stemp_config.get('ACTIVATED_SCENARIOS', [])
 SCENARIO_PATH = os.path.join('stemp', 'scenarios')
 
 
