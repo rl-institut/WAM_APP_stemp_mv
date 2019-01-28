@@ -125,11 +125,29 @@ class Scenario(basic_setup.BaseScenario):
             },
             outputs={b_el_net: Flow()},
         )
+
+        # Add transformer to heat via electricity
+        t_boiler = Transformer(
+            label=AdvancedLabel(
+                f'boiler',
+                type='Transformer'
+            ),
+            inputs={
+                b_el_net: Flow(
+                    variable_costs=parameters['General']['net_costs'],
+                )
+            },
+            outputs={sub_b_th: Flow()},
+            conversion_factors={
+                sub_b_th: 0.9  # FIXME: Parameter dynamic
+            }
+        )
         self.energysystem.add(
             hp,
             pv,
             t_pv_net,
-            t_net_el
+            t_net_el,
+            t_boiler
         )
 
     @classmethod
