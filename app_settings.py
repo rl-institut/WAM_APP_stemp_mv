@@ -29,9 +29,9 @@ def build_db_url(db_name):
 
 
 DB_SETUP = {
-    'oemof_results': os.environ.get('STEMP_DB_RESULTS', 'DEFAULT'),
-    'oep': os.environ.get('STEMP_DB_SCENARIOS', 'OEP'),
-    'reiners_db': os.environ.get('STEMP_DB_INTERNAL', 'reiners_db')
+    'oemof_results': settings.config['STEMP'].get('DB_RESULTS', 'DEFAULT'),
+    'oep': settings.config['STEMP'].get('DB_SCENARIOS', 'OEP'),
+    'reiners_db': settings.config['STEMP'].get('DB_INTERNAL', 'reiners_db')
 }
 
 # Add sqlalchemy for oemof_results:
@@ -50,8 +50,7 @@ sqlahelper.add_engine(engine, 'reiners_db')
 
 
 # SCENARIO SETUP:
-ACTIVATED_SCENARIOS = list(filter(None, os.environ.get(
-    'STEMP_ACTIVATED_SCENARIOS', "").split(',')))
+ACTIVATED_SCENARIOS = settings.config['STEMP'].get('ACTIVATED_SCENARIOS', [])
 SCENARIO_PATH = os.path.join('stemp', 'scenarios')
 
 
