@@ -372,7 +372,7 @@ class ResultView(TemplateView):
         context['visualizations'] = [
             dataframe.InvestmentDataframe(
                 aggregated_results.aggregate('invest')),
-            dataframe.InvestmentDataframe(
+            dataframe.ComparisonDataframe(
                 aggregated_results.aggregate('tech')),
             highcharts.LCOEHighchart(aggregated_results.aggregate('lcoe')),
         ]
