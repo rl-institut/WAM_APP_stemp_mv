@@ -157,6 +157,8 @@ class Scenario(basic_setup.BaseScenario):
                 nodes[1].name.startswith('transformer_from')
         ):
             return 'PV (Stromgutschrift)'
+        else:
+            return super(Scenario, cls).get_data_label(nodes, suffix)
 
     @classmethod
     def calculate_primary_factor_and_energy(cls, param_results, node_results):
