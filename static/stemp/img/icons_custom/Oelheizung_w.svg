@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="105.5766mm"
+   height="128.28409mm"
+   viewBox="0 0 105.5766 128.28409"
+   version="1.1"
+   id="svg838"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="Oelheizung_w.svg">
+  <defs
+     id="defs832" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="268.5714"
+     inkscape:cy="168.14091"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1031"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata835">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-46.241462,-65.036534)">
+    <path
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:30;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 20.234375 13.480469 L 20.234375 150.47266 L 183.5332 150.47266 C 188.023 141.5499 191.58718 133.21701 193.57812 125.81445 C 194.38284 121.49968 196.77312 119.40892 199.16016 119.45703 C 201.5472 119.50514 203.93108 121.69287 204.72461 125.9375 C 206.08876 133.23444 209.22783 141.5399 213.44141 150.47266 L 378.79492 150.47266 L 378.79492 13.480469 L 20.234375 13.480469 z M 20.234375 181.90039 L 20.234375 301.80469 L 122.26172 301.80469 C 120.94669 296.06712 120.23166 290.10224 120.23828 283.9668 C 120.26572 256.356 144.91442 217.46608 165.96875 181.90039 L 20.234375 181.90039 z M 230.52344 181.90039 C 252.04426 218.35111 278.80524 258.2304 278.79102 284.125 C 278.78466 290.206 278.06951 296.11702 276.76562 301.80469 L 378.79492 301.80469 L 378.79492 181.90039 L 230.52344 181.90039 z M 20.234375 333.23438 L 20.234375 471.37305 L 378.79492 471.37305 L 378.79492 333.23438 L 261.64648 333.23438 C 247.10303 351.57517 224.63635 363.34733 199.42773 363.32031 C 174.27976 363.29664 151.88363 351.53167 137.37695 333.23438 L 20.234375 333.23438 z "
+       transform="matrix(0.26458333,0,0,0.26458333,46.241462,65.036534)"
+       id="rect1024" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path1028"
+       d="M 49.858533,68.603169 H 148.20099"
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:7.13255692;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:7.13255692;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
+       d="M 49.858533,189.75398 H 148.20099"
+       id="path1030" />
+  </g>
+</svg>
