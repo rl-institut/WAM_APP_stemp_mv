@@ -45,8 +45,7 @@ class Scenario(basic_setup.BaseScenario):
         sub_b_th = self.find_element_in_groups(f'b_demand_th')
 
         # Add electricity busses:
-        sub_b_el = Bus(label=AdvancedLabel(
-            f'b_demand_el', type='Bus', belongs_to=demand.name))
+        sub_b_el = Bus(label=AdvancedLabel('b_demand_el', type='Bus'))
         b_el_net = Bus(
             label=AdvancedLabel('b_el_net', type='Bus'), balanced=False)
         self.energysystem.add(sub_b_el, b_el_net)
@@ -66,7 +65,6 @@ class Scenario(basic_setup.BaseScenario):
             label=AdvancedLabel(
                 f"{demand.name}_heat_pump",
                 type='Transformer',
-                belongs_to=demand.name
             ),
             inputs={
                 sub_b_el: Flow(
@@ -89,7 +87,6 @@ class Scenario(basic_setup.BaseScenario):
             label=AdvancedLabel(
                 f"{demand.name}_pv",
                 type='Source',
-                belongs_to=demand.name
             ),
             outputs={
                 sub_b_el: Flow(
@@ -106,7 +103,6 @@ class Scenario(basic_setup.BaseScenario):
             label=AdvancedLabel(
                 f'transformer_net_to_demand_el',
                 type='Transformer',
-                belongs_to=demand.name
             ),
             inputs={
                 b_el_net: Flow(
@@ -121,7 +117,6 @@ class Scenario(basic_setup.BaseScenario):
             label=AdvancedLabel(
                 f'transformer_from_demand_el',
                 type='Transformer',
-                belongs_to=demand.name
             ),
             inputs={
                 sub_b_el: Flow(

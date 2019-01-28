@@ -19,8 +19,8 @@ from stemp.models import District, Household
 DEFAULT_PERIODS = 8760
 
 AdvancedLabel = namedtuple(
-    'AdvancedLabel', ('name', 'type', 'belongs_to', 'tags'))
-AdvancedLabel.__new__.__defaults__ = (None, None)
+    'AdvancedLabel', ('name', 'type', 'tags'))
+AdvancedLabel.__new__.__defaults__ = (None,)
 
 pe = namedtuple('PrimaryEnergy', ('energy', 'factor'))
 
@@ -70,7 +70,6 @@ class BaseScenario(ABC):
             label=AdvancedLabel(
                 f"b_demand_th",
                 type='Bus',
-                belongs_to=customer.name,
             )
         )
         self.energysystem.add(sub_b_th)
@@ -80,7 +79,6 @@ class BaseScenario(ABC):
             label=AdvancedLabel(
                 f"demand_th",
                 type='Sink',
-                belongs_to=customer.name,
                 tags=('demand', )
             ),
             inputs={
@@ -98,7 +96,6 @@ class BaseScenario(ABC):
             label=AdvancedLabel(
                 f"excess_th",
                 type='Sink',
-                belongs_to=customer.name
             ),
             inputs={sub_b_th: Flow()}
         )

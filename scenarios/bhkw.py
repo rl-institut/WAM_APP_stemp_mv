@@ -45,7 +45,6 @@ class Scenario(basic_setup.BaseScenario):
             label=AdvancedLabel(
                 f'transformer_from_{demand.name}_el',
                 type='Transformer',
-                belongs_to=demand.name
             ),
             inputs={
                 b_bhkw_el: Flow(
