@@ -81,6 +81,24 @@
 
 {% block scripts %}
   <script language="JavaScript">
+  $( function() {
+    $( "#tabs" ).tabs();
+  } );
+
+  $('#quarterCustomBtn').click(function() {
+    if ($('#quarterListBtn').hasClass('active')) {
+      $('#quarterCustomBtn').addClass('active');
+      $('#quarterListBtn').removeClass('active');
+    }
+  });
+
+  $('#quarterListBtn').click(function() {
+    if ($('#quarterCustomBtn').hasClass('active')) {
+      $('#quarterListBtn').addClass('active');
+      $('#quarterCustomBtn').removeClass('active');
+    }
+  });
+
   function done() {
     if ($("#tabs-1").attr("aria-hidden") == "true") {
       $("#list").submit();
