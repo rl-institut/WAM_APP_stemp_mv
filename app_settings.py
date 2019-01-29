@@ -25,20 +25,20 @@ DB_URL = '{ENGINE}://{USER}:{PASSWORD}@{HOST}:{PORT}'
 
 
 def add_engine(engine_name):
-    db_name = stemp_config.get(engine_name, DB_DEFALUT_SETUP[engine_name])
+    db_name = stemp_config.get(engine_name, DB_DEFAULT_SETUP[engine_name])
     conf = settings.config['DATABASES'][db_name]
     db_url = DB_URL + '/{NAME}' if 'NAME' in conf else DB_URL
     engine = sqlalchemy.create_engine(db_url.format(**conf))
     sqlahelper.add_engine(engine, engine_name)
 
 
-DB_DEFALUT_SETUP = {
+DB_DEFAULT_SETUP = {
     'DB_RESULTS': 'DEFAULT',
     'DB_SCENARIOS': 'OEP',
     'DB_INTERNAL': 'reiners_db'
 }
 
-for setup in DB_DEFALUT_SETUP:
+for setup in DB_DEFAULT_SETUP:
     add_engine(setup)
 
 # Add sqlalchemy for oemof_results:
