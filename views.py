@@ -361,7 +361,6 @@ class ResultView(TemplateView):
         context['pending'] = pending
 
         aggregations = {
-            'invest': agg.InvestmentRanking(),
             'lcoe': agg.LCOEAggregation(),
             'tech': agg.TechnologieComparison()
         }
@@ -370,11 +369,8 @@ class ResultView(TemplateView):
             aggregations
         )
         context['visualizations'] = [
-            dataframe.InvestmentDataframe(
-                aggregated_results.aggregate('invest')),
-            dataframe.ComparisonDataframe(
-                aggregated_results.aggregate('tech')),
             highcharts.LCOEHighchart(aggregated_results.aggregate('lcoe')),
+            dataframe.ComparisonDataframe(aggregated_results.aggregate('tech'))
         ]
         return context
 
