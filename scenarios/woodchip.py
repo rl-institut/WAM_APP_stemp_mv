@@ -61,6 +61,7 @@ class Scenario(basic_setup.PrimaryInputScenario):
             parameters['General']['pf_wood'] /
             parameters[self.name]['efficiency'] * 100
         )
+        woodchip_heating.pf_net = parameters['General']['pf_net']
         self.energysystem.add(woodchip_heating)
 
     @classmethod

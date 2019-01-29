@@ -180,9 +180,12 @@ class PrimaryInputScenario(BaseScenario):
         ))
 
         # Get primary factor:
-        pf = param_results[(primary_source_node, None)]['scalars']['pf']
-
+        pf_primary = param_results[
+            (primary_source_node, None)]['scalars']['pf']
+        pf_net = param_results[
+            (primary_source_node, None)]['scalars']['pf_net']
+        pf = pf_primary + 0.1 * pf_net
         # Get demand:
         demand = sum(node_results.result[demand_node]['input'].values())
 
-        return pe(energy=pf * demand, factor=pf)
+        return pe(energy=demand * pf, factor=pf)

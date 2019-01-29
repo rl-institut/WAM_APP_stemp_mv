@@ -242,22 +242,18 @@ class Scenario(basic_setup.BaseScenario):
             param_results.keys()
         ))
 
-        # Calculate electricity contribution to primary factor:
-        _, eff_el = next(filter(
-            lambda x: 'b_bhkw_el' in x[0],
-            param_results[(bhkw, None)]['scalars'].items()
-        ))
-        pf_el_norm = param_results[(bhkw, b_bhkw_el)]['scalars']['pf']
-        pf_el = pf_el_norm * eff_el
-
         # Calculate thermic contribution to primary factor:
         demand = sum(
             node_results.result[demand_node]['input'].values())
         gas_input = sum(
             node_results.result[b_gas]['output'].values())
-        pf_th_norm = param_results[(bhkw, b_demand_th)]['scalars']['pf']
-        pf_th = pf_th_norm * gas_input / demand
+        el_output = node_results.result[bhkw]['output'][b_bhkw_el]
+        pf_gas = param_results[(bhkw, b_demand_th)]['scalars']['pf']
+        pf_net = param_results[(bhkw, b_bhkw_el)]['scalars']['pf']
 
-        pf_total = pf_th + pf_el
-        primary_energy = demand * pf_total
-        return pe(energy=primary_energy, factor=pf_total)
+        pf = (
+            pf_gas * gas_input / demand -
+            pf_net * (0.9 * el_output / demand - 0.1)
+        )
+        primary_energy = demand * pf
+        return pe(energy=primary_energy, factor=pf)

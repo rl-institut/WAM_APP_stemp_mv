@@ -66,6 +66,7 @@ class Scenario(basic_setup.PrimaryInputScenario):
             parameters['General']['pf_oil'] /
             parameters[self.name]['efficiency'] * 100
         )
+        oil_heating.pf_net = parameters['General']['pf_net']
         self.energysystem.add(oil_heating)
 
     @classmethod

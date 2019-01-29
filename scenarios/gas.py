@@ -63,6 +63,7 @@ class Scenario(PrimaryInputScenario):
             parameters['General']['pf_gas'] /
             parameters[self.name]['efficiency'] * 100
         )
+        gas_heating.pf_net = parameters['General']['pf_net']
         self.energysystem.add(gas_heating)
 
     @classmethod
