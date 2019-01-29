@@ -10,12 +10,23 @@ $("#number_of_persons").change(function() {
 });
 
 // WARMWATER
-$("#warmwater_consumption").on('changed.zf.slider', function() {
-  update_warm_water();
+$("#warmWaterSlider").ionRangeSlider(
+  {
+    min: 0,
+    max: 2,
+    step: 1,
+    from: 1,
+    grid: true,
+    values: ["Gering", "Mittel", "Stark"],
+  }
+);
+
+$("#warmWaterSlider").change(function() {
+  update_warm_water()
 });
 
 function update_warm_water() {
-  warmwater_consumption = $("#warmwater_consumption").children('.slider-handle').attr('aria-valuenow')
+  warmwater_consumption = $("#warmWaterSlider").data().from;
   if (isNaN(warmwater_consumption)) {
     warmwater_consumption = 1;
   }
