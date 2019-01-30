@@ -7,7 +7,7 @@ from oemof.tools.economics import annuity
 
 from stemp.oep_models import OEPTimeseries
 from stemp.scenarios import basic_setup, heat
-from stemp.scenarios.basic_setup import AdvancedLabel
+from stemp.scenarios.basic_setup import AdvancedLabel, pe
 
 
 def get_timeseries():
@@ -42,11 +42,10 @@ class Scenario(basic_setup.BaseScenario):
 
     def add_technology(self, demand, timeseries, parameters):
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_{demand.name}_th')
+        sub_b_th = self.find_element_in_groups(f'b_demand_th')
 
         # Add electricity busses:
-        sub_b_el = Bus(label=AdvancedLabel(
-            f'b_{demand.name}_el', type='Bus', belongs_to=demand.name))
+        sub_b_el = Bus(label=AdvancedLabel('b_demand_el', type='Bus'))
         b_el_net = Bus(
             label=AdvancedLabel('b_el_net', type='Bus'), balanced=False)
         self.energysystem.add(sub_b_el, b_el_net)
@@ -66,7 +65,6 @@ class Scenario(basic_setup.BaseScenario):
             label=AdvancedLabel(
                 f"{demand.name}_heat_pump",
                 type='Transformer',
-                belongs_to=demand.name
             ),
             inputs={
                 sub_b_el: Flow(
@@ -89,7 +87,6 @@ class Scenario(basic_setup.BaseScenario):
             label=AdvancedLabel(
                 f"{demand.name}_pv",
                 type='Source',
-                belongs_to=demand.name
             ),
             outputs={
                 sub_b_el: Flow(
@@ -104,24 +101,22 @@ class Scenario(basic_setup.BaseScenario):
         # Add transformer to get electricty from net for heat pump:
         t_net_el = Transformer(
             label=AdvancedLabel(
-                f'transformer_net_to_{demand.name}_el',
+                f'transformer_net_to_demand_el',
                 type='Transformer',
-                belongs_to=demand.name
             ),
             inputs={
                 b_el_net: Flow(
-                    variable_costs=parameters['General']['net_costs']
+                    variable_costs=parameters['General']['net_costs'],
                 )
             },
-            outputs={sub_b_el: Flow()},
+            outputs={sub_b_el: Flow(pf=parameters['General']['pf_net'])},
         )
 
         # Add transformer to feed in pv to net:
         t_pv_net = Transformer(
             label=AdvancedLabel(
-                f'transformer_from_{demand.name}_el',
+                f'transformer_from_demand_el',
                 type='Transformer',
-                belongs_to=demand.name
             ),
             inputs={
                 sub_b_el: Flow(
@@ -130,16 +125,65 @@ class Scenario(basic_setup.BaseScenario):
             },
             outputs={b_el_net: Flow()},
         )
+
+        # Add transformer to heat via electricity
+        t_boiler = Transformer(
+            label=AdvancedLabel(
+                f'boiler',
+                type='Transformer'
+            ),
+            inputs={
+                b_el_net: Flow(
+                    variable_costs=parameters['General']['net_costs'],
+                )
+            },
+            outputs={sub_b_th: Flow()},
+            conversion_factors={
+                sub_b_th: 0.9  # FIXME: Parameter dynamic
+            }
+        )
         self.energysystem.add(
             hp,
             pv,
             t_pv_net,
-            t_net_el
+            t_net_el,
+            t_boiler
         )
 
-    def get_data_label(cls, nodes):
+    @classmethod
+    def get_data_label(cls, nodes, suffix=False):
         if (
                 nodes[1] is not None and
                 nodes[1].name.startswith('transformer_from')
         ):
             return 'PV (Stromgutschrift)'
+        else:
+            return super(Scenario, cls).get_data_label(nodes, suffix)
+
+    @classmethod
+    def calculate_primary_factor_and_energy(cls, param_results, node_results):
+        _, demand_node = next(filter(
+            lambda x: (
+                    x[1] is not None
+                    and x[1].name == 'demand_th'
+            ),
+            param_results.keys()
+        ))
+        net_transformer, b_demand_el = next(filter(
+            lambda x: (
+                x[0].name == 'transformer_net_to_demand_el' and
+                x[1] is not None
+                and x[1].name == 'b_demand_el'
+            ),
+            param_results.keys()
+        ))
+
+        demand = sum(
+            node_results.result[demand_node]['input'].values())
+        net_input = sum(
+            node_results.result[net_transformer]['input'].values())
+
+        pf_net = param_results[(net_transformer, b_demand_el)]['scalars']['pf']
+        pf = pf_net * (net_input / demand)
+        primary_energy = demand * pf
+        return pe(primary_energy, pf)

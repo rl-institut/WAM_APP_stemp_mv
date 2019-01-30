@@ -1,0 +1,48 @@
+
+<!doctype html>
+
+{% load static %}
+
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stemp Tool: Lützow</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'ionicons-2.0.1/css/ionicons.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'stemp/foundation/css/app.css' %}">
+    <script src="{% static 'highcharts/code/highcharts.js' %}"></script>
+  </head>
+  <body>
+
+    <div class="grid-x loader-wrapper">
+      <div class="cell">
+        <div id="loader" class="loader"></div>
+        <div id='started' class="loader__text">
+          <p>Simulation gestartet</p>
+          <p>Bitte warten</p>
+        </div>
+        <div id='finished' class="loader__text" hidden>
+          <a href="{% url 'stemp:result' %}">Zu den Ergebnissen</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-page">
+      {% include 'includes/navigation.html' %}
+
+      <div class="grid-container fluid results--wrapper">
+        <div class="grid-x grid-padding-x results--grid">
+          <div class="cell u-text--center">
+            <h1>
+              Ergebnisse
+            </h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'stemp/foundation/js/app.js' %}"></script>
+    <script src="/static/stemp/js/pending.js"></script>
+  </body>
+</html>

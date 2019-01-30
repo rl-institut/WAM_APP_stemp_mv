@@ -23,26 +23,28 @@
 {% block right_side %}
 
 <div class="cell large-8 large-cell-block-y">
-  <div class="grid-y large-grid-frame">
-    <main class="cell large-auto large-cell-block-y main-content-wrap">
+  <div id="layout-grid-y" class="grid-y">
+    <div id="layout-block" class="cell">
 
-      <div class="grid-x scen-create__form">
-        <div class="cell scen-create__form u-text--center">
-          <h3>{{demand_name}}</h3>
+      <main class="cell medium-10 main-content-wrap">
+        <div class="grid-x align-center">
+          <div class="cell scen-create__form u-text--center">
+            <h3>{{demand_name}}</h3>
+          </div>
+
+          <div class="panel">
+            {% label 'parameter:note' safe=True %}
+          </div>
+          <div class="cell">
+            <form class="cell medium-10 large-8 scen-padding-btm" id="parameter_form" action="{% url 'stemp:parameter' %}" method="post">
+              {% csrf_token %}
+              {% crispy parameter_form %}
+              <input type="hidden" name="scenario" value="{{scenario}}">
+            </form>
+          </div>
         </div>
-
-        <div class="panel">
-          {% label 'parameter:note' safe=True %}
-        </div>
-
-        <form class="cell medium-10 medium-offset-1 large-8 large-offset-2" id="parameter_form" action="{% url 'stemp:parameter' %}" method="post">
-          {% csrf_token %}
-          {% crispy parameter_form %}
-          <input type="hidden" name="scenario" value="{{scenario}}">
-        </form>
-
-      </div>
-    </main>
+      </main>
+    </div>
     {% url 'stemp:technology' as back_url%}
     {% include 'includes/button_section.html' with back_url=back_url function="done();" %}
   </div>

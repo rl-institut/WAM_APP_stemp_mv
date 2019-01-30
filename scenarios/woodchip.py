@@ -6,7 +6,7 @@ from stemp.scenarios import basic_setup
 from stemp.scenarios.basic_setup import AdvancedLabel
 
 
-class Scenario(basic_setup.BaseScenario):
+class Scenario(basic_setup.PrimaryInputScenario):
     name = 'Woodchip'
     needed_parameters = {
         'General': ['wacc', 'woodchip_price'],
@@ -34,19 +34,21 @@ class Scenario(basic_setup.BaseScenario):
         epc = annuity(capex, lifetime, wacc)
     
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_{demand.name}_th')
+        sub_b_th = self.find_element_in_groups(f'b_demand_th')
         b_woodchip = self.find_element_in_groups('b_woodchip')
         invest = Investment(ep_costs=epc)
         invest.capex = capex
         woodchip_heating = Transformer(
             label=AdvancedLabel(
                 f'{demand.name}_woodchip_heating',
-                type='Transformer'
+                type='Transformer',
+                tags=('primary_source',)
             ),
             inputs={
                 b_woodchip: Flow(
                     variable_costs=parameters['General']['woodchip_price'],
                     investment=invest,
+                    is_fossil=True,
                     co2_emissions=parameters[self.name]['co2_emissions']
                 )
             },
@@ -55,12 +57,18 @@ class Scenario(basic_setup.BaseScenario):
             conversion_factors={
                 sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
+        woodchip_heating.pf = (
+            parameters['General']['pf_wood'] /
+            parameters[self.name]['efficiency'] * 100
+        )
+        woodchip_heating.pf_net = parameters['General']['pf_net']
         self.energysystem.add(woodchip_heating)
 
     @classmethod
     def get_data_label(cls, nodes, suffix=False):
         if not suffix:
-            if nodes[1] is not None and nodes[1].name.endswith('woodchip_heating'):
+            if nodes[1] is not None and nodes[1].name.endswith(
+                    'woodchip_heating'):
                 return 'Holzhackschnetzel'
             elif (
                     nodes[0] is not None and
@@ -70,7 +78,8 @@ class Scenario(basic_setup.BaseScenario):
             else:
                 return super(Scenario, cls).get_data_label(nodes)
         else:
-            if nodes[1] is not None and nodes[1].name.endswith('woodchip_heating'):
+            if nodes[1] is not None and nodes[1].name.endswith(
+                    'woodchip_heating'):
                 return ' (Holz)'
             elif (
                     nodes[0] is not None and

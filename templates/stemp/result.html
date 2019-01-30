@@ -1,38 +1,45 @@
-{% extends "stemp/base.html" %}
 
-{% load staticfiles %}
+<!doctype html>
 
-{% block header %}
-<script src="{% static 'highcharts/code/highcharts.js' %}"></script>
-{% endblock %}
+{% load static %}
 
-{% block content %}
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stemp Tool: Lützow</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'ionicons-2.0.1/css/ionicons.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'stemp/foundation/css/app.css' %}">
+    <script src="{% static 'highcharts/code/highcharts.js' %}"></script>
+  </head>
+  <body>
+    <div class="results-page">
+      {% include 'includes/navigation.html' %}
 
-{% if pending %}
-  <div class="cell shrink">
-    <div class="grid-x grid-padding-x">
-      <div class="cell" id="pending" style="color: white">
-        Simulation gestartet.<br>
-        Bitte warten...
+      <div class="grid-container fluid results--wrapper">
+        <div class="grid-x grid-padding-x results--grid">
+
+          <div class="cell u-text--center">
+            <h1>
+              Ergebnisse
+            </h1>
+            {% if not visualizations %}
+            <h2>Keine Ergebnisse gefunden</h2>
+            {% endif %}
+          </div>
+
+          {% if visualizations %}
+            {% for visualization in visualizations %}
+              <div class="cell results--chart" style="margin-top: 2rem">
+                {{visualization}}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
       </div>
     </div>
-  </div>
-{% endif %}
 
-<div class="cell l-bg-color-w scen-create__wrapper u-text--center">
-  <div class="grid-x grid-padding-x">
-    {% for visualization in visualizations %}
-      <div class="cell" style="margin-top: 2rem">
-        {{visualization}}
-      </div>
-    {% endfor %}
-  </div>
-</div>
-
-{% endblock %}
-
-{% block scripts %}
-  {% if pending %}
-    <script src="/static/stemp/js/pending.js"></script>
-  {% endif %}
-{% endblock %}
+    <script src="{% static 'stemp/foundation/js/app.js' %}"></script>
+  </body>
+</html>

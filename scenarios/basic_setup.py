@@ -19,8 +19,10 @@ from stemp.models import District, Household
 DEFAULT_PERIODS = 8760
 
 AdvancedLabel = namedtuple(
-    'AdvancedLabel', ('name', 'type', 'belongs_to', 'tags'))
-AdvancedLabel.__new__.__defaults__ = (None, None)
+    'AdvancedLabel', ('name', 'type', 'tags'))
+AdvancedLabel.__new__.__defaults__ = (None,)
+
+pe = namedtuple('PrimaryEnergy', ('energy', 'factor'))
 
 
 def upload_scenario_parameters():
@@ -68,9 +70,8 @@ class BaseScenario(ABC):
         # Add subgrid busses
         sub_b_th = Bus(
             label=AdvancedLabel(
-                f"b_{customer.name}_th",
+                f"b_demand_th",
                 type='Bus',
-                belongs_to=customer.name,
             )
         )
         self.energysystem.add(sub_b_th)
@@ -78,9 +79,8 @@ class BaseScenario(ABC):
         # Add heat demand
         demand_th = Sink(
             label=AdvancedLabel(
-                f"demand_{customer.name}_th",
+                f"demand_th",
                 type='Sink',
-                belongs_to=customer.name,
                 tags=('demand', )
             ),
             inputs={
@@ -96,9 +96,8 @@ class BaseScenario(ABC):
         # Add safety excess:
         ex_th = Sink(
             label=AdvancedLabel(
-                f"excess_{customer.name}_th",
+                f"excess_th",
                 type='Sink',
-                belongs_to=customer.name
             ),
             inputs={sub_b_th: Flow()}
         )
@@ -154,3 +153,41 @@ class BaseScenario(ABC):
             return ''
         else:
             return '-'.join(map(str, nodes))
+
+    @classmethod
+    @abstractmethod
+    def calculate_primary_factor_and_energy(cls, param_results, results):
+        return pe(None, None)
+
+
+class PrimaryInputScenario(BaseScenario):
+    """
+    Scenario where one primary source provides demand
+    """
+
+    @abstractmethod
+    def add_technology(self, demand, timeseries, parameters):
+        pass
+
+    @classmethod
+    def calculate_primary_factor_and_energy(cls, param_results, node_results):
+        # Find primary source & demand:
+        primary_source_node = next(filter(
+            lambda x: x.tags is not None and 'primary_source' in x.tags,
+            node_results.result
+        ))
+        demand_node = next(filter(
+            lambda x: x.tags is not None and 'demand' in x.tags,
+            node_results.result
+        ))
+
+        # Get primary factor:
+        pf_primary = param_results[
+            (primary_source_node, None)]['scalars']['pf']
+        pf_net = param_results[
+            (primary_source_node, None)]['scalars']['pf_net']
+        pf = pf_primary + 0.1 * pf_net
+        # Get demand:
+        demand = sum(node_results.result[demand_node]['input'].values())
+
+        return pe(energy=demand * pf, factor=pf)

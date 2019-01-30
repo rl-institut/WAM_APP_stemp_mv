@@ -3,7 +3,7 @@ from oemof.solph import Flow, Bus, Investment, Transformer
 from oemof.tools.economics import annuity
 
 from stemp.scenarios import basic_setup
-from stemp.scenarios.basic_setup import AdvancedLabel
+from stemp.scenarios.basic_setup import AdvancedLabel, pe
 
 
 BHKW_SIZE_PEAK_FACTOR = 3.33
@@ -32,7 +32,7 @@ class Scenario(basic_setup.BaseScenario):
     
     def add_technology(self, demand, timeseries, parameters):
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_{demand.name}_th')
+        sub_b_th = self.find_element_in_groups(f'b_demand_th')
         b_gas = self.find_element_in_groups('b_gas')
     
         # Add bus from bhkw to net:
@@ -45,7 +45,6 @@ class Scenario(basic_setup.BaseScenario):
             label=AdvancedLabel(
                 f'transformer_from_{demand.name}_el',
                 type='Transformer',
-                belongs_to=demand.name
             ),
             inputs={
                 b_bhkw_el: Flow(
@@ -67,12 +66,17 @@ class Scenario(basic_setup.BaseScenario):
             lifetime,
             parameters['General']['gas_rate']
         )
+
+        if self.name == 'BIO_BHKW':
+            pf_gas = parameters['General']['pf_biogas']
+        else:
+            pf_gas = parameters['General']['pf_gas']
     
         bhkw = Transformer(
             label=AdvancedLabel(
-                f'{demand.name}_chp', 
-                type='Transformer', 
-                belongs_to=demand.name
+                'bhkw',
+                type='Transformer',
+                tags=('bhkw',)
             ),
             inputs={
                 b_gas: Flow(
@@ -82,14 +86,15 @@ class Scenario(basic_setup.BaseScenario):
                             parameters[self.name]['minimal_load'] /
                             parameters[self.name]['conversion_factor_th']
                     ),
+                    is_fossil=True,
                     co2_emissions=parameters[self.name]['co2_emissions']
                 )
             },
             outputs={
                 b_bhkw_el: Flow(
-                    co2_emissions=-217.0  # FIXME: MAKE IT A PARAMETER
+                    pf=parameters['General']['pf_bhkw_el']
                 ),
-                sub_b_th: Flow()
+                sub_b_th: Flow(pf=pf_gas)
             },
             conversion_factors={
                 b_bhkw_el: (
@@ -112,6 +117,7 @@ class Scenario(basic_setup.BaseScenario):
                 b_gas: Flow(
                     variable_costs=avg_gas_price,
                     investment=invest,
+                    is_fossil=True,
                     co2_emissions=parameters['Gas']['co2_emissions']
                 )
             },
@@ -179,9 +185,9 @@ class Scenario(basic_setup.BaseScenario):
     @classmethod
     def get_data_label(cls, nodes, suffix=False):
         if not suffix:
-            if nodes[1] is not None and nodes[1].name.endswith('chp'):
+            if nodes[1] is not None and nodes[1].name == 'bhkw':
                 return 'BHKW'
-            elif nodes[0].name.endswith('chp'):
+            elif nodes[0].name == 'bhkw':
                 return 'BHKW (Stromgutschrift)'
             elif (
                     nodes[0].name.startswith('b_bhkw_el') and
@@ -202,7 +208,7 @@ class Scenario(basic_setup.BaseScenario):
             else:
                 return super(Scenario, cls).get_data_label(nodes)
         else:
-            if nodes[1] is not None and nodes[1].name.endswith('chp'):
+            if nodes[1] is not None and nodes[1].name == 'bhkw':
                 return ' (Gas)'
             elif (
                     nodes[1] is not None and
@@ -211,3 +217,43 @@ class Scenario(basic_setup.BaseScenario):
                 return ' (Gas)'
             else:
                 return super(Scenario, cls).get_data_label(nodes, suffix=True)
+
+    @classmethod
+    def calculate_primary_factor_and_energy(cls, param_results, node_results):
+        # Find nodes:
+        bhkw, b_bhkw_el = next(filter(
+            lambda x: (
+                x[0].name == 'bhkw' and
+                x[1] is not None and
+                x[1].name == 'b_bhkw_el'
+            ),
+            param_results.keys()
+        ))
+        b_demand_th, demand_node = next(filter(
+            lambda x: (
+                x[0].name == 'b_demand_th' and
+                x[1] is not None
+                and x[1].name == 'demand_th'
+            ),
+            param_results.keys()
+        ))
+        b_gas, _ = next(filter(
+            lambda x: x[0].name == 'b_gas',
+            param_results.keys()
+        ))
+
+        # Calculate thermic contribution to primary factor:
+        demand = sum(
+            node_results.result[demand_node]['input'].values())
+        gas_input = sum(
+            node_results.result[b_gas]['output'].values())
+        el_output = node_results.result[bhkw]['output'][b_bhkw_el]
+        pf_gas = param_results[(bhkw, b_demand_th)]['scalars']['pf']
+        pf_net = param_results[(bhkw, b_bhkw_el)]['scalars']['pf']
+
+        pf = (
+            pf_gas * gas_input / demand -
+            pf_net * (0.9 * el_output / demand - 0.1)
+        )
+        primary_energy = demand * pf
+        return pe(energy=primary_energy, factor=pf)

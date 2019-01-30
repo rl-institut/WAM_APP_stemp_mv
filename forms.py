@@ -209,8 +209,9 @@ class ParameterForm(Form):
 
 class HouseholdForm(ModelForm):
     number_of_persons = IntegerField(
-        widget=SliderInput(
+        widget=NumberInput(
             attrs={
+                'class': "input input-group-field input--s",
                 'id': 'number_of_persons'
             }
         ),
@@ -218,6 +219,24 @@ class HouseholdForm(ModelForm):
         initial=constants.DEFAULT_NUMBER_OF_PERSONS,
         max_value=10,
         min_value=1,
+    )
+    heat_demand_hand = IntegerField(
+        widget=NumberInput(
+            attrs={
+                'class': "input input-group-field input--s",
+                'id': 'heat_hand'
+            }
+        ),
+        label='Manuell eingeben'
+    )
+    roof_area_hand = IntegerField(
+        widget=NumberInput(
+            attrs={
+                'class': "input-group-field input input--m",
+                'id': 'roof_hand'
+            }
+        ),
+        label='Manuell eingeben'
     )
 
     class Meta:
@@ -240,7 +259,15 @@ class HouseholdForm(ModelForm):
             ),
             'warm_water_per_day': (
                 constants.WarmwaterConsumption.Medium.in_liters()
-            )
+            ),
+            'heat_demand_hand': (
+                constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON *
+                constants.ENERGY_PER_QM_PER_YEAR[constants.HouseType.EFH.name]
+            ),
+            'roof_area_hand': round(constants.get_roof_square_meters(
+                constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON,
+                constants.HouseType.EFH
+            ))
         }
         super(HouseholdForm, self).__init__(*args, **kwargs)
         if only_house_type is not None:

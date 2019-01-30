@@ -6,7 +6,7 @@ from stemp.scenarios import basic_setup
 from stemp.scenarios.basic_setup import AdvancedLabel
 
 
-class Scenario(basic_setup.BaseScenario):
+class Scenario(basic_setup.PrimaryInputScenario):
     name = 'Oil'
     needed_parameters = {
         'General': ['wacc', 'oil_price', 'oil_rate'],
@@ -39,17 +39,21 @@ class Scenario(basic_setup.BaseScenario):
         )
     
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_{demand.name}_th')
+        sub_b_th = self.find_element_in_groups(f'b_demand_th')
         b_oil = self.find_element_in_groups('b_oil')
         invest = Investment(ep_costs=epc)
         invest.capex = capex
         oil_heating = Transformer(
             label=AdvancedLabel(
-                f'{demand.name}_oil_heating', type='Transformer'),
+                f'{demand.name}_oil_heating',
+                type='Transformer',
+                tags=('primary_source', )
+            ),
             inputs={
                 b_oil: Flow(
                     variable_costs=avg_oil_price,
                     investment=invest,
+                    is_fossil=True,
                     co2_emissions=parameters[self.name]['co2_emissions']
                 )
             },
@@ -58,6 +62,11 @@ class Scenario(basic_setup.BaseScenario):
             conversion_factors={
                 sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
+        oil_heating.pf = (
+            parameters['General']['pf_oil'] /
+            parameters[self.name]['efficiency'] * 100
+        )
+        oil_heating.pf_net = parameters['General']['pf_net']
         self.energysystem.add(oil_heating)
 
     @classmethod

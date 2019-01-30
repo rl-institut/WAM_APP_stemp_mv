@@ -14,44 +14,41 @@ from stemp import oep_models
 STORE_LP_FILE = False
 
 ADDITIONAL_PARAMETERS = ConfigObj(
-    os.path.join(settings.BASE_DIR, 'stemp', 'attributes.cfg'))
+    os.path.join(settings.BASE_DIR, 'stemp', 'scenarios', 'attributes.cfg'))
 
 LABELS = ConfigObj(os.path.join(settings.BASE_DIR, 'stemp', 'labels.cfg'))
+
+stemp_config = settings.config['STEMP']
 
 # DB SETUP:
 DB_URL = '{ENGINE}://{USER}:{PASSWORD}@{HOST}:{PORT}'
 
 
-def build_db_url(db_name):
+def add_engine(engine_name):
+    db_name = stemp_config.get(engine_name, DB_DEFAULT_SETUP[engine_name])
     conf = settings.config['DATABASES'][db_name]
     db_url = DB_URL + '/{NAME}' if 'NAME' in conf else DB_URL
-    return db_url.format(**conf)
+    engine = sqlalchemy.create_engine(db_url.format(**conf))
+    sqlahelper.add_engine(engine, engine_name)
 
 
-DB_SETUP = {
-    'oemof_results': os.environ.get('STEMP_DB_RESULTS', 'DEFAULT'),
-    'oep': os.environ.get('STEMP_DB_SCENARIOS', 'OEP'),
-    'reiners_db': os.environ.get('STEMP_DB_INTERNAL', 'reiners_db')
+DB_DEFAULT_SETUP = {
+    'DB_RESULTS': 'DEFAULT',
+    'DB_SCENARIOS': 'OEP',
+    'DB_INTERNAL': 'reiners_db'
 }
 
+for setup in DB_DEFAULT_SETUP:
+    add_engine(setup)
+
 # Add sqlalchemy for oemof_results:
-engine = sqlalchemy.create_engine(build_db_url(DB_SETUP['oemof_results']))
-sqlahelper.add_engine(engine, 'oemof_results')
-oemof_results.Base.metadata.bind = engine
+oemof_results.Base.metadata.bind = sqlahelper.get_engine('DB_RESULTS')
 
 # Add OEP:
-engine = sqlalchemy.create_engine(build_db_url(DB_SETUP['oep']))
-sqlahelper.add_engine(engine, 'oep')
-oep_models.Base.metadata.bind = engine
-
-# Add reiner:
-engine = sqlalchemy.create_engine(build_db_url(DB_SETUP['reiners_db']))
-sqlahelper.add_engine(engine, 'reiners_db')
-
+oep_models.Base.metadata.bind = sqlahelper.get_engine('DB_SCENARIOS')
 
 # SCENARIO SETUP:
-ACTIVATED_SCENARIOS = list(filter(None, os.environ.get(
-    'STEMP_ACTIVATED_SCENARIOS', "").split(',')))
+ACTIVATED_SCENARIOS = stemp_config.get('ACTIVATED_SCENARIOS', [])
 SCENARIO_PATH = os.path.join('stemp', 'scenarios')
 
 

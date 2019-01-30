@@ -1,9 +1,13 @@
 from abc import ABC
-
 import pandas
+from collections import namedtuple
+from collections import OrderedDict
+
 from oemof.solph import analyzer as an
 
 from stemp.results import analyzer as stemp_an
+
+formatter = namedtuple('formatter', ['unit', 'format'])
 
 
 class Aggregation(ABC):
@@ -137,19 +141,43 @@ class CO2Ranking(Ranking):
 
 class TechnologieComparison(Aggregation):
     name = 'Technologievergleich'
-    analyzer = {
-        'invest': stemp_an.TotalInvestmentAnalyzer,
-        'co2': stemp_an.CO2Analyzer
+    analyzer = OrderedDict(
+        [
+            ('Wärmekosten', stemp_an.LCOEAutomatedDemandAnalyzer),
+            ('Investment', stemp_an.TotalInvestmentAnalyzer),
+            ('CO2', stemp_an.CO2Analyzer),
+            ('Brennstoffkosten', stemp_an.FossilCostsAnalyzer)
+        ]
+    )
+    formatters = {
+        'Wärmekosten': formatter('€/kWh', '{:.2f}'),
+        'Investment': formatter('€', '{:,.0f}'),
+        'CO2': formatter('g/kWh', '{:,.0f}'),
+        'Brennstoffkosten': formatter('€/Jahr', '{:,.0f}'),
+        'Primärfaktor': formatter('-', '{:.1f}'),
+        'Primärenergie': formatter('kWh', '{:,.0f}'),
     }
 
     def aggregate(self, results):
         df = pandas.DataFrame()
         for result in results:
             series = pandas.Series(name=result.scenario.Scenario.name)
+
+            # Add data from analyzers:
             for category, analyzer in self.analyzer.items():
-                data = result.analysis.get_analyzer(analyzer).result
-                data = self._set_label(data, result)
-                series[category] = '<br>'.join(
-                    f'{key}: {value}' for key, value in data.items())
+                series[category] = result.analysis.get_analyzer(analyzer).total
+
+            # Add primary energy:
+            pe = result.scenario.Scenario.calculate_primary_factor_and_energy(
+                result.analysis.param_results,
+                result.analysis.get_analyzer(an.NodeBalanceAnalyzer)
+            )
+            series['Primärfaktor'] = pe.factor
+            series['Primärenergie'] = pe.energy
+
             df = df.append(series)
+
+        # Apply formatting:
+        for column, formatter in self.formatters.items():
+            df[column] = df[column].apply(formatter.format.format)
         return df.transpose()

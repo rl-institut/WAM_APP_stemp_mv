@@ -26,89 +26,91 @@
 {% block right_side %}
 
 <div class="cell large-8 large-cell-block-y">
-  <div class="grid-y large-grid-frame">
+  <div id="layout-grid-y" class="grid-y">
+    <div id="layout-block" class="cell">
 
-    <main class="cell large-auto large-cell-block-y main-content-wrap">
-      <div class="grid-x scen-create__form">
+      <main class="cell medium-10 main-content-wrap">
+        <div class="grid-x align-center">
 
-        <div class="cell scen-create__form u-text--center">
-          <h3>{{demand.name}}</h3>
-        </div>
-
-        <!-- HOUSEHOLD STRUCTURE START -->
-        <div class="cell medium-10 medium-offset-1">
-
-          <div class="grid-x summary-header">
-            <div class="cell shrink summary-icon u-margin-right--m">
-              <img src="{% static 'stemp/img/icons_custom/Enavi_Einzelhaus_black.svg' %}" alt="Icon Einzelhaus">
-            </div>
-            <div class="cell shrink summary-txt u-margin-right--m">
-              <h4>Haushaltsstruktur</h4>
-            </div>
-            <div class="cell auto summary-border">
-            </div>
+          <div class="cell scen-create__form u-text--center">
+            <h3>{{demand.name}}</h3>
           </div>
 
-          <div class="cell u-text--left u-padding-left--m">
-            {{demand.summary}}
+          <!-- HOUSEHOLD STRUCTURE START -->
+          <div class="cell medium-10 medium-offset-1">
+
+            <div class="grid-x summary-header">
+              <div class="cell shrink summary-icon u-margin-right--m">
+                <img src="{% static 'stemp/img/icons_custom/Enavi_Einzelhaus_black.svg' %}" alt="Icon Einzelhaus">
+              </div>
+              <div class="cell shrink summary-txt u-margin-right--m">
+                <h4>Haushaltsstruktur</h4>
+              </div>
+              <div class="cell auto summary-border">
+              </div>
+            </div>
+
+            <div class="cell u-text--left u-padding-left--m">
+              {{demand.summary}}
+            </div>
+
           </div>
+          <!-- HOUSEHOLD STRUCTURE END -->
 
-        </div>
-        <!-- HOUSEHOLD STRUCTURE END -->
+          <!-- HEATING OPTION START -->
+          <div class="cell medium-10 medium-offset-1">
 
-        <!-- HEATING OPTION START -->
-        <div class="cell medium-10 medium-offset-1">
-
-          <div class="grid-x summary-header">
-            <div class="cell shrink summary-icon u-margin-right--m">
-              <img src="{% static 'stemp/img/icons_custom/Heizung_black.svg' %}" alt="Icon Heizung">
+            <div class="grid-x summary-header">
+              <div class="cell shrink summary-icon u-margin-right--m">
+                <img src="{% static 'stemp/img/icons_custom/Heizung_black.svg' %}" alt="Icon Heizung">
+              </div>
+              <div class="cell shrink summary-txt u-margin-right--m">
+                <h4>Heizungsoptionen</h4>
+              </div>
+              <div class="cell auto summary-border">
+              </div>
             </div>
-            <div class="cell shrink summary-txt u-margin-right--m">
-              <h4>Heizungsoptionen</h4>
-            </div>
-            <div class="cell auto summary-border">
-            </div>
-          </div>
 
-          <div class="cell u-text--left u-padding-left--m">
-            {% for tech in technologies %}
-              <p>{{tech}}</p>
-            {% endfor %}
-          </div>
-
-        </div>
-        <!-- HEATING OPTION END -->
-
-        <!-- PARAMETER OPTION START -->
-        <div class="cell medium-10 medium-offset-1 scen-padding-btm">
-
-          <div class="grid-x summary-header">
-            <div class="cell shrink summary-icon u-margin-right--m">
-              <img src="{% static 'stemp/img/icons_custom/Enavi_Parameter_black.svg' %}" alt="Icon Parameter">
-            </div>
-            <div class="cell shrink summary-txt u-margin-right--m">
-              <h4>Parameter (es werden nur geänderte Paramater angezeigt)</h4>
-            </div>
-            <div class="cell auto summary-border">
-            </div>
-          </div>
-
-          <div class="cell u-text--left u-padding-left--m">
-            {% for category, params in parameters.items %}
-              <p>{{category}}</p>
-              {% for parameter, value_unit in params.items %}
-                <p>{{parameter}}: {{value_unit.0}} {{value_unit.1}}</p>
+            <div class="cell u-text--left u-padding-left--m">
+              {% for tech in technologies %}
+                <p>{{tech}}</p>
               {% endfor %}
-            {% empty %}
-              <p>Keine Parameter geändert</p>
-            {% endfor %}
+            </div>
+
           </div>
+          <!-- HEATING OPTION END -->
+
+          <!-- PARAMETER OPTION START -->
+          <div class="cell medium-10 medium-offset-1 scen-padding-btm">
+
+            <div class="grid-x summary-header">
+              <div class="cell shrink summary-icon u-margin-right--m">
+                <img src="{% static 'stemp/img/icons_custom/Enavi_Parameter_black.svg' %}" alt="Icon Parameter">
+              </div>
+              <div class="cell shrink summary-txt u-margin-right--m">
+                <h4>Parameter (es werden nur geänderte Paramater angezeigt)</h4>
+              </div>
+              <div class="cell auto summary-border">
+              </div>
+            </div>
+
+            <div class="cell u-text--left u-padding-left--m">
+              {% for category, params in parameters.items %}
+                <p>{{category}}</p>
+                {% for parameter, value_unit in params.items %}
+                  <p>{{parameter}}: {{value_unit.0}} {{value_unit.1}}</p>
+                {% endfor %}
+              {% empty %}
+                <p>Keine Parameter geändert</p>
+              {% endfor %}
+            </div>
+
+          </div>
+          <!-- PARAMETER OPTION END -->
 
         </div>
-        <!-- PARAMETER OPTION END -->
-
-      </div>
-    </main>
+      </main>
+    </div>
 
     <form action="" method="post" id="summary">
       {% csrf_token %}

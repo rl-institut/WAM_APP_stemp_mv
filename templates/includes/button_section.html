@@ -1,41 +1,50 @@
 <!-- BUTTONS SECTION START -->
-<div class="cell shrink footer footer-btns">
-  <div class="grid-x">
-    <div class="cell footer-btns__left small-6">
-      <a href={{back_url}} class="btn btn--hollow btn--small">
-        <i class ="icon ion-chevron-left icon--small"></i>
-        Zurück
-      </a>
-    </div>
-    <div class="cell footer-btns__right small-6">
-      {% if modal %}
-        <button type="button" class="btn btn-cta" data-open={{done_id|default:"done"}}>
-          Weiter
-          <i class ="icon ion-chevron-right icon--small"></i>
-        </button>
-      {% else %}
-        {% if is_district_hh %}
-          <button type="submit" class="btn btn-apply btn-apply--secondary" name="done" id={{done_id|default:"done"}}{% if function %} onclick="{{function}}"{% endif %}>
-            ​Hinzufügen
-            <i class ="icon ion-android-add​ icon--small"></i>
-          </button>
-        {% else %}
-          <button type="submit" class="btn btn-cta btn-submit" name="done" id={{done_id|default:"done"}}{% if function %} onclick="{{function}}"{% endif %}>
-            {{done_label|default:"Weiter"}}
+<div id="layout-footer" class="cell">
+  <div class="cell medium-2 footer footer-btns">
+    <div class="grid-x">
+      <div class="cell footer-btns__left small-6">
+        <a href={{back_url}} class="btn btn--hollow btn--small">
+          <i class ="icon ion-chevron-left icon--small"></i>
+          Zurück
+        </a>
+      </div>
+      <div class="cell footer-btns__right small-6">
+        {% if modal %}
+          <button type="button" class="btn btn-cta" data-open={{done_id|default:"done"}}>
+            Weiter
             <i class ="icon ion-chevron-right icon--small"></i>
           </button>
+        {% else %}
+          {% if is_district_hh %}
+            <button type="submit" class="btn btn-apply btn-apply--secondary" name="done" id={{done_id|default:"done"}}{% if function %} onclick="{{function}}"{% endif %}>
+              ​Hinzufügen
+              <i class ="icon ion-android-add​ icon--small"></i>
+            </button>
+          {% else %}
+            <button type="submit" class="btn btn-cta btn-submit" name="done" id={{done_id|default:"done"}}{% if function %} onclick="{{function}}"{% endif %}>
+              {{done_label|default:"Weiter"}}
+              <i class ="icon ion-chevron-right icon--small"></i>
+            </button>
+          {% endif %}
         {% endif %}
-      {% endif %}
+      </div>
     </div>
-  </div>
 
-  <div class="cell u-text--center">
-    <a href="{% url 'stemp:index' %}">
-      <span class="anchor-text">
-      <i class ="icon ion-close icon--small"></i>
-      Abbrechen
-      </span>
-    </a>
+    <div class="cell u-text--center">
+      <a href="{% url 'stemp:index' %}">
+        <span class="anchor-text">
+        <i class ="icon ion-close icon--small"></i>
+        Abbrechen
+        </span>
+      </a>
+    </div>
+
+    <div class="cell hide-for-large">
+      <div class="cell show-for-small hide-for-large footer-legal footer-legal--mobile">
+        {% include 'includes/footer_small.html' %}
+      </div>
+    </div>
+
   </div>
 </div>
 <!-- BUTTONS SECTION END -->

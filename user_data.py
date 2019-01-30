@@ -1,5 +1,7 @@
 
 import sqlahelper
+import celery.result
+import logging
 
 from stemp.app_settings import SCENARIO_MODULES
 from stemp.constants import DemandType, DistrictStatus
@@ -64,7 +66,11 @@ class SessionSimulation(object):
         if self.pending is None:
             return False
         if self.pending.ready():
-            self.result_id = self.pending.get()
+            try:
+                self.result_id = self.pending.get()
+            except Exception:
+                logging.exception('Simulation task failed')
+                self.result_id = None
             return False
         return True
 

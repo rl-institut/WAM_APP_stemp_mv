@@ -1,23 +1,32 @@
 
-var $ = jQuery;
-
 $("#id_house_type").change(function() {
   set_default_roof_area();
   set_default_heat_demand();
 });
 
-$("#number_of_persons_slider").on('changed.zf.slider', function() {
+$("#number_of_persons").change(function() {
   set_default_square_meters();
   update_warm_water();
 });
 
 // WARMWATER
-$("#warmwater_consumption").on('changed.zf.slider', function() {
-  update_warm_water();
+$("#warmWaterSlider").ionRangeSlider(
+  {
+    min: 0,
+    max: 2,
+    step: 1,
+    from: 1,
+    grid: true,
+    values: ["Gering", "Mittel", "Stark"],
+  }
+);
+
+$("#warmWaterSlider").change(function() {
+  update_warm_water()
 });
 
 function update_warm_water() {
-  warmwater_consumption = $("#warmwater_consumption").children('.slider-handle').attr('aria-valuenow')
+  warmwater_consumption = $("#warmWaterSlider").data().from;
   if (isNaN(warmwater_consumption)) {
     warmwater_consumption = 1;
   }
@@ -132,3 +141,8 @@ function set_default_roof_area() {
     }
   });
 };
+
+$(document).ready(function() {
+  set_default_square_meters();
+  update_warm_water();
+})

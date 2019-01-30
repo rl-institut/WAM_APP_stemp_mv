@@ -2,11 +2,10 @@
 from oemof.solph import Flow, Transformer, Bus, Investment
 from oemof.tools.economics import annuity
 
-from stemp.scenarios import basic_setup
-from stemp.scenarios.basic_setup import AdvancedLabel
+from stemp.scenarios.basic_setup import PrimaryInputScenario, AdvancedLabel
 
 
-class Scenario(basic_setup.BaseScenario):
+class Scenario(PrimaryInputScenario):
     name = 'Gas'
     needed_parameters = {
         'General': ['wacc', 'gas_price', 'gas_rate'],
@@ -37,17 +36,21 @@ class Scenario(basic_setup.BaseScenario):
         )
     
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_{demand.name}_th')
+        sub_b_th = self.find_element_in_groups(f'b_demand_th')
         b_gas = self.find_element_in_groups('b_gas')
         invest = Investment(ep_costs=epc)
         invest.capex = capex
         gas_heating = Transformer(
             label=AdvancedLabel(
-                f'{demand.name}_gas_heating', type='Transformer'),
+                f'{demand.name}_gas_heating',
+                type='Transformer',
+                tags=('primary_source', )
+            ),
             inputs={
                 b_gas: Flow(
                     variable_costs=avg_gas_price,
                     investment=invest,
+                    is_fossil=True,
                     co2_emissions=parameters[self.name]['co2_emissions']
                 )
             },
@@ -56,6 +59,11 @@ class Scenario(basic_setup.BaseScenario):
             conversion_factors={
                 sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
+        gas_heating.pf = (
+            parameters['General']['pf_gas'] /
+            parameters[self.name]['efficiency'] * 100
+        )
+        gas_heating.pf_net = parameters['General']['pf_net']
         self.energysystem.add(gas_heating)
 
     @classmethod

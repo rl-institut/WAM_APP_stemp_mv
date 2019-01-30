@@ -53,3 +53,12 @@ class CO2Dataframe(Dataframe):
             units='g/kWh',
             data=data
         )
+
+
+class ComparisonDataframe(Dataframe):
+    def __init__(self, data):
+        super(ComparisonDataframe, self).__init__(
+            'Technologievergleich',
+            units='€',
+            data=data,
+        )
