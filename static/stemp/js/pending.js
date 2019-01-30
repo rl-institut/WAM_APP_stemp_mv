@@ -1,5 +1,5 @@
 
-var interval = setInterval(check_if_pending, 1000);
+var interval = setInterval(check_if_pending, 2000);
 
 function check_if_pending() {
   $.ajax({
@@ -9,7 +9,9 @@ function check_if_pending() {
     success : function(json) {
       if (json.ready === true) {
         clearInterval(interval);
-        $('#pending').html('Simulation abgeschlossen.<br>Bitte <a href="/stemp/result/">hier</a> klicken um Ergebnisse zu laden.');
+        $('#loader').toggle();
+        $('#started').toggle();
+        $('#finished').toggle();
       }
     }
   });

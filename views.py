@@ -355,10 +355,8 @@ class SummaryView(TemplateView):
 class ResultView(TemplateView):
     template_name = 'stemp/result.html'
 
-    def get_context_data(self, result_ids, pending, **kwargs):
+    def get_context_data(self, result_ids, **kwargs):
         context = super(ResultView, self).get_context_data(**kwargs)
-
-        context['pending'] = pending
 
         aggregations = {
             'lcoe': agg.LCOEAggregation(),
@@ -375,35 +373,36 @@ class ResultView(TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
+        result_ids = kwargs.get('results')
+
+        if result_ids is not None:
+            context = self.get_context_data(result_ids)
+            # Render list of given results:
+            return self.render_to_response(context)
+
         try:
             session = SESSION_DATA.get_session(request)
         except KeyError:
-            session = None
+            # Render empty results:
+            return self.render_to_response({})
 
-        # Check if pending results exist:
-        if session is None:
-            pending = False
-        else:
-            pending = any(
-                [
-                    scenario.is_pending()
-                    for scenario in session.scenarios
-                ]
-            )
+        pending = any(
+            [
+                scenario.is_pending()
+                for scenario in session.scenarios
+            ]
+        )
+        if pending:
+            # Render pending simulation:
+            return redirect('stemp:pending')
 
-        result_ids = kwargs.get('results')
-        if result_ids is None:
-            if session is None:
-                result_ids = []
-            else:
-                result_ids = [
-                    sc.result_id
-                    for sc in session.scenarios
-                    if sc.result_id is not None
-                ]
-
-        context = self.get_context_data(result_ids, pending)
-        return self.render_to_response(context)
+        result_ids = [
+            sc.result_id
+            for sc in session.scenarios
+            if sc.result_id is not None
+        ]
+        # Render stored results from session:
+        return redirect('stemp:result_list', results=result_ids)
 
     @check_session_method
     def post(self, request):
@@ -415,6 +414,10 @@ class ResultView(TemplateView):
                 return render(request, 'stemp/session_not_found.html')
             session.store_simulation(simulation_name)
             return self.render_to_response({})
+
+
+class PendingView(TemplateView):
+    template_name = 'stemp/pending.html'
 
 
 class HighchartTestView(TemplateView):

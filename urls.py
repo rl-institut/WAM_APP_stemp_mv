@@ -68,6 +68,7 @@ urlpatterns = [
     path('parameter/', views.ParameterView.as_view(), name='parameter'),
     path('summary/', views.SummaryView.as_view(), name='summary'),
     path('result/', views.ResultView.as_view(), name='result'),
+    path('pending/', views.PendingView.as_view(), name='pending'),
     path(
         'result/<list:results>',
         views.ResultView.as_view(),

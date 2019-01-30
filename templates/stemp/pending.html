@@ -14,32 +14,35 @@
     <script src="{% static 'highcharts/code/highcharts.js' %}"></script>
   </head>
   <body>
+
+    <div class="grid-x loader-wrapper">
+      <div class="cell">
+        <div id="loader" class="loader"></div>
+        <div id='started' class="loader__text">
+          <p>Simulation gestartet</p>
+          <p>Bitte warten</p>
+        </div>
+        <div id='finished' class="loader__text" hidden>
+          <a href="{% url 'stemp:result' %}">Zu den Ergebnissen</a>
+        </div>
+      </div>
+    </div>
+
     <div class="results-page">
       {% include 'includes/navigation.html' %}
 
       <div class="grid-container fluid results--wrapper">
         <div class="grid-x grid-padding-x results--grid">
-
           <div class="cell u-text--center">
             <h1>
               Ergebnisse
             </h1>
-            {% if not visualizations %}
-            <h2>Keine Ergebnisse gefunden</h2>
-            {% endif %}
           </div>
-
-          {% if visualizations %}
-            {% for visualization in visualizations %}
-              <div class="cell results--chart" style="margin-top: 2rem">
-                {{visualization}}
-              </div>
-            {% endfor %}
-          {% endif %}
         </div>
       </div>
     </div>
 
     <script src="{% static 'stemp/foundation/js/app.js' %}"></script>
+    <script src="/static/stemp/js/pending.js"></script>
   </body>
 </html>
