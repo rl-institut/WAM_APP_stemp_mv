@@ -21,7 +21,21 @@ class TotalInvestmentAnalyzer(an.Analyzer):
 
 class CO2Analyzer(an.Analyzer):
     requires = ('results', 'param_results')
-    depends_on = (an.SequenceFlowSumAnalyzer,)
+    depends_on_former = (an.NodeBalanceAnalyzer,)
+
+    def __init__(self):
+        super(CO2Analyzer, self).__init__()
+        self.demand = 0.0
+
+    def init_analyzer(self):
+        nb_result = self._get_dep_result(an.NodeBalanceAnalyzer)
+        # Find all demands:
+        for node, node_balance in nb_result.items():
+            try:
+                if node.tags is not None and 'demand' in node.tags:
+                    self.demand += sum(node_balance['input'].values())
+            except AttributeError:
+                pass
 
     def analyze(self, *args):
         super(CO2Analyzer, self).analyze(*args)
@@ -32,7 +46,7 @@ class CO2Analyzer(an.Analyzer):
             co2 = psc['co2_emissions']
         except KeyError:
             return
-        result = co2 * flow
+        result = co2 * flow / self.demand
         self.result[args] = result
         self.total += result
 
