@@ -63,7 +63,7 @@ class DistrictHouseholds(models.Model):
 class Household(models.Model):
     timeseries = None
 
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=22, unique=True)
     house_type = models.CharField(
         max_length=3,
         choices=((ht.name, ht.value) for ht in constants.HouseType),
@@ -147,7 +147,7 @@ class Household(models.Model):
 
 
 class District(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=22)
     households = models.ManyToManyField(
         'Household', through='DistrictHouseholds')
 
