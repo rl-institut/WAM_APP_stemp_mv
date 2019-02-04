@@ -3,37 +3,43 @@
 
 {% for group, options, index in widget.optgroups %}
   {% for option in options %}
-    <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 u-text--left">
-      <label class="container" for="{{option.name}}_{{option.index}}">
-        {% if option.attrs.grey_out %}
-          <font color="grey">
-            {{option.label}}
-          </font>
-        {% else %}
-          {{option.label}}
-        {% endif %}
-        <input type="checkbox" name="{{option.name}}" value="{{option.value}}" id="{{option.name}}_{{option.index}}"{% if option.selected %} checked {% endif %}>
-        <span class="checkmark"></span>
-      </label>
-      <span class="has-tip--no-border">
-        <i data-open="modal-{{option.value}}" class ="icon ion-information-circled icon--small info-box" title="Hier klicken für mehr Informationen zum {{option.label}}"></i>
-      </span><br>
-      {% if option.attrs.warning %}<font color="grey">{{option.attrs.warning}}</font>{% endif %}
-      <div class="reveal" id="modal-{{option.value}}" data-reveal>
-        <div class="grid-x technology">
-          <div class="cell technology__header">
-            <h2 style="font-size: 1.2rem">{{option.label}}</h2>
+    <div class="cell checkbox-wrap {% cycle 'checkbox-wrap--dark' '' %}">
+      <div class="grid-x">
+        <div class="cell small-9 medium-4 medium-offset-4 u-text--left checkbox-wrap__left">
+          <div>
+            <label class="container" for="{{option.name}}_{{option.index}}">
+              {% if option.attrs.grey_out %}
+                <font color="grey">
+                  {{option.label}}
+                </font>
+              {% else %}
+                {{option.label}}
+              {% endif %}
+              <input type="checkbox" name="{{option.name}}" value="{{option.value}}" id="{{option.name}}_{{option.index}}"{% if option.selected %} checked {% endif %}>
+              <span class="checkmark"></span>
+            </label>
           </div>
-          <div class="cell technology__img">
-            <img src="{% static option.attrs.image %}">
-          </div>
-          <div class="cell technology__text">
-            {{option.attrs.description|safe}}
+          <div>{% if option.attrs.warning %}<font color="grey">{{option.attrs.warning}}</font>{% endif %}</div>
+          <div class="reveal" id="modal-{{option.value}}" data-reveal>
+            <div class="grid-x technology">
+              <div class="cell technology__header">
+                <h2 style="font-size: 1.2rem">{{option.label}}</h2>
+              </div>
+              <div class="cell technology__img">
+                <img src="{% static option.attrs.image %}">
+              </div>
+              <div class="cell technology__text">
+                {{option.attrs.description|safe}}
+              </div>
+            </div>
+            <button class="close-button" data-close aria-label="Schließen" type="button">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
         </div>
-        <button class="close-button" data-close aria-label="Schließen" type="button">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <div class="cell medium-2 checkbox-wrap__right {{option.attrs.icon_class}}" data-open="modal-{{option.value}}" title="Mehr Informationen zum {{option.label}}">
+          <img src="{% static option.attrs.icon %}" alt="">
+        </div>
       </div>
     </div>
   {% endfor %}

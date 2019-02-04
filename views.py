@@ -176,12 +176,8 @@ class TechnologyView(TemplateView):
             for sc, params in app_settings.SCENARIO_PARAMETERS.items()
         )
         technology_information = {
-            sc: {
-                'image': params['LABELS']['image'],
-                'description': params['LABELS']['description']
-            }
+            sc: params['LABELS']
             for sc, params in app_settings.SCENARIO_PARAMETERS.items()
-            if 'description' in params['LABELS']
         }
 
         demand = session.get_demand()
