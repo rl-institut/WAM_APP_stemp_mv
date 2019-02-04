@@ -14,6 +14,16 @@ LOCATION = (11.181475, 53.655119)  # Lützow (lon,lat)
 DEFAULT_NUMBER_OF_PERSONS = 2
 DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER = 22
 
+CATEGORIZED_COLOR_NAMES = OrderedDict(
+    [
+        ('best', 'background-color: #0A6164; color: $white;'),
+        ('good', 'background-color: #5BC3AF;'),
+        ('neutral', 'background-color: #E6E1BD;'),
+        ('bad', 'background-color: #ECA14D;'),
+        ('worst', 'background-color: #DA4225; color: $white;'),
+    ]
+)
+
 
 class WarmwaterConsumption(Enum):
     Low = 0

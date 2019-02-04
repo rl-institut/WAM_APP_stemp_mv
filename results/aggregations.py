@@ -1,13 +1,10 @@
 from abc import ABC
 import pandas
-from collections import namedtuple
 from collections import OrderedDict
 
 from oemof.solph import analyzer as an
 
 from stemp.results import analyzer as stemp_an
-
-formatter = namedtuple('formatter', ['unit', 'format'])
 
 
 class Aggregation(ABC):
@@ -149,14 +146,6 @@ class TechnologieComparison(Aggregation):
             ('Brennstoffkosten', stemp_an.FossilCostsAnalyzer)
         ]
     )
-    formatters = {
-        'Wärmekosten': formatter('€/kWh', '{:.2f}'),
-        'Investment': formatter('€', '{:,.0f}'),
-        'CO2': formatter('g/kWh', '{:,.0f}'),
-        'Brennstoffkosten': formatter('€/Jahr', '{:,.0f}'),
-        'Primärfaktor': formatter('-', '{:.1f}'),
-        'Primärenergie': formatter('kWh', '{:,.0f}'),
-    }
 
     def aggregate(self, results):
         df = pandas.DataFrame()
@@ -175,9 +164,10 @@ class TechnologieComparison(Aggregation):
             series['Primärfaktor'] = pe.factor
             series['Primärenergie'] = pe.energy
 
+            # Add total demand (not rendered later):
+            series['Demand'] = result.analysis.get_analyzer(
+                stemp_an.LCOEAutomatedDemandAnalyzer).total_load
+
             df = df.append(series)
 
-        # Apply formatting:
-        for column, formatter in self.formatters.items():
-            df[column] = df[column].apply(formatter.format.format)
         return df.transpose()
