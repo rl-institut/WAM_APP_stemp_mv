@@ -208,11 +208,13 @@ class Scenario(basic_setup.BaseScenario):
             else:
                 return super(Scenario, cls).get_data_label(nodes)
         else:
-            if nodes[1] is not None and nodes[1].name == 'bhkw':
-                return ' (Gas)'
-            elif (
+            if (
+                    nodes[0].name.endswith('gas_heating') or
                     nodes[1] is not None and
-                    nodes[1].name.endswith('gas_heating')
+                    (
+                        nodes[1].name == 'bhkw' or
+                        nodes[1].name.endswith('gas_heating')
+                    )
             ):
                 return ' (Gas)'
             else:

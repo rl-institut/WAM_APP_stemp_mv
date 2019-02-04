@@ -63,7 +63,7 @@ class Scenario(basic_setup.BaseScenario):
 
         hp = Transformer(
             label=AdvancedLabel(
-                f"{demand.name}_heat_pump",
+                f"heat_pump",
                 type='Transformer',
             ),
             inputs={
@@ -85,7 +85,7 @@ class Scenario(basic_setup.BaseScenario):
         pv_invest.capex = capex
         pv = Source(
             label=AdvancedLabel(
-                f"{demand.name}_pv",
+                f"pv",
                 type='Source',
             ),
             outputs={
@@ -153,10 +153,27 @@ class Scenario(basic_setup.BaseScenario):
     @classmethod
     def get_data_label(cls, nodes, suffix=False):
         if (
-                nodes[1] is not None and
-                nodes[1].name.startswith('transformer_from')
+                (
+                    nodes[1] is not None and
+                    nodes[1].name.startswith('transformer_from')
+                ) or (
+                    nodes[0].name == 'pv'
+                )
         ):
-            return 'PV (Stromgutschrift)'
+            if suffix:
+                return ' (Stromgutschrift)'
+            else:
+                return 'PV'
+        elif nodes[0].name == 'b_el_net':
+            if suffix:
+                return ' (Strom)'
+            else:
+                if nodes[1].name == 'boiler':
+                    return 'Heizungsboiler'
+                else:
+                    return 'Wärmepumpe'
+        elif nodes[1] is not None and nodes[1].name == 'heat_pump':
+            return 'Wärmepumpe'
         else:
             return super(Scenario, cls).get_data_label(nodes, suffix)
 
