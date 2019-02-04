@@ -28,7 +28,8 @@ logging.getLogger().setLevel(logging.INFO)
 
 def delete_scenarios():
     session = sqlahelper.get_session()
-    session.query(oep_models.OEPScenario).delete()
+    with transaction.manager:
+        session.query(oep_models.OEPScenario).delete()
 
 
 def insert_scenarios():
@@ -74,7 +75,6 @@ def insert_pv_and_temp():
         meta_data=meta,
         data=temperature['TT_TU']
     )
-    session.add(temp)
 
     pv_feedin = pandas.read_csv(
         os.path.join(os.path.dirname(__file__), 'data', 'pv_normalized.csv'),
@@ -92,9 +92,9 @@ def insert_pv_and_temp():
         meta_data=meta,
         data=pv_feedin
     )
-    session.add(pv)
-    with transaction.manager as tm:
-        tm.commit()
+    with transaction.manager:
+        session.add(temp)
+        session.add(pv)
 
 
 def insert_heat_demand():
@@ -124,26 +124,25 @@ def insert_heat_demand():
         name='MFH').get_normalized_bdew_profile()
 
     # Add to OEP
-    session.add_all([
-        oep_models.OEPTimeseries(
-            name=constants.HouseType.EFH.value,
-            meta_data={
-                'name': 'Heat demand for EFH',
-                'source': 'oemof/demandlib'
-            },
-            data=demand['efh'].values.tolist()
-        ),
-        oep_models.OEPTimeseries(
-            name=constants.HouseType.MFH.value,
-            meta_data={
-                'name': 'Heat demand for MFH',
-                'source': 'oemof/demandlib'
-            },
-            data=demand['mfh'].values.tolist()
-        ),
-    ])
-    with transaction.manager as tm:
-        tm.commit()
+    with transaction.manager:
+        session.add_all([
+            oep_models.OEPTimeseries(
+                name=constants.HouseType.EFH.value,
+                meta_data={
+                    'name': 'Heat demand for EFH',
+                    'source': 'oemof/demandlib'
+                },
+                data=demand['efh'].values.tolist()
+            ),
+            oep_models.OEPTimeseries(
+                name=constants.HouseType.MFH.value,
+                meta_data={
+                    'name': 'Heat demand for MFH',
+                    'source': 'oemof/demandlib'
+                },
+                data=demand['mfh'].values.tolist()
+            ),
+        ])
 
 
 def insert_dhw_timeseries():
@@ -167,9 +166,8 @@ def insert_dhw_timeseries():
                 liter=consumption.in_liters() * (p + 1),
                 data=hot_water_energy_profile[0].values.tolist()
             )
-            session.add(hot_water)
-    with transaction.manager as tm:
-        tm.commit()
+            with transaction.manager:
+                session.add(hot_water)
 
 
 def insert_default_households():
@@ -214,9 +212,8 @@ def delete_stored_simulations():
     Parameter.objects.all().delete()
     Scenario.objects.all().delete()
     session = sqlahelper.get_session()
-    session.query(oemof_results.OemofInputResult).delete()
-    session.query(oemof_results.OemofScalar).delete()
-    session.query(oemof_results.OemofSequence).delete()
-    session.query(oemof_results.OemofData).delete()
-    with transaction.manager as tm:
-        tm.commit()
+    with transaction.manager:
+        session.query(oemof_results.OemofInputResult).delete()
+        session.query(oemof_results.OemofScalar).delete()
+        session.query(oemof_results.OemofSequence).delete()
+        session.query(oemof_results.OemofData).delete()
