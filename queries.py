@@ -4,7 +4,6 @@ import logging
 import pandas
 import sqlahelper
 import json
-from geoalchemy2 import func
 import transaction
 import datetime as dt
 
@@ -19,11 +18,24 @@ application = get_wsgi_application()
 from stemp import constants
 from stemp.models import Parameter, Scenario, Household, District
 
-from db_apps import coastdat, oemof_results
+from db_apps import oemof_results
 from stemp import oep_models
 from stemp.scenarios import basic_setup
 
 logging.getLogger().setLevel(logging.INFO)
+
+
+def __get_temperature():
+    return pandas.read_csv(
+        os.path.join(os.path.dirname(__file__), 'data', 'temperature.txt'),
+        index_col=[1],
+        delimiter=';',
+        parse_dates=[1],
+        date_parser=(
+            lambda x: dt.datetime(
+                int(x[:4]), int(x[4:6]), int(x[6:8]), int(x[8:10]), 0, 0)
+        )
+    )['2017-01-01':'2017-12-31']
 
 
 def delete_scenarios():
@@ -36,36 +48,10 @@ def insert_scenarios():
     basic_setup.upload_scenario_parameters()
 
 
-def get_coastdat_data(session, year, datatype, location):
-    # Get temperature from coastdat dataset:
-    query = coastdat.get_timeseries_join(session)
-    query = query.filter(coastdat.Year.year == year)
-    query = query.filter(coastdat.Datatype.name == datatype)
-    ts = query.order_by(
-        func.ST_Distance(
-            coastdat.Spatial.geom,
-            func.Geometry(
-                func.ST_GeographyFromText(
-                    'POINT({} {})'.format(*location)
-                )
-            )
-        )
-    ).limit(1).first()
-    data = pandas.Series(ts.tsarray) - constants.KELVIN
-    return data
-
-
 def insert_pv_and_temp():
     session = sqlahelper.get_session()
 
-    temperature = pandas.read_csv(
-        os.path.join(os.path.dirname(__file__), 'data', 'temperature.txt'),
-        index_col=[1],
-        delimiter=';',
-        parse_dates=[1],
-        date_parser=lambda x: dt.datetime(int(x[:4]), int(x[4:6]), int(x[6:8]),
-                                          int(x[8:10]), 0, 0)
-    )['2017-01-01':'2017-12-31']
+    temperature = __get_temperature()
     temp_meta_file = os.path.join(
         os.path.dirname(__file__), 'metadata', 'dwd_temperature.json')
     with open(temp_meta_file) as json_data:
@@ -99,8 +85,8 @@ def insert_pv_and_temp():
 
 def insert_heat_demand():
     session = sqlahelper.get_session()
-    temperature = get_coastdat_data(
-        session, year=2014, datatype='T_2M', location=constants.LOCATION)
+
+    temperature = __get_temperature()
 
     demand = pandas.DataFrame(
         index=pandas.date_range(
