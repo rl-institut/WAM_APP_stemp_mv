@@ -30,81 +30,60 @@
     <div id="layout-block" class="cell">
 
       <main class="cell medium-10 main-content-wrap">
-        <div class="grid-x align-center">
+        <div class="grid-x align-center main-padding">
 
           <div class="cell scen-create__form u-text--center">
-            <h3>{{demand.name}}</h3>
+            <h3>{{demand_name}}</h3>
           </div>
 
           <!-- HOUSEHOLD STRUCTURE START -->
-          <div class="cell medium-10 medium-offset-1">
+          <div class="cell summary-block summary-block--nopadding">
+            <div class="grid-x grid-padding-x">
 
-            <div class="grid-x summary-header">
-              <div class="cell shrink summary-icon u-margin-right--m">
-                <img src="{% static 'stemp/img/icons_custom/Enavi_Einzelhaus_black.svg' %}" alt="Icon Einzelhaus">
+              <div class="cell medium-8 medium-offset-2 summary__header">
+                <img src="{% static 'stemp/img/icons_custom/mv_icon_district.svg' %}" alt="Icon District" class="summary__header-icon icon-district">
+                <h3 class="summary__header-text">Haushaltsstruktur</h3>
+                <a href=""><i class="icon ion-android-create icon--small"></i><span class="show-for-medium"> Ändern</span></a>
               </div>
-              <div class="cell shrink summary-txt u-margin-right--m">
-                <h4>Haushaltsstruktur</h4>
-              </div>
-              <div class="cell auto summary-border">
-              </div>
+
+              {% for demand in demands %}
+                {{demand}}
+              {% endfor %}
             </div>
-
-            <div class="cell u-text--left u-padding-left--m">
-              {{demand.summary}}
-            </div>
-
           </div>
           <!-- HOUSEHOLD STRUCTURE END -->
 
           <!-- HEATING OPTION START -->
-          <div class="cell medium-10 medium-offset-1">
+          <div class="cell l-bg-color--light summary-block">
+            <div class="grid-x grid-padding-x">
 
-            <div class="grid-x summary-header">
-              <div class="cell shrink summary-icon u-margin-right--m">
-                <img src="{% static 'stemp/img/icons_custom/Heizung_black.svg' %}" alt="Icon Heizung">
+              <div class="cell medium-8 medium-offset-2 summary__header">
+                <img src="{% static 'stemp/img/icons_custom/mv_icon_heater_b.svg' %}" alt="Icon Heizung" class="summary__header-icon icon-heater">
+                <h3 class="summary__header-text">Wärmetechnologien</h3>
+                <a href=""><i class="icon ion-android-create icon--small"></i><span class="show-for-medium"> Ändern</span></a>
               </div>
-              <div class="cell shrink summary-txt u-margin-right--m">
-                <h4>Heizungsoptionen</h4>
-              </div>
-              <div class="cell auto summary-border">
-              </div>
-            </div>
 
-            <div class="cell u-text--left u-padding-left--m">
               {% for tech in technologies %}
-                <p>{{tech}}</p>
+                {{tech}}
               {% endfor %}
-            </div>
 
+            </div>
           </div>
           <!-- HEATING OPTION END -->
 
           <!-- PARAMETER OPTION START -->
-          <div class="cell medium-10 medium-offset-1 scen-padding-btm">
+          <div class="cell summary-block">
+            <div class="grid-x grid-padding-x">
 
-            <div class="grid-x summary-header">
-              <div class="cell shrink summary-icon u-margin-right--m">
-                <img src="{% static 'stemp/img/icons_custom/Enavi_Parameter_black.svg' %}" alt="Icon Parameter">
+              <div class="cell medium-8 medium-offset-2 summary__header">
+                <img src="{% static 'stemp/img/icons_custom/Enavi_Parameter_b.svg' %}" alt="Icon Parameter" class="summary__header-icon icon-parameters">
+                <h3 class="summary__header-text">Parameter</h3>(nur geänderte Parameter werden gelistet)
+                <a href=""><i class="icon ion-android-create icon--small"></i><span class="show-for-medium"> Ändern</span></a>
               </div>
-              <div class="cell shrink summary-txt u-margin-right--m">
-                <h4>Parameter (es werden nur geänderte Paramater angezeigt)</h4>
-              </div>
-              <div class="cell auto summary-border">
-              </div>
+
+              {{parameters}}
+
             </div>
-
-            <div class="cell u-text--left u-padding-left--m">
-              {% for category, params in parameters.items %}
-                <p>{{category}}</p>
-                {% for parameter, value_unit in params.items %}
-                  <p>{{parameter}}: {{value_unit.0}} {{value_unit.1}}</p>
-                {% endfor %}
-              {% empty %}
-                <p>Keine Parameter geändert</p>
-              {% endfor %}
-            </div>
-
           </div>
           <!-- PARAMETER OPTION END -->
 

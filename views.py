@@ -10,12 +10,14 @@ from utils.widgets import Wizard
 from user_sessions.utils import check_session_method
 from stemp import app_settings
 from stemp.user_data import DemandType
+from stemp.models import Household
 from stemp.oep_models import OEPScenario
 from stemp import models, forms
 from stemp.results import results
 from stemp.visualizations import highcharts, dataframe
 from stemp.results import aggregations as agg
 from stemp.user_data import UserSession
+from stemp.widgets import HouseholdSummary, TechnologySummary, ParameterSummary
 
 
 class IndexView(TemplateView):
@@ -320,12 +322,18 @@ class SummaryView(TemplateView):
                 'Sie sind auf der Seite Zusammenfassung des Haushalts')
         )
         context['demand_label'] = session.demand_type.label()
-        context['demand'] = session.get_demand()
+        demand = session.get_demand()
+        context['demand_name'] = demand.name
+        if isinstance(demand, Household):
+            context['demands'] = [HouseholdSummary(demand)]
+        else:
+            context['demands'] = [
+                HouseholdSummary(hh) for hh in demand.households]
         context['technologies'] = [
-            app_settings.SCENARIO_PARAMETERS[scenario.name]['LABELS']['name']
+            TechnologySummary(app_settings.SCENARIO_PARAMETERS[scenario.name])
             for scenario in session.scenarios
         ]
-        context['parameters'] = session.changed_parameters
+        context['parameters'] = ParameterSummary(session.changed_parameters)
         return context
 
     @check_session_method

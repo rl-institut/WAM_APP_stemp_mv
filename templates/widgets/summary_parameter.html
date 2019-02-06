@@ -1,0 +1,46 @@
+
+{% load staticfiles %}
+{% load dictionary %}
+{% load labels %}
+
+
+<div class="cell medium-8 medium-offset-2 summary-parameter">
+  {% if parameters %}
+    <ul class="accordion" data-accordion data-multi-expand="true" data-allow-all-closed="true">
+      {% for category, params in parameters.items %}
+        <li class="accordion-item" data-accordion-item>
+          <a href="#" class="accordion-title">
+            <div class="accordion-title__img">
+              <img src="{% static icons|get_item:category %}" alt="Icon {% label 'technologies:labels:'|add:category app='stemp' %}">
+            </div>
+            <div>
+              {% label 'technologies:labels:'|add:category app='stemp' %}
+            </div>
+
+          </a>
+          <div class="accordion-content" data-tab-content>
+            <ul>
+              {% for parameter, value_unit in params.items %}
+                <li>{{labels|get_item:category|get_item:parameter}}: {{value_unit.value}} {{value_unit.unit}}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    Keine Parameter geändert
+  {% endif %}
+</div>
+
+
+<!--<div class="cell u-text&#45;&#45;left u-padding-left&#45;&#45;m">-->
+  <!--{% for category, params in parameters.items %}-->
+    <!--<p>{{category}}</p>-->
+    <!--{% for parameter, value_unit in params.items %}-->
+      <!--<p>{{parameter}}: {{value_unit.value}} {{value_unit.unit}}</p>-->
+    <!--{% endfor %}-->
+  <!--{% empty %}-->
+    <!--<p>Keine Parameter geändert</p>-->
+  <!--{% endfor %}-->
+<!--</div>-->

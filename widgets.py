@@ -1,8 +1,13 @@
 
+from collections import defaultdict
 import warnings
 from django.forms import Select, RadioSelect, Widget, NumberInput
 from django.forms.widgets import CheckboxSelectMultiple
 from django.utils import html
+
+from wam.settings import APP_LABELS
+from stemp.app_settings import ADDITIONAL_PARAMETERS
+from utils.widgets import CustomWidget
 
 
 class DynamicWidgetMixin(object):
@@ -188,6 +193,59 @@ class SubmitWidget(Widget):
         return '<input type="submit" name="%s" value="%s">' % (
             html.escape(name), html.escape(value)
         )
+
+
+class HouseholdSummary(CustomWidget):
+    template_name = 'widgets/summary_household.html'
+
+    def __init__(self, household):
+        self.household = household
+
+    def get_context(self):
+        return {
+            'household': self.household,
+            'warm_water_demand': self.household.get_hot_water_profile().sum()
+        }
+
+
+class TechnologySummary(CustomWidget):
+    template_name = 'widgets/summary_technology.html'
+
+    def __init__(self, scenario_config):
+        self.config = scenario_config
+
+    def get_context(self):
+        return {
+            'name': self.config['LABELS']['name'],
+            'icon': self.config['LABELS'].get('icon', None),
+            'icon_class': self.config['LABELS'].get('icon_class', None),
+        }
+
+
+class ParameterSummary(CustomWidget):
+    template_name = 'widgets/summary_parameter.html'
+
+    def __init__(self, changed_parameters):
+        self.parameters = changed_parameters
+
+    def get_context(self):
+        labels = defaultdict(dict)
+        icons = {}
+        for comp, parameters in self.parameters.items():
+            icons[comp] = APP_LABELS['stemp']['technologies']['icons'].get(
+                comp, None)
+            for parameter in parameters:
+                labels[comp][parameter] = (
+                    ADDITIONAL_PARAMETERS.get(comp, {}).get(
+                        parameter, ADDITIONAL_PARAMETERS.get(parameter, {})
+                    ).get('label', parameter)
+                )
+        context = {
+            'parameters':  self.parameters,
+            'labels': labels,
+            'icons': icons
+        }
+        return context
 
 
 class SliderInput(NumberInput):

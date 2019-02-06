@@ -1,0 +1,11 @@
+
+{% load staticfiles %}
+
+<div class="cell medium-8 medium-offset-2 summary-tech">
+  <div class="summary-tech__img {{icon_class}}">
+    <img src="{% static icon %}" alt="Icon {{name}}" class="summary__header-icon icon-technology">
+  </div>
+  <div class="summary-tech__text">
+    {{name}}
+  </div>
+</div>
