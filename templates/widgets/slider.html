@@ -1,5 +1,12 @@
 <div class="cell medium-8">
-  <label for="{{widget.attrs.id}}" class="accordion-label">{{widget.attrs.label}}</label>
+  <label for="{{widget.attrs.id}}" class="accordion-label">
+    {{widget.attrs.label}}
+    {% if widget.attrs.description %}
+      <span class="has-tip--no-border" data-tooltip title='{{widget.attrs.description}}' data-position="right" data-alignment="center">
+        <i class="icon ion-information-circled icon--small info-box"></i>
+      </span>
+    {% endif %}
+  </label>
   <div class="slider slider--{{widget.attrs.parameter_type}} accordion-slider" id="{{widget.attrs.id}}_slider" data-slider data-start="{{widget.attrs.min}}" data-initial-start="{{widget.value}}" data-end="{{widget.attrs.max}}" data-decimal="{{widget.precision}}" data-step="{{widget.step_size}}">
     <span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="{{widget.attrs.id}}"></span>
     <span class="slider-fill" data-slider-fill></span>

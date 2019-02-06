@@ -60,7 +60,7 @@ class ParameterForm(Form):
 
     @staticmethod
     def __init_field(parameter_data, scenario):
-        attributes = ('label', 'parameter_type', 'unit')
+        attributes = ('label', 'description', 'parameter_type', 'unit')
         attrs = {
             attr_name: parameter_data[attr_name]
             for attr_name in attributes
