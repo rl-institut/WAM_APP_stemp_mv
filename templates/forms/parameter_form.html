@@ -1,10 +1,11 @@
 
+{% load labels %}
 {% regroup form by field.group as field_groups %}
 
 <ul class="accordion" data-accordion>
   {% for field_group in field_groups %}
     <li class="accordion-item" data-accordion-item>
-      <a href="#" class="accordion-title">{{field_group.grouper}}</a>
+      <a href="#" class="accordion-title">{% label 'parameter:labels:'|add:field_group.grouper app='stemp' %}</a>
       <div class="accordion-content" data-tab-content>
         <div class="grid-x grid-margin-x">
           {% for field in field_group.list %}
