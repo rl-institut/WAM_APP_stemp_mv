@@ -70,24 +70,13 @@ class Scenario(basic_setup.PrimaryInputScenario):
         self.energysystem.add(oil_heating)
 
     @classmethod
-    def get_data_label(cls, nodes, suffix=False):
-        if not suffix:
-            if nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
-                return 'Ölkessel'
-            elif (
-                    nodes[0] is not None and
-                    nodes[0].name.endswith('oil_heating')
-            ):
-                return 'Ölkessel'
-            else:
-                return super(Scenario, cls).get_data_label(nodes)
+    def get_data_label(cls, nodes):
+        if nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
+            return 'Brennstoffkosten'
+        elif (
+                nodes[0] is not None and
+                nodes[0].name.endswith('oil_heating')
+        ):
+            return 'Betriebskosten'
         else:
-            if nodes[1] is not None and nodes[1].name.endswith('oil_heating'):
-                return ' (Öl)'
-            elif (
-                    nodes[0] is not None and
-                    nodes[0].name.endswith('oil_heating')
-            ):
-                return ' (OPEX)'
-            else:
-                return super(Scenario, cls).get_data_label(nodes, suffix=True)
+            return super(Scenario, cls).get_data_label(nodes)

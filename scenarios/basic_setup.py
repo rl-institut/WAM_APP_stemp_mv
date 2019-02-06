@@ -146,11 +146,8 @@ class BaseScenario(ABC):
 
     @classmethod
     @abstractmethod
-    def get_data_label(cls, nodes, suffix=False):
-        if suffix:
-            return ''
-        else:
-            return '-'.join(map(str, nodes))
+    def get_data_label(cls, nodes):
+        return '-'.join(map(str, nodes))
 
     @classmethod
     @abstractmethod

@@ -183,42 +183,26 @@ class Scenario(basic_setup.BaseScenario):
         return parameters
 
     @classmethod
-    def get_data_label(cls, nodes, suffix=False):
-        if not suffix:
-            if nodes[1] is not None and nodes[1].name == 'bhkw':
-                return 'BHKW'
-            elif nodes[0].name == 'bhkw':
-                return 'BHKW (Stromgutschrift)'
-            elif (
-                    nodes[0].name.startswith('b_bhkw_el') and
-                    nodes[1] is not None and
-                    nodes[1].name.startswith('transformer_from')
-            ):
-                return 'BHKW (Stromgutschrift)'
-            elif (
-                    nodes[1] is not None and
+    def get_data_label(cls, nodes):
+        if nodes[0].name == 'bhkw':
+            return 'Stromgutschrift'
+        elif (
+                nodes[0].name.startswith('b_bhkw_el') and
+                nodes[1] is not None and
+                nodes[1].name.startswith('transformer_from')
+        ):
+            return 'Stromgutschrift'
+        elif (
+                nodes[0].name.endswith('gas_heating') or
+                nodes[1] is not None and
+                (
+                    nodes[1].name == 'bhkw' or
                     nodes[1].name.endswith('gas_heating')
-            ):
-                return 'Gasheizung'
-            elif (
-                    nodes[0] is not None and
-                    nodes[0].name.endswith('gas_heating')
-            ):
-                return 'Gasheizung'
-            else:
-                return super(Scenario, cls).get_data_label(nodes)
+                )
+        ):
+            return 'Brennstoffkosten'
         else:
-            if (
-                    nodes[0].name.endswith('gas_heating') or
-                    nodes[1] is not None and
-                    (
-                        nodes[1].name == 'bhkw' or
-                        nodes[1].name.endswith('gas_heating')
-                    )
-            ):
-                return ' (Gas)'
-            else:
-                return super(Scenario, cls).get_data_label(nodes, suffix=True)
+            return super(Scenario, cls).get_data_label(nodes)
 
     @classmethod
     def calculate_primary_factor_and_energy(cls, param_results, node_results):

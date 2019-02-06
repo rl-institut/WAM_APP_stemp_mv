@@ -1,6 +1,6 @@
 from abc import ABC
 import pandas
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 from oemof.solph import analyzer as an
 
@@ -44,24 +44,15 @@ class LCOEAggregation(Aggregation):
 
     def _get_data(self, result):
         data = result.analysis.get_analyzer(self.analyzer).result
-        filtered_data = {}
+        filtered_data = defaultdict(float)
         for k, v in data.items():
-            new_label = result.scenario.Scenario.get_data_label(k)
             if abs(v.investment) > 0.001:
-                filtered_data[new_label + ' (Investment)'] = v.investment
+                filtered_data['Investment'] += v.investment
             if abs(v.variable_costs) > 0.001:
                 filtered_data[
-                    new_label + self._get_suffix(k, result)
-                    ] = v.variable_costs
+                    result.scenario.Scenario.get_data_label(k)
+                ] += v.variable_costs
         return filtered_data
-
-    @staticmethod
-    def _get_suffix(nodes, result):
-        if isinstance(nodes, str):
-            return nodes
-        else:
-            return result.scenario.Scenario.get_data_label(
-                nodes, suffix=True)
 
 
 class TotalDemandAggregation(Aggregation):

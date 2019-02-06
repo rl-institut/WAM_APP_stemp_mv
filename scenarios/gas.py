@@ -68,23 +68,12 @@ class Scenario(PrimaryInputScenario):
 
     @classmethod
     def get_data_label(cls, nodes, suffix=False):
-        if not suffix:
-            if nodes[1] is not None and nodes[1].name.endswith('gas_heating'):
-                return 'Gasheizung'
-            elif (
-                    nodes[0] is not None and
-                    nodes[0].name.endswith('gas_heating')
-            ):
-                return 'Gasheizung'
-            else:
-                return super(Scenario, cls).get_data_label(nodes)
+        if nodes[1] is not None and nodes[1].name.endswith('gas_heating'):
+            return 'Brennstoffkosten'
+        elif (
+                nodes[0] is not None and
+                nodes[0].name.endswith('gas_heating')
+        ):
+            return 'Betriebskosten'
         else:
-            if nodes[1] is not None and nodes[1].name.endswith('gas_heating'):
-                return ' (Gas)'
-            elif (
-                    nodes[0] is not None and
-                    nodes[0].name.endswith('gas_heating')
-            ):
-                return ' (OPEX)'
-            else:
-                return super(Scenario, cls).get_data_label(nodes, suffix=True)
+            return super(Scenario, cls).get_data_label(nodes)

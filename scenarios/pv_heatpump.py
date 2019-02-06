@@ -160,22 +160,12 @@ class Scenario(basic_setup.BaseScenario):
                     nodes[0].name == 'pv'
                 )
         ):
-            if suffix:
-                return ' (Stromgutschrift)'
-            else:
-                return 'PV'
+            return 'Stromgutschrift'
+
         elif nodes[0].name == 'b_el_net':
-            if suffix:
-                return ' (Strom)'
-            else:
-                if nodes[1].name == 'boiler':
-                    return 'Heizungsboiler'
-                else:
-                    return 'Wärmepumpe'
-        elif nodes[1] is not None and nodes[1].name == 'heat_pump':
-            return 'Wärmepumpe'
+            return 'Strombezugskosten'
         else:
-            return super(Scenario, cls).get_data_label(nodes, suffix)
+            return super(Scenario, cls).get_data_label(nodes)
 
     @classmethod
     def calculate_primary_factor_and_energy(cls, param_results, node_results):
