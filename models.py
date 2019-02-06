@@ -1,6 +1,7 @@
 
 import pandas
 import sqlahelper
+import transaction
 from django.utils import timezone
 from django.db import models
 from django.utils.safestring import mark_safe
@@ -88,13 +89,14 @@ class Household(models.Model):
     def get_oep_timeseries(self, name):
         if self.timeseries is None:
             session = sqlahelper.get_session()
-            self.timeseries = {
-                name: pandas.Series(
-                    session.query(
-                        oep_models.OEPTimeseries
-                    ).filter_by(name=house_type.value).first().data)
-                for house_type in constants.HouseType
-            }
+            with transaction.manager:
+                self.timeseries = {
+                    name: pandas.Series(
+                        session.query(
+                            oep_models.OEPTimeseries
+                        ).filter_by(name=house_type.value).first().data)
+                    for house_type in constants.HouseType
+                }
         return self.timeseries[name]
 
     def get_heat_demand_profile(self):
@@ -103,15 +105,16 @@ class Household(models.Model):
 
     def get_hot_water_profile(self):
         session = sqlahelper.get_session()
-        hot_water = session.query(oep_models.OEPHotWater).filter_by(
-                liter=self.warm_water_per_day * self.number_of_persons
-        ).first()
-        if hot_water is None:
-            raise KeyError(
-                f'No hot water profile found for '
-                f'liter={self.warm_water_per_day}'
-            )
-        return pandas.Series(hot_water.data)
+        with transaction.manager:
+            hot_water = session.query(oep_models.OEPHotWater).filter_by(
+                    liter=self.warm_water_per_day * self.number_of_persons
+            ).first()
+            if hot_water is None:
+                raise KeyError(
+                    f'No hot water profile found for '
+                    f'liter={self.warm_water_per_day}'
+                )
+            return pandas.Series(hot_water.data)
 
     def __str__(self):
         return self.name

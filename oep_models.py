@@ -1,11 +1,13 @@
 
 import os
 from collections import defaultdict, OrderedDict, ChainMap
-from stemp import app_settings
+import sqlahelper
+import transaction
 from sqlalchemy import Column, VARCHAR, BIGINT, JSON, INT
 from sqlalchemy.dialects.postgresql import ARRAY, FLOAT
 from sqlalchemy.ext.declarative import declarative_base
-import sqlahelper
+
+from stemp import app_settings
 
 
 SCHEMA = 'sandbox'
@@ -29,31 +31,33 @@ class OEPScenario(Base):
     @classmethod
     def get_scenario_parameters(cls, scenario_name, demand_type):
         session = sqlahelper.get_session()
-        scenario_parameters = session.query(cls).filter_by(
-            scenario=f'{scenario_name}_{demand_type.suffix()}').all()
-        if not scenario_parameters:
+        with transaction.manager:
             scenario_parameters = session.query(cls).filter_by(
-                scenario=f'{scenario_name}').all()
-        if not scenario_parameters:
-            raise KeyError(f'Scenario "{scenario_name}" not found in OEP')
+                scenario=f'{scenario_name}_{demand_type.suffix()}').all()
+            if not scenario_parameters:
+                scenario_parameters = session.query(cls).filter_by(
+                    scenario=f'{scenario_name}').all()
+            if not scenario_parameters:
+                raise KeyError(f'Scenario "{scenario_name}" not found in OEP')
 
-        # Get secondary attributes:
-        description = app_settings.ADDITIONAL_PARAMETERS
+            # Get secondary attributes:
+            description = app_settings.ADDITIONAL_PARAMETERS
+            parameters = defaultdict(OrderedDict)
 
-        parameters = defaultdict(OrderedDict)
-        for scenario_parameter in scenario_parameters:
-            item = scenario_parameter.__dict__
-            item.pop('_sa_instance_state')
-            item.pop('id')
-            item.pop('scenario')
-            comp = item.pop('component')
-            parameter = item.pop('parameter')
-            param_dict = ChainMap(
-                item,
-                description.get(
-                    comp, {}).get(parameter, description.get(parameter, {}))
-            )
-            parameters[comp][parameter] = param_dict
+            for scenario_parameter in scenario_parameters:
+                item = scenario_parameter.__dict__.copy()
+                item.pop('_sa_instance_state')
+                item.pop('id')
+                item.pop('scenario')
+                comp = item.pop('component')
+                parameter = item.pop('parameter')
+                param_dict = ChainMap(
+                    item,
+                    description.get(comp, {}).get(
+                        parameter, description.get(parameter, {})
+                    )
+                )
+                parameters[comp][parameter] = param_dict
 
         # Default factory has to be unset in order to support iterating over
         # dict in django template:
