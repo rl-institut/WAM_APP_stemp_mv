@@ -1,5 +1,5 @@
 
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict, namedtuple
 from itertools import chain
 
 from django.forms import (
@@ -16,6 +16,9 @@ from stemp.widgets import (
     TechnologyWidget
 )
 from stemp.models import (Household, Simulation, District)
+
+
+ValueUnit = namedtuple('ValueUnit', ['value', 'unit'])
 
 
 class ChoiceForm(Form):
@@ -182,7 +185,7 @@ class ParameterForm(Form):
         for (_, scenario_params) in parameters:
             for category, category_params in scenario_params.items():
                 for parameter, attributes in category_params.items():
-                    original[category][parameter] = (
+                    original[category][parameter] = ValueUnit(
                         attributes['value'],
                         attributes['unit']
                     )
@@ -202,7 +205,7 @@ class ParameterForm(Form):
             for parameter, (value, unit) in category_params.items():
                 if value != posted[category][parameter]:
                     val = posted[category][parameter]
-                    changed[category][parameter] = (val, unit)
+                    changed[category][parameter] = ValueUnit(val, unit)
         changed.default_factory = None
         return changed
 
