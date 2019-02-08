@@ -165,12 +165,30 @@ class TechnologieComparison(Aggregation):
                 result.scenario.Scenario.name.lower()]['LABELS']
             pros = labels.get('pros', [])
             cons = labels.get('cons', [])
-            series['Vorteile'] = '<br>'.join(map(lambda x: f'<i class ="icon ion-thumbsup icon--small"> {x}</i>', pros))
-            series['Nachteile'] = '<br>'.join(map(lambda x: f'<i class ="icon ion-thumbsdown icon--small"> {x}</i>', cons))
+            series['Vorteile'] = '<br>'.join(map(
+                lambda x: f'<i class ="icon ion-thumbsup icon--small">{x}</i>',
+                pros
+            ))
+            series['Nachteile'] = '<br>'.join(map(
+                lambda x: f'<i class ="icon ion-thumbsdown icon--small"> {x}</i>',
+                cons
+            ))
 
             df = df.append(series)
 
-            # Order columns:
-            df = df[['Wärmekosten', 'Investment', 'Brennstoffkosten', 'CO2', 'Primärfaktor', 'Primärenergie', 'Vorteile', 'Nachteile', 'Demand']]
+        # Order columns:
+        df = df[
+            [
+                'Wärmekosten',
+                'Investment',
+                'Brennstoffkosten',
+                'CO2',
+                'Primärfaktor',
+                'Primärenergie',
+                'Vorteile',
+                'Nachteile',
+                'Demand'
+            ]
+        ]
 
         return df.transpose()
