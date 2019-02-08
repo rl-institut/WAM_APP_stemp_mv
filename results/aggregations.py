@@ -5,6 +5,7 @@ from collections import OrderedDict, defaultdict
 from oemof.solph import analyzer as an
 
 from stemp.results import analyzer as stemp_an
+from stemp.app_settings import SCENARIO_PARAMETERS
 
 
 class Aggregation(ABC):
@@ -159,6 +160,17 @@ class TechnologieComparison(Aggregation):
             series['Demand'] = result.analysis.get_analyzer(
                 stemp_an.LCOEAutomatedDemandAnalyzer).total_load
 
+            # Add pros and cons:
+            labels = SCENARIO_PARAMETERS[
+                result.scenario.Scenario.name.lower()]['LABELS']
+            pros = labels.get('pros', [])
+            cons = labels.get('cons', [])
+            series['Vorteile'] = '<br>'.join(map(lambda x: f'<i class ="icon ion-thumbsup icon--small"> {x}</i>', pros))
+            series['Nachteile'] = '<br>'.join(map(lambda x: f'<i class ="icon ion-thumbsdown icon--small"> {x}</i>', cons))
+
             df = df.append(series)
+
+            # Order columns:
+            df = df[['Wärmekosten', 'Investment', 'Brennstoffkosten', 'CO2', 'Primärfaktor', 'Primärenergie', 'Vorteile', 'Nachteile', 'Demand']]
 
         return df.transpose()
