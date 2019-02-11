@@ -15,14 +15,16 @@ from django.core.wsgi import get_wsgi_application
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 application = get_wsgi_application()
 
+from db_apps import oemof_results
+from meta.models import Assumption, Source, Category
 from stemp import constants
 from stemp.models import Parameter, Scenario, Household, District
-
-from db_apps import oemof_results
 from stemp import oep_models
 from stemp.scenarios import basic_setup
 
 logging.getLogger().setLevel(logging.INFO)
+
+META_PATH = os.path.join(os.path.dirname(__file__), 'metadata')
 
 
 def __get_temperature():
@@ -52,8 +54,7 @@ def insert_pv_and_temp():
     session = sqlahelper.get_session()
 
     temperature = __get_temperature()
-    temp_meta_file = os.path.join(
-        os.path.dirname(__file__), 'metadata', 'dwd_temperature.json')
+    temp_meta_file = os.path.join(META_PATH, 'dwd_temperature.json')
     with open(temp_meta_file) as json_data:
         meta = json.load(json_data)
     temp = oep_models.OEPTimeseries(
@@ -69,8 +70,7 @@ def insert_pv_and_temp():
     )
     pv_system = 'LG290G3_ABB_tlt34_az180_alb02'
     pv_feedin = pv_feedin.swaplevel(axis=1)[pv_system]['2014']
-    pv_meta_file = os.path.join(
-        os.path.dirname(__file__), 'metadata', 'pv_feedin.json')
+    pv_meta_file = os.path.join(META_PATH, 'pv_feedin.json')
     with open(pv_meta_file) as json_data:
         meta = json.load(json_data)
     pv = oep_models.OEPTimeseries(
@@ -203,3 +203,35 @@ def delete_stored_simulations():
         session.query(oemof_results.OemofScalar).delete()
         session.query(oemof_results.OemofSequence).delete()
         session.query(oemof_results.OemofData).delete()
+
+
+def insert_assumptions():
+    c_hot_water = Category(
+        name='Warmwasser',
+        description='Annahmen rund um den Warmwasserverbrauch'
+    )
+    c_hot_water.save()
+    hot_water_meta_file = os.path.join(META_PATH, 'hot_water_energy.json')
+    with open(hot_water_meta_file) as json_data:
+        meta = json.load(json_data)
+    hot_water_energy_source = Source(
+        meta_data=meta,
+        app_name='stemp',
+        category=c_hot_water
+    )
+    hot_water_energy_source.save()
+    hot_water_energy = Assumption(
+        name='Warmwasserenergie',
+        description=(
+            'Benötigte Energie um einen Liter Wasser von 5° auf 55° zu '
+            'erhitzen. Dieser Wert wird benutzt, um den durch Warmwasser '
+            'benötigten Wärmebedarf auszurechnen.'
+        ),
+        value=constants.ENERGY_PER_LITER,
+        unit='kWh/l',
+
+        app_name='stemp',
+        category=c_hot_water,
+        source=hot_water_energy_source
+    )
+    hot_water_energy.save()

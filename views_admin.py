@@ -40,6 +40,9 @@ class ManageView(TemplateView):
         elif 'insert_households' in request.POST:
             queries.insert_default_households()
             info = 'Households added.'
+        elif 'insert_assumptions' in request.POST:
+            queries.insert_assumptions()
+            info = 'Assumptions inserted.'
         else:
             info = 'Did not found matching command...'
         context = self.get_context_data(info)
