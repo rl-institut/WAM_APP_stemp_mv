@@ -346,18 +346,7 @@ class SummaryView(TemplateView):
         if 'done' in request.POST:
             for scenario in session.scenarios:
                 scenario.load_or_simulate()
-            result_ids = [
-                sc.result_id
-                for sc in session.scenarios
-                if sc.result_id is not None
-            ]
-            if len(result_ids) == 0:
-                return redirect('stemp:result')
-            else:
-                return redirect(
-                    'stemp:result_list',
-                    results=result_ids
-                )
+            return redirect('stemp:result')
         else:
             return redirect('stemp:parameters')
 
