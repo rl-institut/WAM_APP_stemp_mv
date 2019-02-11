@@ -193,7 +193,6 @@ class Scenario(basic_setup.BaseScenario):
         ):
             return 'Stromgutschrift'
         elif (
-                nodes[0].name.endswith('gas_heating') or
                 nodes[1] is not None and
                 (
                     nodes[1].name == 'bhkw' or
@@ -201,6 +200,8 @@ class Scenario(basic_setup.BaseScenario):
                 )
         ):
             return 'Brennstoffkosten'
+        elif nodes[0].name.endswith('gas_heating'):
+            return 'Betriebskosten'
         else:
             return super(Scenario, cls).get_data_label(nodes)
 
