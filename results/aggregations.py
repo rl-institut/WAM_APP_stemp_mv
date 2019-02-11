@@ -27,7 +27,8 @@ class Aggregation(ABC):
 
     def aggregate(self, results):
         aggregated_data = {
-            result.scenario.Scenario.name: self._get_data(result)
+            SCENARIO_PARAMETERS[
+                result.scenario.Scenario.name.lower()]['LABELS']['name']: self._get_data(result)
             for result in results
         }
         df = pandas.DataFrame(aggregated_data)
@@ -142,7 +143,9 @@ class TechnologieComparison(Aggregation):
     def aggregate(self, results):
         df = pandas.DataFrame()
         for result in results:
-            series = pandas.Series(name=result.scenario.Scenario.name)
+            labels = SCENARIO_PARAMETERS[
+                result.scenario.Scenario.name.lower()]['LABELS']
+            series = pandas.Series(name=labels['name'])
 
             # Add data from analyzers:
             for category, analyzer in self.analyzer.items():
@@ -161,8 +164,6 @@ class TechnologieComparison(Aggregation):
                 stemp_an.LCOEAutomatedDemandAnalyzer).total_load
 
             # Add pros and cons:
-            labels = SCENARIO_PARAMETERS[
-                result.scenario.Scenario.name.lower()]['LABELS']
             pros = labels.get('pros', [])
             cons = labels.get('cons', [])
             series['Vorteile'] = '<br>'.join(map(
