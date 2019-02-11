@@ -15,7 +15,9 @@ class HCCosts(HCStemp):
             'type': 'column'
         },
         'yAxis': {
-            'min': 0,
+            'title': {
+                'text': 'Wärmekosten [€/kWh]'
+            },
             'stackLabels': {
                 'enabled': True,
                 'format': "{total:.2f}€",
