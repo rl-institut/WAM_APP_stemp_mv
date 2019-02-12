@@ -6,7 +6,7 @@ class HCStemp(Highchart):
 
     def __init__(self, data=None, **kwargs):
         super(HCStemp, self).__init__(
-            data, theme=RLI_THEME, setup=self.setup, **kwargs)
+            data, options=self.setup, **kwargs)
 
 
 class HCCosts(HCStemp):
@@ -25,7 +25,22 @@ class HCCosts(HCStemp):
                     'fontWeight': 'bold',
                     'color': "(Highcharts.theme && Highcharts.theme.textColor) || 'gray'"
                 }
-            }
+            },
+            'plotLines': [{
+                'color': '#002E4F',
+                'dashStyle': 'dot',
+                'width': 1,
+                'value': 150,
+                'label': {
+                    'align': 'right',
+                    'style': {
+                        'fontStyle': 'italic'
+                    },
+                    'text': 'Zielvorgabe CO2-Emissionen',
+                    'x': -10
+                },
+                'zIndex': 300
+            }],
         },
         'tooltip': {
             'headerFormat': '<b>{point.x}</b><br/>',
@@ -180,8 +195,6 @@ class HCScatter(Highchart):
 
 class LCOEHighchart(HCCosts):
     def __init__(self, data):
-        super(LCOEHighchart, self).__init__(
-            data=data,
-            title='Wärmekosten',
-            subtitle='Euro pro Kilowattstunde'
-        )
+        super(LCOEHighchart, self).__init__(data=data)
+        self.set_options('title', {'text': 'Wärmekosten'})
+        self.set_options('subtitle', {'text': 'Euro pro Kilowattstunde'})
