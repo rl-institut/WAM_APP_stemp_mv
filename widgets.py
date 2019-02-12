@@ -198,13 +198,18 @@ class SubmitWidget(Widget):
 class HouseholdSummary(CustomWidget):
     template_name = 'widgets/summary_household.html'
 
-    def __init__(self, household):
+    def __init__(self, household, use_header=True):
         self.household = household
+        self.base_class = (
+            'widgets/summary_household_accordion.html'
+            if use_header else 'widgets/summary_household_simple.html'
+        )
 
     def get_context(self):
         return {
             'household': self.household,
-            'warm_water_demand': self.household.get_hot_water_profile().sum()
+            'warm_water_demand': self.household.get_hot_water_profile().sum(),
+            'base_class': self.base_class
         }
 
 

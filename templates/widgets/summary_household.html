@@ -1,57 +1,41 @@
 
+{% extends base_class %}
+
 {% load staticfiles %}
 
-<div class="cell medium-8 medium-offset-2 house-component">
-  <div class="grid-x">
-    <div class="cell medium-10">
-      <ul class="accordion" data-accordion data-allow-all-closed="true">
-        <li class="accordion-item" data-accordion-item>
-          <a href="#" class="accordion-title">
-            <div class="grid-x grid-padding-x align-justify">
-              <div class="cell house__header">
-                <img src="{% static 'stemp/img/icons_custom/mv_icon_house_w.svg' %}" alt="Icon single house" class="house__header-icon">
-                <div class="house__header-text">{{household.name}}</div>
-              </div>
-            </div>
-          </a>
-          <div class="accordion-content house__content" data-tab-content>
-            <div class="grid-x">
-              <div class="cell small-3 medium-2">
-                <div class="house__content-icon-frame --people">
-                  <img src="{% static 'stemp/img/icons_custom/mv_icon_people.svg' %}" alt="" class="house__content-icon">
-                </div>
-              </div>
-              <div class="cell small-9 medium-10 house__content-text">
-                {{household.number_of_persons}} Person{% if household.number_of_persons > 1 %}en{% endif %}
-              </div>
-              <div class="cell small-3 medium-2">
-                <div class="house__content-icon-frame --roof">
-                  <img src="{% static 'stemp/img/icons_custom/mv_icon_roof_area.svg' %}" alt="" class="house__content-icon">
-                </div>
-              </div>
-              <div class="cell small-9 medium-10 house__content-text">
-                Verfügbare Dachfläche für Photovoltaik: {{household.roof_area}} qm
-              </div>
-              <div class="cell small-3 medium-2">
-                <div class="house__content-icon-frame --heater">
-                  <img src="{% static 'stemp/img/icons_custom/mv_icon_heater.svg' %}" alt="" class="house__content-icon">
-                </div>
-              </div>
-              <div class="cell small-9 medium-10 house__content-text">
-                Jährlicher Energiebedarf (Heizung): {{household.heat_demand}} kW/h
-              </div>
-              <div class="cell small-3 medium-2">
-                <div class="house__content-icon-frame --hot-water">
-                  <img src="{% static 'stemp/img/icons_custom/mv_icon_hot_water.svg' %}" alt="" class="house__content-icon">
-                </div>
-              </div>
-              <div class="cell small-9 medium-10 house__content-text">
-                Jährlicher Energiebedarf (Warmwasser): {{warm_water_demand}} kW/h
-              </div>
-            </div>
-          </div>
-        </li>
-      </ul>
+{% block content %}
+<div class="grid-x">
+  <div class="cell small-3 medium-2">
+    <div class="house__content-icon-frame --people">
+      <img src="{% static 'stemp/img/icons_custom/mv_icon_people.svg' %}" alt="" class="house__content-icon">
     </div>
   </div>
+  <div class="cell small-9 medium-10 house__content-text">
+    <p><b>{{household.number_of_persons}} </b> Person{% if household.number_of_persons > 1 %}en{% endif %}</p>
+  </div>
+  <div class="cell small-3 medium-2">
+    <div class="house__content-icon-frame --roof">
+      <img src="{% static 'stemp/img/icons_custom/mv_icon_roof_area.svg' %}" alt="" class="house__content-icon">
+    </div>
+  </div>
+  <div class="cell small-9 medium-10 house__content-text">
+    <p>Verfügbare Dachfläche für Photovoltaik: <b> {{household.roof_area}} qm</b></p>
+  </div>
+  <div class="cell small-3 medium-2">
+    <div class="house__content-icon-frame --heater">
+      <img src="{% static 'stemp/img/icons_custom/mv_icon_heater.svg' %}" alt="" class="house__content-icon">
+    </div>
+  </div>
+  <div class="cell small-9 medium-10 house__content-text">
+    <p>Jährlicher Energiebedarf (Heizung): <b> {{household.heat_demand}} kW/h</b></p>
+  </div>
+  <div class="cell small-3 medium-2">
+    <div class="house__content-icon-frame --hot-water">
+      <img src="{% static 'stemp/img/icons_custom/mv_icon_hot_water.svg' %}" alt="" class="house__content-icon">
+    </div>
+  </div>
+  <div class="cell small-9 medium-10 house__content-text">
+    <p>Jährlicher Energiebedarf (Warmwasser): <b> {{warm_water_demand}} kW/h</b></p>
+  </div>
 </div>
+{% endblock %}

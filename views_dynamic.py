@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from stemp import constants
 from user_sessions.utils import check_session
 from stemp.models import Household
+from stemp.widgets import HouseholdSummary
 
 
 @check_session
@@ -64,4 +65,9 @@ def get_roof_area(request):
 
 def get_household_summary(request):
     hh_id = int(request.GET['hh_id'])
-    return HttpResponse(Household.objects.get(pk=hh_id).summary())
+    return HttpResponse(
+        HouseholdSummary(
+            Household.objects.get(pk=hh_id),
+            use_header=False
+        )
+    )

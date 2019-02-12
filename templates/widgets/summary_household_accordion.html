@@ -1,0 +1,23 @@
+<div class="cell medium-8 medium-offset-2 house-component">
+  <div class="grid-x">
+    <div class="cell medium-10">
+      <ul class="accordion" data-accordion data-allow-all-closed="true">
+        <li class="accordion-item" data-accordion-item>
+          <a href="#" class="accordion-title">
+            <div class="grid-x grid-padding-x align-justify">
+              <div class="cell house__header">
+                <img src="{% static 'stemp/img/icons_custom/mv_icon_house_w.svg' %}" alt="Icon single house" class="house__header-icon">
+                <div class="house__header-text">{{household.name}}</div>
+              </div>
+            </div>
+          </a>
+          <div class="accordion-content house__content" data-tab-content>
+            {% block content %}
+
+            {% endblock %}
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
