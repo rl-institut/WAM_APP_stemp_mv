@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 from django.urls import reverse
 
 from wam.settings import SESSION_DATA
-from utils.widgets import Wizard
+from utils.widgets import Wizard, CSVWidget
 
 from user_sessions.utils import check_session_method
 from stemp import app_settings
@@ -419,3 +419,16 @@ class PendingView(TemplateView):
 
     def get_context_data(self, **kwargs):
         return {'tipps': app_settings.ENERGY_TIPS}
+
+
+class EnergyLinksView(TemplateView):
+    template_name = 'stemp/energy_links.html'
+
+    def get_context_data(self, **kwargs):
+        return {
+            'contacts': CSVWidget(
+                'stemp/texts/ansprechpartner.csv',
+                'Ansprechpartner',
+                csv_kwargs={'index_col': 0, 'sep': ';', 'encoding': 'latin_1'}
+            )
+        }

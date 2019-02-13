@@ -79,6 +79,11 @@ urlpatterns = [
         name='result_list'
     ),
     path(
+        'energy_links/',
+        views.EnergyLinksView.as_view(),
+        name='energy_links'
+    ),
+    path(
         'ajax/get_next_household_name/',
         views_dynamic.get_next_household_name,
         name='household_name'
