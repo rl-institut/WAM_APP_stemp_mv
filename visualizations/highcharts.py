@@ -5,9 +5,8 @@ from utils.highcharts import Highchart, RLI_THEME
 class HCStemp(Highchart):
     setup = {}
 
-    def __init__(self, data=None, **kwargs):
-        super(HCStemp, self).__init__(
-            data, options=self.setup, **kwargs)
+    def __init__(self, **kwargs):
+        super(HCStemp, self).__init__(**kwargs)
 
 
 class HCCosts(HCStemp):
@@ -216,7 +215,9 @@ class LCOEHighchart(HCCosts):
     }
 
     def __init__(self, data):
-        super(LCOEHighchart, self).__init__(data=data)
+        super(LCOEHighchart, self).__init__(renderTo='test')
+        self.set_dict_options(self.setup)
+        self.add_pandas_data_set(data)
         self.set_options('title', {'text': 'Wärmekosten'})
         self.set_options('subtitle', {'text': 'Euro pro Kilowattstunde'})
 
