@@ -1,3 +1,4 @@
+from copy import deepcopy
 from utils.highcharts import Highchart, RLI_THEME
 
 
@@ -44,7 +45,7 @@ class HCCosts(HCStemp):
         },
         'tooltip': {
             'headerFormat': '<b>{point.x}</b><br/>',
-            'pointFormat': '{series.name}: {point.y:.2f}€<br/>Total: {point.stackTotal:.2f}€'
+            'pointFormat': '{series.name}: {point.y:.2f}€'
         },
         'plotOptions': {
             'column': {
@@ -194,7 +195,39 @@ class HCScatter(Highchart):
 
 
 class LCOEHighchart(HCCosts):
+    sum_line_options = {
+        'color': 'black',
+        'showInLegend': False,
+        'dataLabels': {
+            'enabled': True,
+            'format': "{point.y:.2f}€",
+            'align': 'left',
+            'verticalAlign': 'middle',
+            'filter': {
+                'property': 'x',
+                'value': 0.3,
+                'operator': '=='
+            }
+        },
+        'enableMouseTracking': False,
+        'marker': {
+            'enabled': False
+        }
+    }
+
     def __init__(self, data):
         super(LCOEHighchart, self).__init__(data=data)
         self.set_options('title', {'text': 'Wärmekosten'})
         self.set_options('subtitle', {'text': 'Euro pro Kilowattstunde'})
+
+        # Add lcoe sum per scenario as horizontal lines:
+        summed_data = data.sum(axis=1)
+        for i, lcoe_sum in enumerate(summed_data):
+            current_options = deepcopy(self.sum_line_options)
+            current_options['dataLabels']['filter']['value'] = i + 0.3
+            self.add_data_set(
+                [[i - 0.3, lcoe_sum], [i + 0.3, lcoe_sum]],
+                series_type='line',
+                name=f'{i}',
+                **current_options
+            )
