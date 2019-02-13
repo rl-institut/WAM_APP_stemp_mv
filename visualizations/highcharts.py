@@ -215,7 +215,7 @@ class LCOEHighchart(HCCosts):
     }
 
     def __init__(self, data):
-        super(LCOEHighchart, self).__init__(renderTo='test')
+        super(LCOEHighchart, self).__init__()
         self.set_dict_options(self.setup)
         self.add_pandas_data_set(data)
         self.set_options('title', {'text': 'Wärmekosten'})
