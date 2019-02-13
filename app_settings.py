@@ -17,6 +17,8 @@ ADDITIONAL_PARAMETERS = ConfigObj(
     os.path.join(settings.BASE_DIR, 'stemp', 'scenarios', 'attributes.cfg'))
 
 LABELS = ConfigObj(os.path.join(settings.BASE_DIR, 'stemp', 'labels.cfg'))
+ENERGY_TIPS = ConfigObj(
+    os.path.join(settings.BASE_DIR, 'stemp', 'texts', 'energy_tips.cfg'))
 
 stemp_config = settings.config['STEMP']
 

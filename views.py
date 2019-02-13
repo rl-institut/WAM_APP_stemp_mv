@@ -1,5 +1,4 @@
 
-import pandas
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 from django.urls import reverse
@@ -418,76 +417,5 @@ class ResultView(TemplateView):
 class PendingView(TemplateView):
     template_name = 'stemp/pending.html'
 
-
-class HighchartTestView(TemplateView):
-    template_name = 'stemp/highchart_test.html'
-
     def get_context_data(self, **kwargs):
-        context = {'visualizations': []}
-
-        context['visualizations'].append(
-            highcharts.HCCosts(
-                pandas.DataFrame(
-                    {
-                        'Investitionskosten': [5.2, 5, 3.2, 2.8],
-                        'Wartungskosten': [1, 1, .9, 1],
-                        'Brennstoffkosten': [5.4, 4.9, 3.8, 3.1]
-                    },
-                    index=[
-                        'BHKW',
-                        'PV + Wärmepumpe',
-                        'Ölheizung',
-                        'Gasheizung'
-                    ]
-                )
-            ).render(
-                "container-costs",
-                {'style': 'min-width: 310px; height: 400px; margin: 0 auto'}
-            )
-        )
-
-        emissions = highcharts.HCEmissions(
-            pandas.Series(
-                [140, 140, 280, 220],
-                index=['BHKW', 'PV + Wärmepumpe', 'Ölheizung', 'Gasheizung'],
-                name='CO2-Emissionen'
-            )
-        )
-        emissions.dict['series'][0].update(
-            {
-                'dataLabels': {
-                    'enabled': True,
-                    'color': '#FFFFFF',
-                    'format': '{point.y:.1f}',
-                    'style': {
-                        'fontSize': '13px',
-                        'fontFamily': 'Verdana, sans-serif'
-                    }
-                }
-            }
-        )
-        context['visualizations'].append(
-            emissions.render(
-                "container-emissions",
-                {'style': 'min-width: 310px; height: 400px; margin: 0 auto'}
-            )
-        )
-
-        context['visualizations'].append(
-            highcharts.HCScatter(
-                pandas.DataFrame(
-                    {
-                        'BHKW': [11.6, 140],
-                        'PV + Wärmepumpe': [10.9, 140],
-                        'Ölheizung': [7.9, 280],
-                        'Gasheizung': [6.9, 220]
-                    },
-                    index=['Kosten (cent/kWh)', 'CO2-Emissionen (g/kWh)']
-                )
-            ).render(
-                "container-scatter",
-                {'style': 'min-width: 310px; height: 400px; margin: 0 auto'}
-            )
-        )
-
-        return context
+        return {'tipps': app_settings.ENERGY_TIPS}
