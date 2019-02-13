@@ -32,11 +32,11 @@
           <ul class="orbit-container">
             <button class="orbit-previous" aria-label="vorheriger"><span class="show-for-sr">Vorheriger Tipp</span>&#9664;</button>
             <button class="orbit-next" aria-label="nächster"><span class="show-for-sr">Nächster Tipp</span>&#9654;</button>
-            {% for tipp in tipps.values %}
+            {% for tipp in tipps %}
               <li class="orbit-slide">
                 <div class="energy_tipp">
                   <h3>{{tipp.title}}</h3>
-                  {{tipp.text|safe}}
+                  {{tipp.description|safe}}
                 </div>
               </li>
             {% endfor %}

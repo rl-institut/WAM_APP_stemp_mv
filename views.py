@@ -1,9 +1,13 @@
 
+import os
+import pandas
+from collections import namedtuple
+
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 from django.urls import reverse
 
-from wam.settings import SESSION_DATA
+from wam.settings import SESSION_DATA, BASE_DIR
 from utils.widgets import Wizard, CSVWidget
 
 from user_sessions.utils import check_session_method
@@ -416,9 +420,19 @@ class ResultView(TemplateView):
 
 class PendingView(TemplateView):
     template_name = 'stemp/pending.html'
+    Tip = namedtuple('Tip', ['title', 'description'])
 
     def get_context_data(self, **kwargs):
-        return {'tipps': app_settings.ENERGY_TIPS}
+        filename = os.path.join(
+            BASE_DIR, 'stemp', 'texts', 'energiespartipps.csv')
+        data = pandas.read_csv(
+            filename, index_col=0, sep=';')
+        return {
+            'tipps': [
+                self.Tip(d[0], d[1]['Beschreibung'])
+                for d in data.iterrows()
+            ]
+        }
 
 
 class EnergyLinksView(TemplateView):
@@ -430,5 +444,10 @@ class EnergyLinksView(TemplateView):
                 'stemp/texts/ansprechpartner.csv',
                 'Ansprechpartner',
                 csv_kwargs={'index_col': 0, 'sep': ';', 'encoding': 'latin_1'}
-            )
+            ),
+            'tipps': CSVWidget(
+                'stemp/texts/energiespartipps.csv',
+                'Energiespartipps',
+                csv_kwargs={'index_col': 0, 'sep': ';'}
+            ),
         }
