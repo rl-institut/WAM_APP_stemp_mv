@@ -220,8 +220,6 @@ class HouseholdForm(ModelForm):
         ),
         label='Anzahl Personen im Haushalt',
         initial=constants.DEFAULT_NUMBER_OF_PERSONS,
-        max_value=10,
-        min_value=1,
     )
     heat_demand_hand = IntegerField(
         widget=NumberInput(

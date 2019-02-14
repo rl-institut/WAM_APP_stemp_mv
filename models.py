@@ -64,18 +64,56 @@ class DistrictHouseholds(models.Model):
 class Household(models.Model):
     timeseries = None
 
-    name = models.CharField(max_length=22, unique=True)
+    name = models.CharField(
+        max_length=22,
+        unique=True,
+        error_messages={
+            'unique': (
+                'Es ist schon ein Haushalt mit diesem Namen vorhanden - '
+                'bitte einen neuen Namen auswählen'
+            )
+        }
+    )
     house_type = models.CharField(
         max_length=3,
         choices=((ht.name, ht.value) for ht in constants.HouseType),
         default='EFH',
         verbose_name='Haustyp'
     )
-    heat_demand = models.FloatField(verbose_name='Jährlicher Wärmebedarf')
-    number_of_persons = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    heat_demand = models.FloatField(
+        verbose_name='Jährlicher Wärmebedarf',
+        validators=[
+            MaxValueValidator(
+                1e5,
+                message=(
+                    'Der jährliche, mögliche Heizwärmebedarf ist auf ein '
+                    'Limit von %(limit_value)s kWh begrenzt.'
+                )
+            )
+        ]
     )
-    square_meters = models.IntegerField(verbose_name='Quadratmeter')
+    number_of_persons = models.IntegerField(
+        validators=[
+            MinValueValidator(
+                1, message='Mindestens eine Person muss im Haushalt leben.'),
+            MaxValueValidator(
+                10,
+                message='Bitte nur maximal %(limit_value)s Personen angeben.'
+            )
+        ],
+    )
+    square_meters = models.IntegerField(
+        verbose_name='Quadratmeter',
+        validators=[
+            MaxValueValidator(
+                1e3,
+                message=(
+                    'Die Angabe der Quadratmeter ist auf %(limit_value)s qm '
+                    'begrenzt.'
+                )
+            )
+        ]
+    )
     heat_type = models.CharField(
         choices=((ht.name, ht.value) for ht in constants.HeatType),
         default='radiator',
@@ -84,7 +122,15 @@ class Household(models.Model):
     )
     warm_water_per_day = models.IntegerField()
     roof_area = models.FloatField(
-        verbose_name='Verfügbare Dachfläche für Photovoltaik')
+        verbose_name='Verfügbare Dachfläche für Photovoltaik',
+        validators=[
+            MaxValueValidator(
+                400,
+                'Die verfügbare Dachfläche ist auf %(limit_value)s qm '
+                'begrenzt.'
+            )
+        ]
+    )
 
     def get_oep_timeseries(self, name):
         if self.timeseries is None:

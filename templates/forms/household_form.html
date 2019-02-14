@@ -10,7 +10,7 @@
       <div class="cell medium-10 large-8 hh-component__form">
         <h3>Name des Haushalts</h3>
         <label class="form__label" for="id_name">
-          {{form.name.errors}}
+          <font color="darkred">{{form.name.errors}}</font>
           {{form.name}}
         </label>
       </div>
@@ -23,24 +23,24 @@
       <div class="cell medium-10 large-8 hh-component__form">
         <h3>Haus</h3>
         <label for="{{form.number_of_persons.id_for_label}}" class="form__label">{{form.number_of_persons.label}}
-          {{form.number_of_persons.errors}}
+          <font color="darkred">{{form.number_of_persons.errors}}</font>
           {{form.number_of_persons}}
         </label>
         <label class="form__label" for="{{form.house_type.id_for_label}}">{{form.house_type.label}}
-          {{form.house_type.errors}}
+          <font color="darkred">{{form.house_type.errors}}</font>
           {% if form.house_type_fix %}{{form.house_type_fix.value}}{% endif %}
           {{form.house_type}}
         </label>
         <fieldset id="sm_option">
           <legend>Grundfläche</legend>
-          {{square_meters.errors}}
+          <font color="darkred">{{form.square_meters.errors}}</font>
           <ul class="menu vertical">
             <li>
               <input type="radio" checked="" name="sm" value="auto" id="radio_sm_auto" required>
               <label for="radio_sm_auto" class="form__label">Standardwert</label>
               <div class="input-group input-disabled">
                 <input class="input-group-field input input--s" type="number" readonly step="any" id="sm_auto">
-                <span class="input-group-label">kWh</span>
+                <span class="input-group-label">qm</span>
               </div>
             </li>
             <li>
@@ -73,7 +73,7 @@
 
             <fieldset id="heat_option">
               <legend>Jährlicher Energiebedarf durch Heizung</legend>
-              {{form.heat_demand.errors}}
+              <font color="darkred">{{form.heat_demand.errors}}</font>
               <ul class="menu vertical">
                 <li>
                   <input type="radio" name="heat" checked="" value="person" id="radio_heat_auto" required>
@@ -135,12 +135,12 @@
                 </li>
               </ul>
             <div>
-            {{form.warm_water_per_day.label}}
-            <span class="has-tip--no-border">
-              <i data-open="modal-warmwater" class ="icon ion-information-circled icon--small info-box" title="Hier klicken um mehr Informationen zum Warmwasserverbrauch zu erhalten"></i>
-            </span>
-            {{form.warm_water_per_day.errors}}
-            {{form.warm_water_per_day}}
+              {{form.warm_water_per_day.label}}
+              <span class="has-tip--no-border">
+                <i data-open="modal-warmwater" class ="icon ion-information-circled icon--small info-box" title="Hier klicken um mehr Informationen zum Warmwasserverbrauch zu erhalten"></i>
+              </span>
+              <font color="darkred">{{form.warm_water_per_day.errors}}</font>
+              {{form.warm_water_per_day}}
             </div>
             <div class="reveal" id="modal-warmwater" data-reveal>
               <div class="grid-x technology">
@@ -187,7 +187,7 @@
               <legend>
                 Verfügbare Dachfläche für Photovoltaik
               </legend>
-              {{form.roof_area.errors}}
+              <font color="darkred">{{form.roof_area.errors}}</font>
               <ul class="menu vertical" id="roof-area-form">
                 <li>
                   <input type="radio" name="roof" checked="" value="auto" id="radio_roof_auto" required>
