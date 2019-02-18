@@ -1,15 +1,10 @@
 
-import pandas
 import numpy
-from collections import namedtuple
-from functools import partial
+import pandas
+from itertools import accumulate
 
 from utils.visualizations import VisualizationTemplate
-from stemp.constants import CATEGORIZED_COLOR_NAMES
-
-CATEGORIES = len(CATEGORIZED_COLOR_NAMES)
-CATEGORY_STATS = namedtuple(
-    'CategoryStats', ['min', 'max', 'is_demand_related'])
+from stemp.constants import RESULT_COLORS
 
 
 class Dataframe(VisualizationTemplate):
@@ -51,55 +46,42 @@ class ComparisonDataframe(Dataframe):
         'Primärfaktor': lambda x: f'{x:.1f}',
         'Primärenergie': lambda x: f'{x:,.0f} kWh',
     }
-    color_ranges = {
-        'Wärmekosten': CATEGORY_STATS(0, 0.2, False),
-        'Investment': CATEGORY_STATS(0.1, 0.4, True),
-        'CO2': CATEGORY_STATS(100.0, 300.0, False),
-        'Brennstoffkosten': CATEGORY_STATS(0.0, 0.1, True),
-        'Primärfaktor': CATEGORY_STATS(0.0, 3.0, False),
-        'Primärenergie': CATEGORY_STATS(0.0, 3.0, True),
-    }
+    colored = (
+        'Wärmekosten',
+        'Investment',
+        'Brennstoffkosten',
+        'CO2',
+        'Primärfaktor',
+        'Primärenergie',
+    )
 
     def __init__(self, data):
-        self.demand = data.loc['Demand'][0]
-        data = data.drop('Demand')
         super(ComparisonDataframe, self).__init__(
             'Technologievergleich',
             data=data,
         )
-        self.__color_bins = {
-            cat: [
-                (
-                    (cat_range.max - cat_range.min) /
-                    (CATEGORIES - 2) * i + cat_range.min
-                )
-                for i in range(CATEGORIES - 1)
-            ]
-            for cat, cat_range in self.color_ranges.items()
-        }
+        self.bins = list(accumulate([r.percentage for r in RESULT_COLORS]))
 
     def set_data(self, data: pandas.DataFrame):
         self.data = data
 
-    def _style_color_per_category(self, df: pandas.DataFrame):
-        def set_quality(value, category):
-            if self.color_ranges[category].is_demand_related:
-                value /= self.demand
-            cat_num = numpy.digitize(
-                [value], self.__color_bins[category], right=True)[0]
-            return list(CATEGORIZED_COLOR_NAMES.values())[cat_num]
-
-        series = []
-        for cname, row in df.iterrows():
-            if cname not in self.color_ranges:
-                series.append(row)
-                continue
-            series.append(row.apply(partial(set_quality, category=cname)))
-        concat = pandas.concat(series, axis=1)
-        return concat.transpose()
+    def _style_color(self, row):
+        row_style = []
+        for value in row:
+            color_index = numpy.digitize(
+                [(value - row.min()) / (row.max() - row.min())],
+                self.bins
+            )[0]
+            color_index = min(color_index, len(RESULT_COLORS) - 1)
+            row_style.append(RESULT_COLORS[color_index].style)
+        return row_style
 
     def render_data(self):
         # Apply styles:
         styler = self.format_row_wise(self.data.style, self.formatters)
-        styler = styler.apply(self._style_color_per_category, axis=None)
+        styler = styler.apply(
+            self._style_color,
+            axis=1,
+            subset=pandas.IndexSlice[self.colored, :]
+        )
         return styler.render()

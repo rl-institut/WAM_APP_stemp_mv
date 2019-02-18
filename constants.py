@@ -1,5 +1,5 @@
 
-from collections import OrderedDict
+from collections import namedtuple
 from enum import Enum, IntEnum
 
 TIME_INDEX = [str(i + 1) + 'h' for i in range(24)]
@@ -14,15 +14,13 @@ LOCATION = (11.181475, 53.655119)  # Lützow (lon,lat)
 DEFAULT_NUMBER_OF_PERSONS = 2
 DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER = 22
 
-CATEGORIZED_COLOR_NAMES = OrderedDict(
-    [
-        ('best', 'background-color: #0A6164; color: $white;'),
-        ('good', 'background-color: #5BC3AF;'),
-        ('neutral', 'background-color: #E6E1BD;'),
-        ('bad', 'background-color: #ECA14D;'),
-        ('worst', 'background-color: #DA4225; color: $white;'),
-    ]
+ResultColor = namedtuple('ResultColor', ['quality', 'percentage', 'style'])
+RESULT_COLORS = (
+    ResultColor('good', 0.2, 'background-color: #0A6164; color: $white;'),
+    ResultColor('neutral', 0.6, 'background-color: #E6E1BD;'),
+    ResultColor('bad', 0.2, 'background-color: #DA4225; color: $white;'),
 )
+assert sum([r.percentage for r in RESULT_COLORS]) == 1
 
 
 class WarmwaterConsumption(Enum):

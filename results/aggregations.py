@@ -159,10 +159,6 @@ class TechnologieComparison(Aggregation):
             series['Primärfaktor'] = pe.factor
             series['Primärenergie'] = pe.energy
 
-            # Add total demand (not rendered later):
-            series['Demand'] = result.analysis.get_analyzer(
-                stemp_an.LCOEAutomatedDemandAnalyzer).total_load
-
             # Add pros and cons:
             pros = labels.get('pros', [])
             cons = labels.get('cons', [])
@@ -188,7 +184,6 @@ class TechnologieComparison(Aggregation):
                 'Primärenergie',
                 'Vorteile',
                 'Nachteile',
-                'Demand'
             ]
         ]
 
