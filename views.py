@@ -125,7 +125,8 @@ class DemandDistrictView(TemplateView):
             if hh not in (
                 'csrfmiddlewaretoken',
                 'trash',
-                'add_household',
+                'add_efh',
+                'add_mfh',
                 'demand_submit',
                 'district_name',
                 'district_status'
@@ -136,12 +137,14 @@ class DemandDistrictView(TemplateView):
             del session.current_district[trash]
             context = self.get_context_data(session)
             return self.render_to_response(context)
-        elif 'add_household' in request.POST:
-            return redirect('stemp:demand_district_household')
+        elif 'add_efh' in request.POST:
+            return redirect('stemp:demand_district_household_efh')
+        elif 'add_mfh' in request.POST:
+            return redirect('stemp:demand_district_household_mfh')
 
     @check_session_method
     def post(self, request, session):
-        if 'add_household' in request.POST or 'trash' in request.POST:
+        if any(key in request.POST for key in ('add_efh', 'add_mfh', 'trash')):
             return self.__change_district_list(request, session)
         elif 'load_district' in request.POST:
             session.demand_id = request.POST['district']

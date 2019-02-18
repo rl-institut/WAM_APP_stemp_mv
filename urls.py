@@ -5,6 +5,7 @@ import cursive_re
 from wam.admin import wam_admin_site
 from meta import models
 from meta.views import AppListView, AssumptionsView
+from stemp import constants
 from stemp import views
 from stemp import views_dynamic
 from stemp import views_admin
@@ -57,6 +58,20 @@ urlpatterns = [
         'demand/district/household/',
         views.DemandSingleView.as_view(is_district_hh=True),
         name='demand_district_household'
+    ),
+    path(
+        'demand/district/household/mfh',
+        views.DemandSingleView.as_view(
+            is_district_hh=True,
+            only_house_type=constants.HouseType.MFH),
+        name='demand_district_household_mfh'
+    ),
+    path(
+        'demand/district/household/efh',
+        views.DemandSingleView.as_view(
+            is_district_hh=True,
+            only_house_type=constants.HouseType.EFH),
+        name='demand_district_household_efh'
     ),
     path(
         'demand/district/empty',

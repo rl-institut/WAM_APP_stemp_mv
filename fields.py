@@ -7,9 +7,8 @@ from stemp.widgets import HouseholdWidget, SubmitWidget
 class HouseholdField(Field):
     widget = HouseholdWidget
 
-    def __init__(self, hh_id, count=1):
-        self.hh_id = hh_id
-        self.hh_name = Household.objects.get(pk=hh_id).name
+    def __init__(self, hh, count=1):
+        self.household = hh
         self.count = count
         super(HouseholdField, self).__init__()
 
@@ -20,9 +19,9 @@ class HouseholdField(Field):
         Field.
         """
         return {
-            'hh_id': self.hh_id,
-            'hh_name': self.hh_name,
+            'household': self.household,
             'count': self.count,
+            'deletable': True
         }
 
 

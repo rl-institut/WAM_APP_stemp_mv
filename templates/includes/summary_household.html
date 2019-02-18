@@ -1,9 +1,6 @@
 
-{% extends base_class %}
-
 {% load staticfiles %}
 
-{% block content %}
 <div class="grid-x">
   <div class="cell small-3 medium-2">
     <div class="house__content-icon-frame --people">
@@ -35,7 +32,13 @@
     </div>
   </div>
   <div class="cell small-9 medium-10 house__content-text">
-    <p>Jährlicher Energiebedarf (Warmwasser): <b> {{warm_water_demand}} kW/h</b></p>
+    <p>Jährlicher Energiebedarf (Warmwasser): <b> {{household.warm_water_demand}} kW/h</b></p>
   </div>
+  {% if deletable %}
+  <div class="cell house__content-delete">
+    <button class="u-inline-block delete-btn" type="submit" name="trash" value="{{household.id}}">
+      <i class="icon ion-android-delete icon--small"></i> Löschen
+    </button>
+  </div>
+  {% endif %}
 </div>
-{% endblock %}

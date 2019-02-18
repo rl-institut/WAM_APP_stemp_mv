@@ -21,35 +21,51 @@
 {% block right_side %}
 
 <div class="cell large-8 large-cell-block-y">
-  <div class="grid-y large-grid-frame">
-    <main class="cell large-auto large-cell-block-y main-content-wrap">
+  <div id="layout-grid-y" class="grid-y">
+    <div id="layout-block" class="cell">
 
-      <div class="cell scen-create__form u-text--center">
-        <h3>{{demand_name|default:"Neues Viertel"}}</h3>
-        <div class="icon-load">
-          <a data-open="load_modal">
-            <img src="{% static 'stemp/img/icons_custom/Enavi_Upload_ungültig.svg' %}" alt="Gespeichertes Viertel laden" title="Gespeichertes Szenario laden">
-          </a>
-        </div>
-      </div>
+      <main class="cell medium-10 main-content-wrap">
+        <form class="grid-x align-center main-padding" method="post" id="district">
+          {% csrf_token %}
+          <input type="hidden" name="district_name" id="district_name" value="">
+          <input type="hidden" name="district_status" id="district_status" value="{{district_status}}">
 
-      <form class="grid-x" method="post" id="district">
-        {% csrf_token %}
-        <input type="hidden" name="district_name" id="district_name" value="">
-        <input type="hidden" name="district_status" id="district_status" value="{{district_status}}">
+          <div class="cell scen-create__form u-text--center">
+            <h3>{{demand_name|default:"Neues Viertel"}}</h3>
+            <div class="icon-load">
+              <a data-open="load_modal">
+                <img src="{% static 'stemp/img/icons_custom/Enavi_Upload_ungültig.svg' %}" alt="Gespeichertes Viertel laden" title="Gespeichertes Szenario laden">
+              </a>
+            </div>
+          </div>
 
-        <div class="cell large-10 large-offset-1 card-medium">
-          <div class="grid-container">
-            <div class="grid-x grid-padding-x small-up-1 medium-up-2">
-              {% for field in district_form %}
-                {{field}}
+          <div class="cell medium-6">
+            <div class="grid-x grid-padding-x district-column">
+              <div class="cell medium-10 medium-offset-2">
+                <img src="{% static 'stemp/img/icons_custom/mv_icon_house.svg' %}" alt="Icon District" class="icon-district">
+                <h3 class="summary__header-text">Einzelhäuser</h3>
+              </div>
+              {% for efh in district_form.efh %}
+                {{efh}}
               {% endfor %}
             </div>
           </div>
-        </div>
 
-      </form>
-    </main>
+          <div class="cell medium-6">
+            <div class="grid-x grid-padding-x district-column">
+              <div class="cell medium-10 medium-offset-2">
+                <img src="{% static 'stemp/img/icons_custom/mv_icon_building.svg' %}" alt="Icon District" class="icon-district">
+                <h3 class="summary__header-text">Mehrfamilienhäuser</h3>
+              </div>
+              {% for mfh in district_form.mfh %}
+                {{mfh}}
+              {% endfor %}
+            </div>
+          </div>
+
+        </form>
+      </main>
+    </div>
     <!-- STEPS TASKS END -->
 
     {% url 'stemp:demand_selection' as back_url%}

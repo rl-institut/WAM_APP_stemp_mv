@@ -171,6 +171,9 @@ class Household(models.Model):
                 self.get_hot_water_profile()
         )
 
+    def warm_water_demand(self):
+        return self.get_hot_water_profile().sum()
+
     def contains_radiator(self):
         return self.heat_type == constants.HeatType.radiator.name
 

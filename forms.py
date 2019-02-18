@@ -275,10 +275,13 @@ class HouseholdForm(ModelForm):
             self.fields['house_type'] = CharField(
                 label='Haustyp',
                 widget=HiddenInput(
-                    attrs={'id': 'id_house_type', 'value': only_house_type}
+                    attrs={
+                        'id': 'id_house_type',
+                        'value': only_house_type.name
+                    }
                 )
             )
-            self.house_type_fix = constants.HouseType[only_house_type]
+            self.house_type_fix = only_house_type
         self.helper = FormHelper()
         self.helper.template = 'forms/household_form.html'
 
@@ -297,7 +300,7 @@ class HouseholdSelectForm(Form):
         super(HouseholdSelectForm, self).__init__(*args, **kwargs)
         if only_house_type is not None:
             self.fields['profile'].queryset = Household.objects.filter(
-                house_type=only_house_type).all()
+                house_type=only_house_type.name).all()
         self.helper = FormHelper(self)
         self.helper.template = 'forms/household_list_form.html'
 
@@ -362,13 +365,37 @@ class DistrictListForm(Form):
     def __init__(self, hh_dict):
         super(DistrictListForm, self).__init__()
         if hh_dict is not None:
-            for household, count in hh_dict.items():
-                self.fields[household] = HouseholdField(household, count)
-        self.fields['add_household'] = SubmitField(
+            for hh_id, count in hh_dict.items():
+                household = Household.objects.get(pk=hh_id)
+                hh_field = HouseholdField(household, count)
+                hh_field.group = household.house_type
+                self.fields[hh_id] = hh_field
+        self.fields['add_efh'] = SubmitField(
             widget=DistrictSubmitWidget,
             label="",
-            initial='Haushalt hinzufügen'
+            initial='Einzelhaus hinzufügen'
         )
+        self.fields['add_efh'].group = 'EFH'
+        self.fields['add_mfh'] = SubmitField(
+            widget=DistrictSubmitWidget,
+            label="",
+            initial='Mehrfamilienhaus hinzufügen'
+        )
+        self.fields['add_mfh'].group = 'MFH'
+
+    def efh(self):
+        return [
+            self[field_name]
+            for field_name, field in self.fields.items()
+            if field.group == 'EFH'
+        ]
+
+    def mfh(self):
+        return [
+            self[field_name]
+            for field_name, field in self.fields.items()
+            if field.group == 'MFH'
+        ]
 
 
 class DistrictForm(ModelForm):

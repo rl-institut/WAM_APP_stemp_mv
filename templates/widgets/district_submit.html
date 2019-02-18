@@ -1,13 +1,10 @@
 
-<div class="cell">
-  <button type="submit" class="card-medium card-medium--empty" name="{{widget.name}}" value="{{widget.value}}">
-    <div class="grid-x">
-      <div class="cell small-2">
-        <i class ="icon ion-plus icon--small"></i>
-      </div>
-      <div class="cell small-9 small-offset-1 card-medium--empty__text">
-        {{widget.value}}
-      </div>
+<button type="submit" class="cell house-component house-component--district add-house" name="{{widget.name}}" value="{{widget.value}}">
+  <div class="grid-x">
+    <div class="cell medium-2 house-component__input show-for-medium">
     </div>
-  </button>
-</div>
+    <div class="cell small-10 small-offset-1 medium-10 medium-offset-2 add-house__btn">
+      <i class="icon ion-android-add-circle icon--small"> {{widget.value}}</i>
+    </div>
+  </div>
+</button>
