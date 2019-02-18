@@ -15,17 +15,15 @@
       </div>
       <div class="top-bar-right">
         <ul class="dropdown menu" id="nav-list-vertical" data-dropdown-menu>
-          <!-- <li class="menu-text">Startseite</li> -->
           <li class="show-for-small-only"><a class="anchor-text--light" href="index.html">Startseite</a></li>
           <li><a class="anchor-text--light" href="{% url 'stemp:demand_selection' %}">Neues Szenario</a></li>
-          <li><a class="anchor-text--light" href="#">Meine Szenarien</a></li>
           <li>
             <a class="anchor-text--light" href="#">Über uns</a>
             <ul class="menu vertical">
               <li><a class="anchor-text--light" href="#">Kontakt</a></li>
               <li><a class="anchor-text--light" href="#">Impressum</a></li>
               <li><a class="anchor-text--light" href="#">Datenschutz</a></li>
-              <li><a class="anchor-text--light" href="#">Quellen</a></li>
+              <li><a class="anchor-text--light" href="{% url 'stemp:sources' %}">Quellen</a></li>
             </ul>
           </li>
         </ul>
