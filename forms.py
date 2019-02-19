@@ -247,7 +247,12 @@ class HouseholdForm(ModelForm):
             'heat_demand': HiddenInput(),
             'roof_area': HiddenInput(),
             'square_meters': HiddenInput(),
-            'warm_water_per_day': NumberInput(attrs={'readonly': True})
+            'warm_water_per_day': NumberInput(
+                attrs={
+                    'class': "input-group-field input input--m",
+                    'readonly': True
+                }
+            )
         }
 
     class Media:

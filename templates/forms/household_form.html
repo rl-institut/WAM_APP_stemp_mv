@@ -140,7 +140,10 @@
                 <i data-open="modal-warmwater" class ="icon ion-information-circled icon--small info-box" title="Hier klicken um mehr Informationen zum Warmwasserverbrauch zu erhalten"></i>
               </span>
               <font color="darkred">{{form.warm_water_per_day.errors}}</font>
-              {{form.warm_water_per_day}}
+              <div class="input-group">
+                {{form.warm_water_per_day}}
+                <span class="input-group-label">l/Tag</span>
+              </div>
             </div>
             <div class="reveal" id="modal-warmwater" data-reveal>
               <div class="grid-x technology">

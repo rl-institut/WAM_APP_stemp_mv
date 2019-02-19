@@ -120,7 +120,9 @@ class Household(models.Model):
         max_length=10,
         verbose_name='Heizungsmodell'
     )
-    warm_water_per_day = models.IntegerField()
+    warm_water_per_day = models.IntegerField(
+        verbose_name='Warmwasserbedarf'
+    )
     roof_area = models.FloatField(
         verbose_name='Verfügbare Dachfläche für Photovoltaik',
         validators=[
