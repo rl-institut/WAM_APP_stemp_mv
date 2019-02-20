@@ -100,6 +100,11 @@ class ParameterForm(Form):
                 )
             else:
                 field = IntegerField(initial=int(parameter_data['value']))
+        elif parameter_data['value_type'] == 'hidden':
+            field = CharField(
+                widget=HiddenInput,
+                initial=parameter_data['value']
+            )
         else:
             raise TypeError(
                 'Unknown value type "' + parameter_data['value_type'] +

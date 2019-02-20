@@ -14,6 +14,8 @@ LOCATION = (11.181475, 53.655119)  # Lützow (lon,lat)
 DEFAULT_NUMBER_OF_PERSONS = 2
 DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER = 22
 
+BHKW_FULL_LOAD_HOURS = 5000
+
 ResultColor = namedtuple('ResultColor', ['quality', 'percentage', 'style'])
 RESULT_COLORS = (
     ResultColor('good', 0.2, 'background-color: #0A6164; color: $white;'),

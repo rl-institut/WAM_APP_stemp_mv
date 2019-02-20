@@ -3,10 +3,8 @@ from oemof.solph import Flow, Bus, Investment, Transformer
 from oemof.tools.economics import annuity
 
 from stemp.scenarios import basic_setup
+from stemp.constants import BHKW_FULL_LOAD_HOURS
 from stemp.scenarios.basic_setup import AdvancedLabel, pe
-
-
-BHKW_SIZE_PEAK_FACTOR = 3.33
 
 
 class Scenario(basic_setup.BaseScenario):
@@ -62,7 +60,9 @@ class Scenario(basic_setup.BaseScenario):
         lifetime = parameters[self.name]['lifetime']
         wacc = parameters['General']['wacc'] / 100
         epc = annuity(capex, lifetime, wacc)
-        invest = Investment(ep_costs=epc)
+        invest = Investment(
+            ep_costs=epc, minimum=float(parameters[self.name]['min_size'])
+        )
         invest.capex = capex
         avg_gas_price = self.average_cost_per_year(
             parameters['General']['gas_price'],
@@ -134,18 +134,25 @@ class Scenario(basic_setup.BaseScenario):
         )
         self.energysystem.add(gas_heating)
 
-    @classmethod
-    def add_dynamic_parameters(cls, scenario, parameters):
-        demand = cls.get_demand(
-            scenario.session.demand_type,
-            scenario.session.demand_id
-        )
-        max_heat_demand = max(demand.annual_total_demand())
-    
-        # Estimate bhkw size:
-        bhkw_size = max_heat_demand * BHKW_SIZE_PEAK_FACTOR
-    
-        # Get capex:
+    @staticmethod
+    def get_optimum_bhkw_size(demand):
+        demand.sort_values(ascending=False, inplace=True)
+        partial_load_right = demand[BHKW_FULL_LOAD_HOURS - 1:8760].sum()
+
+        # Search for optimum bkhw-size starting at minimum (full-load-hours):
+        x_start = BHKW_FULL_LOAD_HOURS - 2
+        while True:
+            bhkw_size = demand[x_start]
+            partial_load_left = -(
+                    demand[:BHKW_FULL_LOAD_HOURS] - bhkw_size
+            ).clip(upper=0).sum()
+            if partial_load_left > partial_load_right:
+                break
+            x_start -= 1
+        return demand[x_start + 1]
+
+    @staticmethod
+    def get_bhkw_capex(bhkw_size):
         if bhkw_size < 1:
             capex = 9.585 * 1e3
         elif 1 <= bhkw_size < 10:
@@ -158,7 +165,10 @@ class Scenario(basic_setup.BaseScenario):
             capex = 460.89 * bhkw_size ** -0.015
         else:
             raise IndexError(f'No BHKW-capex found for size {bhkw_size}kW')
-    
+        return capex
+
+    @staticmethod
+    def get_bhkw_efficiency(bhkw_size):
         # Get eff:
         if bhkw_size < 1:
             raise IndexError(
@@ -173,7 +183,24 @@ class Scenario(basic_setup.BaseScenario):
             eff = 29.627 * bhkw_size ** 0.0498
         else:
             eff = 29.627
-    
+        return eff
+
+    @classmethod
+    def add_dynamic_parameters(cls, scenario, parameters):
+        demand = cls.get_demand(
+            scenario.session.demand_type,
+            scenario.session.demand_id
+        ).annual_total_demand()
+
+        bhkw_size = cls.get_optimum_bhkw_size(demand)
+        capex = cls.get_bhkw_capex(bhkw_size)
+        eff = cls.get_bhkw_efficiency(bhkw_size)
+
+        parameters[cls.name]['min_size'] = {
+            'value': str(round(bhkw_size)),
+            'value_type': 'hidden',
+            'unit': 'kW'
+        }
         parameters[cls.name]['capex'] = (
             parameters[cls.name]['capex'].new_child(
                 {'value': str(round(capex))}
@@ -185,6 +212,16 @@ class Scenario(basic_setup.BaseScenario):
             )
         )
         return parameters
+
+    @classmethod
+    def is_available(cls, demand):
+        bhkw_size = cls.get_optimum_bhkw_size(demand.annual_total_demand())
+        try:
+            cls.get_bhkw_capex(bhkw_size)
+            cls.get_bhkw_efficiency(bhkw_size)
+        except IndexError:
+            return False
+        return True
 
     @classmethod
     def get_data_label(cls, nodes):

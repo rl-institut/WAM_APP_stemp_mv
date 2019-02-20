@@ -74,7 +74,6 @@ class ScenarioModules(object):
             return module
 
 
-# SCENARIO_MODULES are set in apps.StempConfig.ready:
 SCENARIO_MODULES = ScenarioModules()
 SCENARIO_PARAMETERS = {
     scenario: ConfigObj(

@@ -183,12 +183,48 @@ class TechnologyView(TemplateView):
             (sc, params['LABELS']['name'])
             for sc, params in app_settings.SCENARIO_PARAMETERS.items()
         )
+        initial = [choice[0] for choice in choices]
         technology_information = {
             sc: params['LABELS']
             for sc, params in app_settings.SCENARIO_PARAMETERS.items()
         }
 
         demand = session.get_demand()
+
+        # Make BHKW/BIO-BHKW uncheckable if bhkw-size is out of bounds:
+        if 'bhkw' in app_settings.ACTIVATED_SCENARIOS:
+            scenario = (
+                app_settings.SCENARIO_MODULES['bhkw'].Scenario)
+            if not scenario.is_available(demand):
+                name = (
+                    app_settings.SCENARIO_PARAMETERS['bhkw']['LABELS']['name'])
+                technology_information['bhkw']['warning'] = (
+                    f"{name} ist nicht in nötiger Größe verfügbar"
+                )
+                technology_information['bhkw']['grey_out'] = True
+                technology_information['bhkw']['disabled'] = True
+                initial.remove('bhkw')
+        if 'bio_bhkw' in app_settings.ACTIVATED_SCENARIOS:
+            scenario = (
+                app_settings.SCENARIO_MODULES['bio_bhkw'].Scenario)
+            if not scenario.is_available(demand):
+                name = (
+                    app_settings.SCENARIO_PARAMETERS['bio_bhkw']['LABELS'][
+                        'name'
+                    ]
+                )
+                technology_information['bio_bhkw']['warning'] = (
+                    f"{name} ist nicht in nötiger Größe verfügbar"
+                )
+                technology_information['bio_bhkw']['grey_out'] = True
+                technology_information['bio_bhkw']['disabled'] = True
+                initial.remove('bio_bhkw')
+            else:
+                # Add warning for bio-bhkw
+                technology_information['bio_bhkw']['warning'] = (
+                    app_settings.SCENARIO_PARAMETERS[
+                        'bio_bhkw']['LABELS']['warning']
+                )
 
         # Add warning if radiator is chosen in combination with heatpump:
         if 'pv_heatpump' in app_settings.ACTIVATED_SCENARIOS:
@@ -197,18 +233,12 @@ class TechnologyView(TemplateView):
                     app_settings.SCENARIO_PARAMETERS[
                         'pv_heatpump']['LABELS']['warning']
                 )
-                technology_information['pv_heatpump']['grey_out'] = True
-        if 'bio_bhkw' in app_settings.ACTIVATED_SCENARIOS:
-            technology_information['bio_bhkw']['warning'] = (
-                app_settings.SCENARIO_PARAMETERS[
-                    'bio_bhkw']['LABELS']['warning']
-            )
 
         context['technology'] = forms.TechnologyForm(
             'technology',
             'Technology',
             choices=choices,
-            initial=[choice[0] for choice in choices],
+            initial=initial,
             information=technology_information
         )
         context['demand_type'] = session.demand_type.suffix()
