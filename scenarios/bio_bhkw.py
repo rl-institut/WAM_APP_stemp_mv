@@ -22,7 +22,7 @@ class Scenario(bhkw.Scenario):
             scenario.session.demand_type,
             scenario.session.demand_id
         )
-        max_heat_demand = max(demand.annual_heat_demand())
+        max_heat_demand = max(demand.annual_total_demand())
     
         # Estimate bhkw size:
         bhkw_size = max_heat_demand * BHKW_SIZE_PEAK_FACTOR

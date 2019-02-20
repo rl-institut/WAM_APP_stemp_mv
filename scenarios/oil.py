@@ -13,13 +13,20 @@ class Scenario(basic_setup.PrimaryInputScenario):
         'Oil': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions'],
         'demand': ['index', 'type']
     }
+
+    def __init__(self, **parameters):
+        self.b_oil = None
+        super(Scenario, self).__init__(**parameters)
     
     def create_energysystem(self, **parameters):
         super(Scenario, self).create_energysystem()
     
         # Create oil bus
-        b_oil = Bus(label=AdvancedLabel("b_oil", type='Bus'), balanced=False)
-        self.energysystem.add(b_oil)
+        self.b_oil = Bus(
+            label=AdvancedLabel("b_oil", type='Bus'),
+            balanced=False
+        )
+        self.energysystem.add(self.b_oil)
     
         # Add households separately or as whole district:
         self.add_households(
@@ -39,8 +46,6 @@ class Scenario(basic_setup.PrimaryInputScenario):
         )
     
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_demand_th')
-        b_oil = self.find_element_in_groups('b_oil')
         invest = Investment(ep_costs=epc)
         invest.capex = capex
         oil_heating = Transformer(
@@ -50,7 +55,7 @@ class Scenario(basic_setup.PrimaryInputScenario):
                 tags=('primary_source', )
             ),
             inputs={
-                b_oil: Flow(
+                self.b_oil: Flow(
                     variable_costs=avg_oil_price,
                     investment=invest,
                     is_fossil=True,
@@ -58,9 +63,12 @@ class Scenario(basic_setup.PrimaryInputScenario):
                 )
             },
             outputs={
-                sub_b_th: Flow(variable_costs=parameters[self.name]['opex'])},
+                self.sub_b_th: Flow(
+                    variable_costs=parameters[self.name]['opex']
+                )
+            },
             conversion_factors={
-                sub_b_th: parameters[self.name]['efficiency'] / 100}
+                self.sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
         oil_heating.pf = (
             parameters['General']['pf_oil'] /

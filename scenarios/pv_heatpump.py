@@ -2,7 +2,7 @@
 import pandas
 import sqlahelper
 
-from oemof.solph import Flow, Transformer, Investment, Source, Bus
+from oemof.solph import Flow, Transformer, Investment, Source, Bus, Sink
 from oemof.tools.economics import annuity
 
 from stemp.oep_models import OEPTimeseries
@@ -29,6 +29,11 @@ class Scenario(basic_setup.BaseScenario):
         'demand': ['index', 'type']
     }
 
+    def __init__(self, **parameters):
+        self.sub_b_th_warmwater = None
+        self.demand_th_warmwater = None
+        super(Scenario, self).__init__(**parameters)
+
     def create_energysystem(self, **parameters):
         super(Scenario, self).create_energysystem()
 
@@ -41,9 +46,6 @@ class Scenario(basic_setup.BaseScenario):
         )
 
     def add_technology(self, demand, timeseries, parameters):
-        # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_demand_th')
-
         # Add electricity busses:
         sub_b_el = Bus(label=AdvancedLabel('b_demand_el', type='Bus'))
         b_el_net = Bus(
@@ -72,8 +74,8 @@ class Scenario(basic_setup.BaseScenario):
                     co2_emissions=parameters['HP']['co2_emissions']
                 )
             },
-            outputs={sub_b_th: Flow()},
-            conversion_factors={sub_b_th: COP}
+            outputs={self.sub_b_th: Flow()},
+            conversion_factors={self.sub_b_th: COP}
         )
 
         # Add pv system:

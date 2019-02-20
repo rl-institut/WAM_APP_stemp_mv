@@ -15,13 +15,17 @@ class Scenario(basic_setup.PrimaryInputScenario):
         'demand': ['index', 'type']
     }
 
+    def __init__(self, **parameters):
+        self.b_woodchip = None
+        super(Scenario, self).__init__(**parameters)
+
     def create_energysystem(self, **parameters):
         super(Scenario, self).create_energysystem()
     
         # Create woodchip bus
-        b_woodchip = Bus(
+        self.b_woodchip = Bus(
             label=AdvancedLabel("b_woodchip", type='Bus'), balanced=False)
-        self. energysystem.add(b_woodchip)
+        self. energysystem.add(self.b_woodchip)
     
         # Add households separately or as whole district:
         self.add_households(parameters)    
@@ -34,8 +38,6 @@ class Scenario(basic_setup.PrimaryInputScenario):
         epc = annuity(capex, lifetime, wacc)
     
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_demand_th')
-        b_woodchip = self.find_element_in_groups('b_woodchip')
         invest = Investment(ep_costs=epc)
         invest.capex = capex
         woodchip_heating = Transformer(
@@ -45,7 +47,7 @@ class Scenario(basic_setup.PrimaryInputScenario):
                 tags=('primary_source',)
             ),
             inputs={
-                b_woodchip: Flow(
+                self.b_woodchip: Flow(
                     variable_costs=parameters['General']['woodchip_price'],
                     investment=invest,
                     is_fossil=True,
@@ -53,9 +55,12 @@ class Scenario(basic_setup.PrimaryInputScenario):
                 )
             },
             outputs={
-                sub_b_th: Flow(variable_costs=parameters[self.name]['opex'])},
+                self.sub_b_th: Flow(
+                    variable_costs=parameters[self.name]['opex']
+                )
+            },
             conversion_factors={
-                sub_b_th: parameters[self.name]['efficiency'] / 100}
+                self.sub_b_th: parameters[self.name]['efficiency'] / 100}
         )
         woodchip_heating.pf = (
             parameters['General']['pf_wood'] /

@@ -12,13 +12,20 @@ class Scenario(PrimaryInputScenario):
         'Gas': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions'],
         'demand': ['index', 'type']
     }
+
+    def __init__(self, **parameters):
+        self.b_gas = None
+        super(PrimaryInputScenario, self).__init__(**parameters)
     
     def create_energysystem(self, **parameters):
-        super(Scenario, self).create_energysystem()
+        super(PrimaryInputScenario, self).create_energysystem()
     
         # Create oil bus
-        b_gas = Bus(label=AdvancedLabel("b_gas", type='Bus'), balanced=False)
-        self.energysystem.add(b_gas)
+        self.b_gas = Bus(
+            label=AdvancedLabel("b_gas", type='Bus'),
+            balanced=False
+        )
+        self.energysystem.add(self.b_gas)
     
         # Add households separately or as whole district:
         self.add_households(parameters)    
@@ -36,8 +43,6 @@ class Scenario(PrimaryInputScenario):
         )
     
         # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_demand_th')
-        b_gas = self.find_element_in_groups('b_gas')
         invest = Investment(ep_costs=epc)
         invest.capex = capex
         gas_heating = Transformer(
@@ -47,7 +52,7 @@ class Scenario(PrimaryInputScenario):
                 tags=('primary_source', )
             ),
             inputs={
-                b_gas: Flow(
+                self.b_gas: Flow(
                     variable_costs=avg_gas_price,
                     investment=invest,
                     is_fossil=True,
@@ -55,9 +60,13 @@ class Scenario(PrimaryInputScenario):
                 )
             },
             outputs={
-                sub_b_th: Flow(variable_costs=parameters[self.name]['opex'])},
+                self.sub_b_th: Flow(
+                    variable_costs=parameters[self.name]['opex']
+                )
+            },
             conversion_factors={
-                sub_b_th: parameters[self.name]['efficiency'] / 100}
+                self.sub_b_th: parameters[self.name]['efficiency'] / 100
+            }
         )
         gas_heating.pf = (
             parameters['General']['pf_gas'] /

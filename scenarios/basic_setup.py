@@ -55,6 +55,8 @@ class BaseScenario(ABC):
 
     def __init__(self, **parameters):
         self.energysystem = None
+        self.sub_b_th = None
+        self.demand_th = None
         self.create_energysystem(**parameters)
 
     def create_energysystem(self, **parameters):
@@ -66,40 +68,30 @@ class BaseScenario(ABC):
 
     def add_subgrid_and_demands(self, customer):
         # Add subgrid busses
-        sub_b_th = Bus(
+        self.sub_b_th = Bus(
             label=AdvancedLabel(
                 f"b_demand_th",
                 type='Bus',
             )
         )
-        self.energysystem.add(sub_b_th)
+        self.energysystem.add(self.sub_b_th)
 
         # Add heat demand
-        demand_th = Sink(
+        self.demand_th = Sink(
             label=AdvancedLabel(
                 f"demand_th",
                 type='Sink',
                 tags=('demand', )
             ),
             inputs={
-                sub_b_th: Flow(
+                self.sub_b_th: Flow(
                     nominal_value=1,
-                    actual_value=customer.annual_heat_demand(),
+                    actual_value=customer.annual_total_demand(),
                     fixed=True
                 )
             }
         )
-        self.energysystem.add(demand_th)
-
-        # Add safety excess:
-        ex_th = Sink(
-            label=AdvancedLabel(
-                f"excess_th",
-                type='Sink',
-            ),
-            inputs={sub_b_th: Flow()}
-        )
-        self.energysystem.add(ex_th)
+        self.energysystem.add(self.demand_th)
 
     def add_households(self, parameters, timeseries=None):
         """
@@ -111,14 +103,6 @@ class BaseScenario(ABC):
         )
         self.add_subgrid_and_demands(demand)
         self.add_technology(demand, timeseries, parameters)
-
-    def find_element_in_groups(self, label):
-        try:
-            return next(
-                v for k, v in self.energysystem.groups.items() if label in k)
-        except StopIteration:
-            raise KeyError(
-                f'Could not find element containing {label} in label')
 
     @classmethod
     def add_dynamic_parameters(cls, scenario, parameters):

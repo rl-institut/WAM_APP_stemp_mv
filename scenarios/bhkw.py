@@ -19,22 +19,25 @@ class Scenario(basic_setup.BaseScenario):
         ],
         'demand': ['index', 'type']
     }
+
+    def __init__(self, **parameters):
+        self.b_gas = None
+        super(Scenario, self).__init__(**parameters)
     
     def create_energysystem(self, **parameters):
         super(Scenario, self).create_energysystem()
     
         # Create oil bus
-        b_gas = Bus(label=AdvancedLabel("b_gas", type='Bus'), balanced=False)
-        self.energysystem.add(b_gas)
+        self.b_gas = Bus(
+            label=AdvancedLabel("b_gas", type='Bus'),
+            balanced=False
+        )
+        self.energysystem.add(self.b_gas)
     
         # Add households separately or as whole district:
         self.add_households(parameters)    
     
     def add_technology(self, demand, timeseries, parameters):
-        # Get subgrid busses:
-        sub_b_th = self.find_element_in_groups(f'b_demand_th')
-        b_gas = self.find_element_in_groups('b_gas')
-    
         # Add bus from bhkw to net:
         b_bhkw_el = Bus(label=AdvancedLabel('b_bhkw_el', type='Bus'))
         b_net_el = Bus(
@@ -79,7 +82,7 @@ class Scenario(basic_setup.BaseScenario):
                 tags=('bhkw',)
             ),
             inputs={
-                b_gas: Flow(
+                self.b_gas: Flow(
                     variable_costs=avg_gas_price,
                     investment=invest,
                     min=(
@@ -94,12 +97,13 @@ class Scenario(basic_setup.BaseScenario):
                 b_bhkw_el: Flow(
                     pf=parameters['General']['pf_bhkw_el']
                 ),
-                sub_b_th: Flow(pf=pf_gas)
+                self.sub_b_th: Flow(pf=pf_gas)
             },
             conversion_factors={
                 b_bhkw_el: (
                     parameters[self.name]['conversion_factor_el'] / 100),
-                sub_b_th: parameters[self.name]['conversion_factor_th'] / 100
+                self.sub_b_th: (
+                    parameters[self.name]['conversion_factor_th'] / 100)
             }
         )
         self.energysystem.add(bhkw)
@@ -114,7 +118,7 @@ class Scenario(basic_setup.BaseScenario):
             label=AdvancedLabel(
                 f'{demand.name}_gas_heating', type='Transformer'),
             inputs={
-                b_gas: Flow(
+                self.b_gas: Flow(
                     variable_costs=avg_gas_price,
                     investment=invest,
                     is_fossil=True,
@@ -122,10 +126,10 @@ class Scenario(basic_setup.BaseScenario):
                 )
             },
             outputs={
-                sub_b_th: Flow(variable_costs=parameters['Gas']['opex'])
+                self.sub_b_th: Flow(variable_costs=parameters['Gas']['opex'])
             },
             conversion_factors={
-                sub_b_th: parameters['Gas']['efficiency'] / 100
+                self.sub_b_th: parameters['Gas']['efficiency'] / 100
             }
         )
         self.energysystem.add(gas_heating)
@@ -136,7 +140,7 @@ class Scenario(basic_setup.BaseScenario):
             scenario.session.demand_type,
             scenario.session.demand_id
         )
-        max_heat_demand = max(demand.annual_heat_demand())
+        max_heat_demand = max(demand.annual_total_demand())
     
         # Estimate bhkw size:
         bhkw_size = max_heat_demand * BHKW_SIZE_PEAK_FACTOR
@@ -240,7 +244,7 @@ class Scenario(basic_setup.BaseScenario):
 
         pf = (
             pf_gas * gas_input / demand -
-            pf_net * (0.9 * el_output / demand - 0.1)
+            pf_net * (0.9 * el_output / demand - 0.05)
         )
         primary_energy = demand * pf
         return pe(energy=primary_energy, factor=pf)
