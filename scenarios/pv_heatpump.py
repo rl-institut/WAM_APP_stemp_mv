@@ -108,7 +108,7 @@ class Scenario(basic_setup.BaseScenario):
         epc = annuity(capex, lifetime, wacc)
         hp_invest = Investment(ep_costs=epc)
         hp_invest.capex = capex
-        COP = heat.cop_heating(timeseries['temp'], type_hp='air')
+        COP = heat.cop_heating_floor(timeseries['temp'], type_hp='air')
 
         hp = Transformer(
             label=AdvancedLabel(
