@@ -45,6 +45,53 @@ class Scenario(basic_setup.BaseScenario):
             timeseries
         )
 
+    def add_subgrid_and_demands(self, customer):
+        # Add subgrid busses
+        self.sub_b_th = Bus(
+            label=AdvancedLabel(
+                f"b_demand_th",
+                type='Bus',
+            )
+        )
+        self.sub_b_th_warmwater = Bus(
+            label=AdvancedLabel(
+                f"b_demand_th_warmwater",
+                type='Bus',
+            )
+        )
+        self.energysystem.add(self.sub_b_th, self.sub_b_th_warmwater)
+
+        # Add heat demand
+        self.demand_th = Sink(
+            label=AdvancedLabel(
+                f"demand_th",
+                type='Sink',
+                tags=('demand', )
+            ),
+            inputs={
+                self.sub_b_th: Flow(
+                    nominal_value=1,
+                    actual_value=customer.annual_heat_demand(),
+                    fixed=True
+                )
+            }
+        )
+        self.demand_th_warmwater = Sink(
+            label=AdvancedLabel(
+                f"demand_th_warmwater",
+                type='Sink',
+                tags=('demand',)
+            ),
+            inputs={
+                self.sub_b_th_warmwater: Flow(
+                    nominal_value=1,
+                    actual_value=customer.annual_hot_water_demand(),
+                    fixed=True
+                )
+            }
+        )
+        self.energysystem.add(self.demand_th, self.demand_th_warmwater)
+
     def add_technology(self, demand, timeseries, parameters):
         # Add electricity busses:
         sub_b_el = Bus(label=AdvancedLabel('b_demand_el', type='Bus'))
@@ -135,13 +182,11 @@ class Scenario(basic_setup.BaseScenario):
                 type='Transformer'
             ),
             inputs={
-                b_el_net: Flow(
-                    variable_costs=parameters['General']['net_costs'],
-                )
+                sub_b_el: Flow()
             },
-            outputs={sub_b_th: Flow()},
+            outputs={self.sub_b_th_warmwater: Flow()},
             conversion_factors={
-                sub_b_th: 0.9  # FIXME: Parameter dynamic
+                self.sub_b_th_warmwater: 0.9  # FIXME: Parameter dynamic
             }
         )
         self.energysystem.add(

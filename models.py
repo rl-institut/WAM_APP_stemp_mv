@@ -151,7 +151,7 @@ class Household(models.Model):
         house_type = constants.HouseType[self.house_type]
         return self.get_oep_timeseries(house_type.value)
 
-    def get_hot_water_profile(self):
+    def annual_hot_water_demand(self):
         session = sqlahelper.get_session()
         with transaction.manager:
             hot_water = session.query(oep_models.OEPHotWater).filter_by(
@@ -167,14 +167,17 @@ class Household(models.Model):
     def __str__(self):
         return self.name
 
-    def annual_heat_demand(self):
+    def annual_total_demand(self):
         return (
                 self.heat_demand * self.get_heat_demand_profile() +
-                self.get_hot_water_profile()
+                self.annual_hot_water_demand()
         )
 
+    def annual_heat_demand(self):
+        return self.heat_demand * self.get_heat_demand_profile()
+
     def warm_water_demand(self):
-        return self.get_hot_water_profile().sum()
+        return self.annual_hot_water_demand().sum()
 
     def contains_radiator(self):
         return self.heat_type == constants.HeatType.radiator.name
@@ -199,10 +202,26 @@ class District(models.Model):
                 district=self, household=hh, amount=amount)
             district_hh.save()
 
+    def annual_total_demand(self):
+        return sum(
+            [
+                dh.household.annual_total_demand() * dh.amount
+                for dh in self.districthouseholds_set.all()
+            ]
+        )
+
     def annual_heat_demand(self):
         return sum(
             [
                 dh.household.annual_heat_demand() * dh.amount
+                for dh in self.districthouseholds_set.all()
+            ]
+        )
+
+    def annual_hot_water_demand(self):
+        return sum(
+            [
+                dh.household.annual_hot_water_demand() * dh.amount
                 for dh in self.districthouseholds_set.all()
             ]
         )
@@ -218,10 +237,3 @@ class District(models.Model):
     @property
     def max_pv_size(self):
         return sum([hh.max_pv_size for hh in self.households.all()])
-
-    def summary(self):
-        summary = [
-            f'Jährlicher Wärmebedarf: {self.annual_heat_demand().sum()} kWh',
-        ]
-        summary = ''.join(f'<p>{s}</p>' for s in summary)
-        return mark_safe(summary)
