@@ -85,4 +85,7 @@ class ComparisonDataframe(Dataframe):
                 axis=1,
                 subset=pandas.IndexSlice[self.colored, :]
             )
+        styler.set_table_styles(
+            [{"selector": "td", "props": [("text-align", "right")]}]
+        )
         return styler.render()
