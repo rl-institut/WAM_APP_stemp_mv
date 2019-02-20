@@ -1,5 +1,6 @@
 
 import os
+import click
 import logging
 import pandas
 import sqlahelper
@@ -247,3 +248,39 @@ def insert_assumptions():
         source=hot_water_energy_source
     )
     hot_water_energy.save()
+
+
+@click.command()
+@click.argument('commands', nargs=-1)
+def execute(commands):
+    if not isinstance(commands, tuple):
+        commands = [commands]
+    for command in commands:
+        if command == 'heat':
+            insert_heat_demand()
+        elif command == 'assumptions':
+            insert_assumptions()
+        elif command == 'households':
+            insert_default_households()
+        elif command == 'dhw':
+            insert_dhw_timeseries()
+        elif command == 'pv_temp':
+            insert_pv_and_temp()
+        elif command == 'scenarios':
+            insert_scenarios()
+        elif command == 'oep_tables':
+            create_oep_tables()
+        elif command == 'delete_households':
+            delete_households()
+        elif command == 'delete_oep_tables':
+            delete_oep_tables()
+        elif command == 'delete_scenarios':
+            delete_scenarios()
+        elif command == 'delete_simulations':
+            delete_stored_simulations()
+        else:
+            raise KeyError(f'Unkown command "{command}"')
+
+
+if __name__ == '__main__':
+    execute()
