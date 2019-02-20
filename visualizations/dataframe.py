@@ -79,9 +79,10 @@ class ComparisonDataframe(Dataframe):
     def render_data(self):
         # Apply styles:
         styler = self.format_row_wise(self.data.style, self.formatters)
-        styler = styler.apply(
-            self._style_color,
-            axis=1,
-            subset=pandas.IndexSlice[self.colored, :]
-        )
+        if len(self.data.columns) > 1:
+            styler = styler.apply(
+                self._style_color,
+                axis=1,
+                subset=pandas.IndexSlice[self.colored, :]
+            )
         return styler.render()
