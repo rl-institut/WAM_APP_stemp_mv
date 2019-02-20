@@ -90,7 +90,7 @@ def insert_heat_demand():
 
     demand = pandas.DataFrame(
         index=pandas.date_range(
-            pandas.datetime(2018, 1, 1, 0),
+            pandas.datetime(2017, 1, 1, 0),
             periods=8760,
             freq='H'
         )
@@ -98,16 +98,28 @@ def insert_heat_demand():
 
     # Single family house (efh: Einfamilienhaus)
     demand['efh'] = bdew.HeatBuilding(
-        demand.index, temperature=temperature,
+        temperature.index,
+        temperature=temperature['TT_TU'],
         shlp_type='EFH',
-        building_class=1, wind_class=1,
-        name='EFH').get_normalized_bdew_profile()
+        building_class=1,
+        wind_class=1,
+        name='EFH',
+        ww_incl=False
+    ).get_normalized_bdew_profile()
     # Multi family house (mfh: Mehrfamilienhaus)
     demand['mfh'] = bdew.HeatBuilding(
-        demand.index, temperature=temperature,
+        temperature.index,
+        temperature=temperature['TT_TU'],
         shlp_type='MFH',
-        building_class=2, wind_class=0,
-        name='MFH').get_normalized_bdew_profile()
+        building_class=2,
+        wind_class=0,
+        name='MFH',
+        ww_incl=False
+    ).get_normalized_bdew_profile()
+
+    # Don't heat if temp >= 20°
+    demand['efh'][temperature['TT_TU'] >= 20] = 0
+    demand['mfh'][temperature['TT_TU'] >= 20] = 0
 
     # Add to OEP
     with transaction.manager:
