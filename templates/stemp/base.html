@@ -1,13 +1,14 @@
 <!doctype html>
 
 {% load static %}
+{% load labels %}
 
 <html class="no-js" lang="en">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Stemp Tool: Lützow{% endblock %}</title>
+    <title>{% block title %}Wärmeversorgung: {% label 'region:name' %}{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'ionicons-2.0.1/css/ionicons.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'stemp/foundation/css/app.css' %}">
     {% block header %}{% endblock %}
