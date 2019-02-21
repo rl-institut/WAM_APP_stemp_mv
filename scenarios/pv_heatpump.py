@@ -76,6 +76,14 @@ class Scenario(basic_setup.BaseScenario):
                 )
             }
         )
+        # Add safety excess:
+        ex_th = Sink(
+            label=AdvancedLabel(
+                f"excess_th",
+                type='Sink',
+            ),
+            inputs={self.sub_b_th: Flow()}
+        )
         self.demand_th_warmwater = Sink(
             label=AdvancedLabel(
                 f"demand_th_warmwater",
@@ -90,7 +98,16 @@ class Scenario(basic_setup.BaseScenario):
                 )
             }
         )
-        self.energysystem.add(self.demand_th, self.demand_th_warmwater)
+        # Add safety excess:
+        ex_th_warmwater = Sink(
+            label=AdvancedLabel(
+                f"excess_th_warmwater",
+                type='Sink',
+            ),
+            inputs={self.sub_b_th_warmwater: Flow()}
+        )
+        self.energysystem.add(
+            self.demand_th, self.demand_th_warmwater, ex_th, ex_th_warmwater)
 
     def add_technology(self, demand, timeseries, parameters):
         # Add electricity busses:
