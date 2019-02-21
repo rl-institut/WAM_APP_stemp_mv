@@ -21,7 +21,7 @@ ENERGY_TIPS = ConfigObj(
 stemp_config = settings.config['STEMP']
 
 STORE_LP_FILE = stemp_config.get('STORE_LP_FILE', 'False') == 'True'
-DEFAULT_PERIODS = stemp_config.get('DEFAULT_PERIODS', 8760)
+DEFAULT_PERIODS = int(stemp_config.get('DEFAULT_PERIODS', 8760))
 
 # DB SETUP:
 DB_URL = '{ENGINE}://{USER}:{PASSWORD}@{HOST}:{PORT}'
