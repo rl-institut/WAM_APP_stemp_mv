@@ -11,9 +11,6 @@ from wam import settings
 from db_apps import oemof_results
 from stemp import oep_models
 
-STORE_LP_FILE = os.environ.get('STORE_LP_FILE', 'False') == 'True'
-DEFAULT_PERIODS = os.environ.get('DEFAULT_PERIODS', 8760)
-
 ADDITIONAL_PARAMETERS = ConfigObj(
     os.path.join(settings.BASE_DIR, 'stemp', 'scenarios', 'attributes.cfg'))
 
@@ -22,6 +19,9 @@ ENERGY_TIPS = ConfigObj(
     os.path.join(settings.BASE_DIR, 'stemp', 'texts', 'energy_tips.cfg'))
 
 stemp_config = settings.config['STEMP']
+
+STORE_LP_FILE = stemp_config.get('STORE_LP_FILE', False)
+DEFAULT_PERIODS = stemp_config.get('DEFAULT_PERIODS', 8760)
 
 # DB SETUP:
 DB_URL = '{ENGINE}://{USER}:{PASSWORD}@{HOST}:{PORT}'
