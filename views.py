@@ -478,7 +478,11 @@ class EnergyLinksView(TemplateView):
             'contacts': CSVWidget(
                 'stemp/texts/ansprechpartner.csv',
                 'Ansprechpartner',
-                csv_kwargs={'index_col': 0, 'sep': ';', 'encoding': 'latin_1'}
+                csv_kwargs={
+                    'index_col': 0,
+                    'sep': ';',
+                    'encoding': 'latin_1',
+                }
             ),
             'tipps': CSVWidget(
                 'stemp/texts/energiespartipps.csv',
