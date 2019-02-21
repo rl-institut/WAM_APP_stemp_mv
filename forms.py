@@ -259,6 +259,12 @@ class HouseholdForm(ModelForm):
                 }
             )
         }
+        error_messages = {
+            'name': {
+                'required': (
+                    'Bitte geben Sie einen Namen für den neuen Haushalt an.')
+            }
+        }
 
     class Media:
         js = ('stemp/js/household.js',)
