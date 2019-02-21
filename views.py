@@ -436,6 +436,8 @@ class ResultView(TemplateView):
             for sc in session.scenarios
             if sc.result_id is not None
         ]
+        if len(result_ids) == 0:
+            return self.render_to_response({})
         # Render stored results from session:
         return redirect('stemp:result_list', results=result_ids)
 
