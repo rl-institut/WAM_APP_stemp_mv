@@ -134,8 +134,8 @@ class TechnologieComparison(Aggregation):
     analyzer = OrderedDict(
         [
             ('Wärmekosten', stemp_an.LCOEAutomatedDemandAnalyzer),
-            ('Investment', stemp_an.TotalInvestmentAnalyzer),
-            ('CO2', stemp_an.CO2Analyzer),
+            ('Investition', stemp_an.TotalInvestmentAnalyzer),
+            ('CO2 Emissionen', stemp_an.CO2Analyzer),
             ('Brennstoffkosten', stemp_an.FossilCostsAnalyzer)
         ]
     )
@@ -156,7 +156,7 @@ class TechnologieComparison(Aggregation):
                 result.analysis.param_results,
                 result.analysis.get_analyzer(an.NodeBalanceAnalyzer)
             )
-            series['Primärfaktor'] = pe.factor
+            series['Primärenergiefaktor'] = pe.factor
             series['Primärenergie'] = pe.energy
 
             # Add pros and cons:
@@ -177,10 +177,10 @@ class TechnologieComparison(Aggregation):
         df = df[
             [
                 'Wärmekosten',
-                'Investment',
+                'Investition',
                 'Brennstoffkosten',
-                'CO2',
-                'Primärfaktor',
+                'CO2 Emissionen',
+                'Primärenergiefaktor',
                 'Primärenergie',
                 'Vorteile',
                 'Nachteile',
