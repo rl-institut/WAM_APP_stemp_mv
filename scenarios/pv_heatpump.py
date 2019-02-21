@@ -127,6 +127,9 @@ class Scenario(basic_setup.BaseScenario):
         hp_invest.capex = capex
         COP = heat.cop_heating_floor(timeseries['temp'], type_hp='air')
 
+        # Oemof safety - COP shall not be zero!
+        COP.clip(lower=1e-10, inplace=True)
+
         hp = Transformer(
             label=AdvancedLabel(
                 f"heat_pump",
