@@ -91,7 +91,16 @@ class BaseScenario(ABC):
                 )
             }
         )
-        self.energysystem.add(self.demand_th)
+
+        # Add safety excess:
+        ex_th = Sink(
+            label=AdvancedLabel(
+                f"excess_th",
+                type='Sink',
+            ),
+            inputs={self.sub_b_th: Flow()}
+        )
+        self.energysystem.add(self.demand_th, ex_th)
 
     def add_households(self, parameters, timeseries=None):
         """
