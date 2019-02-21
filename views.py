@@ -185,7 +185,7 @@ class TechnologyView(TemplateView):
         )
         initial = [choice[0] for choice in choices]
         technology_information = {
-            sc: params['LABELS']
+            sc: params['LABELS'].copy()
             for sc, params in app_settings.SCENARIO_PARAMETERS.items()
         }
 
