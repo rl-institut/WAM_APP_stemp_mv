@@ -163,11 +163,11 @@ class TechnologieComparison(Aggregation):
             pros = labels.get('pros', [])
             cons = labels.get('cons', [])
             series['Vorteile'] = '<br>'.join(map(
-                lambda x: f'<i class ="icon ion-thumbsup icon--small">{x}</i>',
+                lambda x: f'<i class ="icon ion-thumbsup icon--small"> {x} </i>',
                 pros
             ))
             series['Nachteile'] = '<br>'.join(map(
-                lambda x: f'<i class ="icon ion-thumbsdown icon--small"> {x}</i>',
+                lambda x: f'<i class ="icon ion-thumbsdown icon--small"> {x} </i>',
                 cons
             ))
 

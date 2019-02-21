@@ -93,7 +93,20 @@ class ComparisonDataframe(Dataframe):
                 axis=1,
                 subset=pandas.IndexSlice[self.colored, :]
             )
+        pro_con_align = [
+            {
+                "selector": f"td.data.row{row}.col{col}",
+                "props": [("text-align", "left")]
+            }
+            for row in range(6, 8)
+            for col in range(len(self.data.columns))
+        ]
         styler.set_table_styles(
-            [{"selector": "td", "props": [("text-align", "right")]}]
+            [
+                {
+                    "selector": "td",
+                    "props": [("text-align", "right")]
+                },
+            ] + pro_con_align
         )
         return styler.render()
