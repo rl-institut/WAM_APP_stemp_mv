@@ -11,7 +11,8 @@ from wam import settings
 from db_apps import oemof_results
 from stemp import oep_models
 
-STORE_LP_FILE = False
+STORE_LP_FILE = os.environ.get('STORE_LP_FILE', 'False') == 'True'
+DEFAULT_PERIODS = os.environ.get('DEFAULT_PERIODS', 8760)
 
 ADDITIONAL_PARAMETERS = ConfigObj(
     os.path.join(settings.BASE_DIR, 'stemp', 'scenarios', 'attributes.cfg'))

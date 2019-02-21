@@ -16,8 +16,6 @@ from stemp.oep_models import OEPScenario
 from stemp.models import District, Household
 
 
-DEFAULT_PERIODS = 8760
-
 AdvancedLabel = namedtuple(
     'AdvancedLabel', ('name', 'type', 'tags'))
 AdvancedLabel.__new__.__defaults__ = (None,)
@@ -63,7 +61,7 @@ class BaseScenario(ABC):
         # initialize energy system
         self.energysystem = EnergySystem(
             timeindex=pandas.date_range(
-                '2016-01-01', periods=DEFAULT_PERIODS, freq='H'),
+                '2016-01-01', periods=app_settings.DEFAULT_PERIODS, freq='H'),
         )
 
     def add_subgrid_and_demands(self, customer):
