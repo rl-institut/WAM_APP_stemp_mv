@@ -137,19 +137,19 @@ class Scenario(basic_setup.BaseScenario):
     @staticmethod
     def get_optimum_bhkw_size(demand):
         demand.sort_values(ascending=False, inplace=True)
-        partial_load_right = demand[BHKW_FULL_LOAD_HOURS - 1:8760].sum()
+        partial_load_right = demand.iloc[BHKW_FULL_LOAD_HOURS - 1:8760].sum()
 
         # Search for optimum bkhw-size starting at minimum (full-load-hours):
         x_start = BHKW_FULL_LOAD_HOURS - 2
         while True:
-            bhkw_size = demand[x_start]
+            bhkw_size = demand.iloc[x_start]
             partial_load_left = -(
-                    demand[:BHKW_FULL_LOAD_HOURS] - bhkw_size
+                    demand.iloc[:BHKW_FULL_LOAD_HOURS] - bhkw_size
             ).clip(upper=0).sum()
             if partial_load_left > partial_load_right:
                 break
             x_start -= 1
-        return demand[x_start + 1]
+        return demand.iloc[x_start + 1]
 
     @staticmethod
     def get_bhkw_capex(bhkw_size):
