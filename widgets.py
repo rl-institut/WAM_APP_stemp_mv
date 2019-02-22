@@ -196,16 +196,18 @@ class SubmitWidget(Widget):
 
 
 class HouseholdSummary(CustomWidget):
-    def __init__(self, household, use_header=True):
-        self.household = household
+    def __init__(self, household, use_header=True, count=None):
         self.template_name = (
             'widgets/summary_household_accordion.html'
             if use_header else 'widgets/summary_household_simple.html'
         )
+        self.household = household
+        self.count = count
 
     def get_context(self):
         return {
             'household': self.household,
+            'count': self.count
         }
 
 
