@@ -213,6 +213,13 @@ class LCOEHighchart(HCCosts):
             'enabled': False
         }
     }
+    colors = {
+        'Betriebskosten': '#fc8e65',
+        'Brennstoffkosten': '#55aae5',
+        'Investitionskosten': '#7fadb7',
+        'Strombezugskosten': '#fce288',
+        'Stromgutschrift': '#f69c3a',
+    }
 
     def __init__(self, data):
         super(LCOEHighchart, self).__init__()
@@ -220,6 +227,9 @@ class LCOEHighchart(HCCosts):
         self.add_pandas_data_set(data)
         self.set_options('title', {'text': 'Wärmekosten'})
         self.set_options('subtitle', {'text': 'Euro pro Kilowattstunde'})
+        self.set_options(
+            'colors', [self.colors[column] for column in data.columns]
+        )
 
         # Add lcoe sum per scenario as horizontal lines:
         summed_data = data.sum(axis=1)
