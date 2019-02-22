@@ -43,7 +43,7 @@ class ComparisonDataframe(Dataframe):
     formatters = {
         'Wärmekosten': lambda x: (
                 f'<pre>{x:.2f}' + f"{' €/kWh':<7}</pre>"),
-        'Investition': lambda x: (
+        'Investitionskosten': lambda x: (
                 f'<pre>{x:,.0f}' + f"{' €':<7}</pre>"),
         'CO2 Emissionen': lambda x: (
                 f'<pre>{x:,.0f}' + f"{' g/kWh':<7}</pre>"),
@@ -58,7 +58,7 @@ class ComparisonDataframe(Dataframe):
     }
     colored = (
         'Wärmekosten',
-        'Investition',
+        'Investitionskosten',
         'Brennstoffkosten',
         'CO2 Emissionen',
         'Primärenergiefaktor',

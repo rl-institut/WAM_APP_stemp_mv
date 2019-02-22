@@ -53,7 +53,7 @@ class LCOEAggregation(Aggregation):
         filtered_data = defaultdict(float)
         for k, v in data.items():
             if abs(v.investment) > 0.001:
-                filtered_data['Investment'] += v.investment
+                filtered_data['Investitionskosten'] += v.investment
             if abs(v.variable_costs) > 0.001:
                 filtered_data[
                     result.scenario.Scenario.get_data_label(k)
@@ -138,7 +138,7 @@ class TechnologieComparison(Aggregation):
     analyzer = OrderedDict(
         [
             ('Wärmekosten', stemp_an.LCOEAutomatedDemandAnalyzer),
-            ('Investition', stemp_an.TotalInvestmentAnalyzer),
+            ('Investitionskosten', stemp_an.TotalInvestmentAnalyzer),
             ('CO2 Emissionen', stemp_an.CO2Analyzer),
             ('Brennstoffkosten', stemp_an.FossilCostsAnalyzer)
         ]
@@ -181,7 +181,7 @@ class TechnologieComparison(Aggregation):
         df = df[
             [
                 'Wärmekosten',
-                'Investition',
+                'Investitionskosten',
                 'Brennstoffkosten',
                 'CO2 Emissionen',
                 'Primärenergiefaktor',
