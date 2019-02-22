@@ -364,7 +364,7 @@ class SummaryView(TemplateView):
             context['demands'] = [HouseholdSummary(demand)]
         else:
             context['demands'] = [
-                HouseholdSummary(hh) for hh in demand.households]
+                HouseholdSummary(hh) for hh in demand.households.all()]
         context['technologies'] = [
             TechnologySummary(app_settings.SCENARIO_PARAMETERS[scenario.name])
             for scenario in session.scenarios
