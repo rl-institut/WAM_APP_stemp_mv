@@ -1,10 +1,12 @@
 
 import numpy
 import pandas
+from collections import OrderedDict
 from itertools import accumulate
 
 from utils.visualizations import VisualizationTemplate
 from stemp.constants import RESULT_COLORS
+from stemp.app_settings import LABELS
 
 
 class Dataframe(VisualizationTemplate):
@@ -62,6 +64,7 @@ class ComparisonDataframe(Dataframe):
         'Primärenergiefaktor',
         'Primärenergie',
     )
+    information = {k: v for k, v in LABELS['result']['information'].items()}
 
     def __init__(self, data):
         super(ComparisonDataframe, self).__init__(
@@ -73,7 +76,7 @@ class ComparisonDataframe(Dataframe):
     def set_data(self, data: pandas.DataFrame):
         self.data = data
 
-    def _style_color(self, row):
+    def __style_color(self, row):
         row_style = []
         for value in row:
             color_index = numpy.digitize(
@@ -84,14 +87,46 @@ class ComparisonDataframe(Dataframe):
             row_style.append(RESULT_COLORS[color_index].style)
         return row_style
 
+    def __create_column_name_with_info(self, column):
+        info = self.information.get(column)
+
+        if info is not None:
+            return f"""\
+{column}
+<span class ="has-tip--no-border" data-tooltip title='{info}' data-position="right" data-alignment="center">
+  <i class="icon ion-information-circled icon--small info-box"></i>
+</span>
+"""
+        else:
+            return column
+
     def render_data(self):
+        # Exchange columns with columns plus information:
+        columns_dict = OrderedDict(
+            [
+                (i, self.__create_column_name_with_info(i))
+                for i in self.data.index
+            ]
+        )
+        self.data.index = pandas.Index(columns_dict.values())
+
         # Apply styles:
-        styler = self.format_row_wise(self.data.style, self.formatters)
+        styler = self.format_row_wise(
+            self.data.style,
+            {
+                columns_dict[column]: formatter
+                for column, formatter in self.formatters.items()
+            }
+        )
+
         if len(self.data.columns) > 1:
             styler = styler.apply(
-                self._style_color,
+                self.__style_color,
                 axis=1,
-                subset=pandas.IndexSlice[self.colored, :]
+                subset=pandas.IndexSlice[
+                    [columns_dict[colored] for colored in self.colored],
+                    :
+                ]
             )
         pro_con_align = [
             {
