@@ -26,11 +26,15 @@ class Aggregation(ABC):
         }
 
     def aggregate(self, results):
-        aggregated_data = {
-            SCENARIO_PARAMETERS[
-                result.scenario.Scenario.name.lower()]['LABELS']['name']: self._get_data(result)
+        aggregated_data = OrderedDict(
+            (
+                SCENARIO_PARAMETERS[
+                    result.scenario.Scenario.name.lower()
+                ]['LABELS']['name'],
+                self._get_data(result)
+            )
             for result in results
-        }
+        )
         df = pandas.DataFrame(aggregated_data)
         df.name = self.name
         finalized = self._finalize_data(df)
