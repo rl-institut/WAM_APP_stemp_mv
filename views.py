@@ -386,7 +386,7 @@ class SummaryView(TemplateView):
                 scenario.load_or_simulate()
             return redirect('stemp:result')
         else:
-            return redirect('stemp:parameters')
+            return redirect('stemp:parameter')
 
 
 class ResultView(TemplateView):

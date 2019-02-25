@@ -9,7 +9,7 @@
         </a>
       </div>
       <div class="cell footer-btns__right small-6">
-        <button type="submit" class="{{done_class|default:'btn btn-cta btn-submit'}}" onclick="{{done_function}}">
+        <button type="submit" class="{{done_class|default:'btn btn-cta btn-submit'}}" name="done" onclick="{{done_function}}">
           {{done_label|default:"Weiter"}}
           {% if done_icon != '' %}<i class="{{done_icon|default:'icon ion-chevron-right icon--small'}}"></i>{% endif %}
         </button>
