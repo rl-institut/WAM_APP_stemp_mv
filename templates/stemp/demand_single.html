@@ -73,7 +73,11 @@
     <!-- FORM END -->
 
     {% url 'stemp:demand_selection' as back_url%}
-    {% include 'includes/button_section.html' with back_url=back_url function='done();' %}
+    {% if is_district_hh %}
+      {% include 'includes/button_section.html' with back_url=back_url done_label='Hinzufügen' done_class='btn btn-apply btn-apply--secondary' done_icon='icon ion-android-add icon--small' done_function='done();' %}
+    {% else %}
+      {% include 'includes/button_section.html' with back_url=back_url done_function='done();' %}
+    {% endif %}
   </div>
 </div>
 

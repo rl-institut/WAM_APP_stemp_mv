@@ -69,22 +69,17 @@
     <!-- STEPS TASKS END -->
 
     {% url 'stemp:demand_selection' as back_url%}
-
-    {% if district_status == 'unchanged' %}
-      {% include 'includes/button_section.html' with back_url=back_url function="$('#district').submit();" %}
-    {% else %}
-      {% include 'includes/button_section.html' with back_url=back_url modal="true" done_id="district_modal" function="$('#district').submit();" %}
-    {% endif %}
+    {% include 'includes/button_section.html' with back_url=back_url done_function="done();" %}
   </div>
 </div>
 
 <div class="reveal" id="district_modal" data-reveal>
-  {% if district_status == 'changed' %}
+  {% if district_status == 'new' %}
+    Wie soll das neue Viertel heißen?
+  {% else %}
     Das Viertel wurde geändert - was soll passieren?<br>
     <input type="button" onclick="district_save()" class="btn btn-cta btn-submit" value="Änderungen speichern"><br>
     Viertel unter neuem Namen speichern:
-  {% else %}
-    Wie soll das neue Viertel heißen?
   {% endif %}
   <input type="text" name="district_name" id="district_name_modal">
   <input type="button" onclick="district_submit()" class="btn btn-cta btn-submit" value="Neues Viertel anlegen">
@@ -114,6 +109,14 @@
   }
   function district_changed() {
     $("#district_status").val("changed");
+  }
+  function done() {
+    alert($("#district_status").val());
+    if ($("#district_status").val() == "unchanged") {
+      $("#district").submit();
+    } else {
+      $("#district_modal").foundation("open");
+    }
   }
 </script>
 {% endblock %}

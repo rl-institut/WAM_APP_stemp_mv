@@ -9,24 +9,10 @@
         </a>
       </div>
       <div class="cell footer-btns__right small-6">
-        {% if modal %}
-          <button type="button" class="btn btn-cta" data-open={{done_id|default:"done"}}>
-            Weiter
-            <i class ="icon ion-chevron-right icon--small"></i>
-          </button>
-        {% else %}
-          {% if is_district_hh %}
-            <button type="submit" class="btn btn-apply btn-apply--secondary" name="done" id={{done_id|default:"done"}}{% if function %} onclick="{{function}}"{% endif %}>
-              ​Hinzufügen
-              <i class ="icon ion-android-add​ icon--small"></i>
-            </button>
-          {% else %}
-            <button type="submit" class="btn btn-cta btn-submit" name="done" id={{done_id|default:"done"}}{% if function %} onclick="{{function}}"{% endif %}>
-              {{done_label|default:"Weiter"}}
-              <i class ="icon ion-chevron-right icon--small"></i>
-            </button>
-          {% endif %}
-        {% endif %}
+        <button type="submit" class="{{done_class|default:'btn btn-cta btn-submit'}}" onclick="{{done_function}}">
+          {{done_label|default:"Weiter"}}
+          {% if done_icon != '' %}<i class="{{done_icon|default:'icon ion-chevron-right icon--small'}}"></i>{% endif %}
+        </button>
       </div>
     </div>
 
