@@ -118,7 +118,8 @@ class DemandDistrictView(TemplateView):
         context = self.get_context_data(session)
         return self.render_to_response(context)
 
-    def __change_district_list(self, request, session):
+    @staticmethod
+    def __update_district(request, session):
         session.current_district = {
             hh: count
             for hh, count in request.POST.items()
@@ -132,6 +133,9 @@ class DemandDistrictView(TemplateView):
                 'district_status'
             )
         }
+
+    def __change_district_list(self, request, session):
+        self.__update_district(request, session)
         if 'trash' in request.POST:
             trash = request.POST['trash']
             del session.current_district[trash]
@@ -157,6 +161,7 @@ class DemandDistrictView(TemplateView):
             return self.render_to_response(context)
         else:
             if request.POST['district_status'] in ('new', 'changed'):
+                self.__update_district(request, session)
                 if request.POST['district_name'] == '':
                     # Save changes to district:
                     district = models.District.objects.get(
