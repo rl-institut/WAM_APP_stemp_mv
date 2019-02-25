@@ -197,13 +197,13 @@ class Scenario(basic_setup.BaseScenario):
         eff = cls.get_bhkw_efficiency(bhkw_size)
 
         parameters[cls.name]['min_size'] = {
-            'value': str(round(bhkw_size)),
+            'value': str(int(bhkw_size)),
             'value_type': 'hidden',
             'unit': 'kW'
         }
         parameters[cls.name]['capex'] = (
             parameters[cls.name]['capex'].new_child(
-                {'value': str(round(capex))}
+                {'value': str(int(capex))}
             )
         )
         parameters[cls.name]['conversion_factor_el'] = (
