@@ -94,9 +94,14 @@ urlpatterns = [
         name='result_list'
     ),
     path(
-        'energy_links/',
-        views.EnergyLinksView.as_view(),
-        name='energy_links'
+        'addresses/',
+        views.AdressesView.as_view(),
+        name='addresses'
+    ),
+    path(
+        'tips/',
+        views.TipsView.as_view(),
+        name='tips'
     ),
     path(
         'ajax/get_next_household_name/',

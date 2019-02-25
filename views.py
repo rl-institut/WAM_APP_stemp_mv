@@ -1,14 +1,13 @@
 
 import os
 import pandas
-from collections import namedtuple
 
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 from django.urls import reverse
 
 from wam.settings import SESSION_DATA, BASE_DIR
-from utils.widgets import Wizard, CSVWidget
+from utils.widgets import Wizard, CSVWidget, OrbitWidget
 
 from user_sessions.utils import check_session_method
 from stemp import app_settings
@@ -462,7 +461,6 @@ class ResultView(TemplateView):
 
 class PendingView(TemplateView):
     template_name = 'stemp/pending.html'
-    Tip = namedtuple('Tip', ['title', 'description'])
 
     def get_context_data(self, **kwargs):
         filename = os.path.join(
@@ -470,15 +468,18 @@ class PendingView(TemplateView):
         data = pandas.read_csv(
             filename, index_col=0, sep=';')
         return {
-            'tipps': [
-                self.Tip(d[0], d[1]['Beschreibung'])
-                for d in data.iterrows()
-            ]
+            'tipps': OrbitWidget(
+                'Energiespartipps',
+                [
+                    OrbitWidget.OrbitItem(d[0], d[1]['Beschreibung'])
+                    for d in data.iterrows()
+                ]
+            )
         }
 
 
-class EnergyLinksView(TemplateView):
-    template_name = 'stemp/energy_links.html'
+class AdressesView(TemplateView):
+    template_name = 'stemp/addresses.html'
 
     def get_context_data(self, **kwargs):
         return {
@@ -491,9 +492,23 @@ class EnergyLinksView(TemplateView):
                     'encoding': 'latin_1',
                 }
             ),
-            'tipps': CSVWidget(
-                'stemp/texts/energiespartipps.csv',
+        }
+
+
+class TipsView(TemplateView):
+    template_name = 'stemp/tips.html'
+
+    def get_context_data(self, **kwargs):
+        filename = os.path.join(
+            BASE_DIR, 'stemp', 'texts', 'energiespartipps.csv')
+        data = pandas.read_csv(
+            filename, index_col=0, sep=';')
+        return {
+            'tipps': OrbitWidget(
                 'Energiespartipps',
-                csv_kwargs={'index_col': 0, 'sep': ';'}
-            ),
+                [
+                    OrbitWidget.OrbitItem(d[0], d[1]['Beschreibung'])
+                    for d in data.iterrows()
+                ]
+            )
         }

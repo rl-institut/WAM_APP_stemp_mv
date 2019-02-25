@@ -43,6 +43,15 @@
       </div>
     </div>
 
+    <div class="grid-x">
+      <div class="cell">
+        <a class="btn btn-cta btn-submit" href="{% url 'stemp:addresses' %}">Ansprechpartner & Fördermöglichkeiten</a>
+      </div>
+      <div class="cell">
+        <a class="btn btn-cta btn-submit" href="{% url 'stemp:addresses' %}">Mehr Energiespar-Tipps</a>
+      </div>
+    </div>
+
     <script src="{% static 'stemp/foundation/js/app.js' %}"></script>
     {% for visualization in visualizations %}
       {{visualization.media}}
