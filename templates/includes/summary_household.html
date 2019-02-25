@@ -16,7 +16,7 @@
     </div>
   </div>
   <div class="cell small-9 medium-10 house__content-text">
-    <p>Verfügbare Dachfläche für Photovoltaik: <b> {{household.roof_area}} qm</b></p>
+    <p>Verfügbare Dachfläche für Photovoltaik: <b> {{household.roof_area|floatformat}} qm</b></p>
   </div>
   <div class="cell small-3 medium-2">
     <div class="house__content-icon-frame --heater">
@@ -24,7 +24,7 @@
     </div>
   </div>
   <div class="cell small-9 medium-10 house__content-text">
-    <p>Jährlicher Energiebedarf (Heizung): <b> {{household.heat_demand}} kW/h</b></p>
+    <p>Jährlicher Energiebedarf (Heizung): <b> {{household.heat_demand|floatformat:"0"}} kW/h</b></p>
   </div>
   <div class="cell small-3 medium-2">
     <div class="house__content-icon-frame --hot-water">
@@ -32,7 +32,7 @@
     </div>
   </div>
   <div class="cell small-9 medium-10 house__content-text">
-    <p>Jährlicher Energiebedarf (Warmwasser): <b> {{household.warm_water_demand}} kW/h</b></p>
+    <p>Jährlicher Energiebedarf (Warmwasser): <b> {{household.warm_water_demand|floatformat:"0"}} kW/h</b></p>
   </div>
   {% if deletable %}
   <div class="cell house__content-delete">
