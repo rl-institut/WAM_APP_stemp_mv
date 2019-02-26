@@ -43,7 +43,7 @@
               <div class="cell medium-8 medium-offset-2 summary__header">
                 <img src="{% static 'stemp/img/icons_custom/mv_icon_district.svg' %}" alt="Icon District" class="summary__header-icon icon-district">
                 <h3 class="summary__header-text">Haushaltsstruktur</h3>
-                <a href=""><i class="icon ion-android-create icon--small"></i><span class="show-for-medium"> Ändern</span></a>
+                <a href="{% if is_district %}{% url 'stemp:demand_district' %}{% else %}{% url 'stemp:demand_single' %}{% endif %}"><i class="icon ion-android-create icon--small"></i><span class="show-for-medium"> Ändern</span></a>
               </div>
 
               {% for demand in demands %}
@@ -60,7 +60,7 @@
               <div class="cell medium-8 medium-offset-2 summary__header">
                 <img src="{% static 'stemp/img/icons_custom/mv_icon_heater_b.svg' %}" alt="Icon Heizung" class="summary__header-icon icon-heater">
                 <h3 class="summary__header-text">Wärmetechnologien</h3>
-                <a href=""><i class="icon ion-android-create icon--small"></i><span class="show-for-medium"> Ändern</span></a>
+                <a href="{% url 'stemp:technology' %}"><i class="icon ion-android-create icon--small"></i><span class="show-for-medium"> Ändern</span></a>
               </div>
 
               {% for tech in technologies %}
@@ -78,7 +78,7 @@
               <div class="cell medium-8 medium-offset-2 summary__header">
                 <img src="{% static 'stemp/img/icons_custom/Enavi_Parameter_b.svg' %}" alt="Icon Parameter" class="summary__header-icon icon-parameters">
                 <h3 class="summary__header-text">Parameter</h3>(nur geänderte Parameter werden gelistet)
-                <a href=""><i class="icon ion-android-create icon--small"></i><span class="show-for-medium"> Ändern</span></a>
+                <a href="{% url 'stemp:parameter' %}"><i class="icon ion-android-create icon--small"></i><span class="show-for-medium"> Ändern</span></a>
               </div>
 
               {{parameters}}

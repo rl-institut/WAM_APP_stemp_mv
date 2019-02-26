@@ -360,6 +360,7 @@ class SummaryView(TemplateView):
         context['demand_label'] = session.demand_type.label()
         demand = session.get_demand()
         context['demand_name'] = demand.name
+        context['is_district'] = session.demand_type == DemandType.District
         if isinstance(demand, Household):
             context['demands'] = [HouseholdSummary(demand)]
         else:
