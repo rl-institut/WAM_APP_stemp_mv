@@ -3,9 +3,11 @@
 
 {% block content %}
 <div class="grid-x">
-  {{tipps}}
-</div>
-<div>
-  <a class="" href="{% url 'stemp:result' %}">Zurück zu den Ergebnissen</a>
+  <div class="cell">
+    {{tipps}}
+  </div>
+  <div class="cell">
+    <a class="btn btn-cta btn-submit" href="{% url 'stemp:result' %}">Zurück zu den Ergebnissen</a>
+  </div>
 </div>
 {% endblock %}
