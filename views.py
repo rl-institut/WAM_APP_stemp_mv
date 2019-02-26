@@ -11,7 +11,7 @@ from utils.widgets import Wizard, CSVWidget, OrbitWidget
 
 from user_sessions.utils import check_session_method
 from stemp import app_settings
-from stemp.user_data import DemandType
+from stemp.constants import DemandType
 from stemp.models import Household
 from stemp.oep_models import OEPScenario
 from stemp import models, forms
@@ -35,20 +35,16 @@ class DemandSingleView(TemplateView):
     only_house_type = None
     is_district_hh = False
 
-    def get_labels(self):
-        if self.is_district_hh:
-            labels = app_settings.LABELS['demand_single']['District']
-        else:
-            labels = app_settings.LABELS['demand_single']['Single']
-        return labels
-
     def get_context_data(self):
         context = super(DemandSingleView, self).get_context_data()
         context['household_form'] = forms.HouseholdForm(self.only_house_type)
         context['list_form'] = forms.HouseholdSelectForm(self.only_house_type)
-        context['labels'] = self.get_labels()
         context['is_district_hh'] = self.is_district_hh
         context['wizard'] = Wizard([None] * 4, current=0)
+        context['demand_label'] = (
+            DemandType.District.label() if self.is_district_hh
+            else DemandType.Single.label()
+        )
         return context
 
     def get(self, request, *args, **kwargs):
@@ -102,8 +98,8 @@ class DemandDistrictView(TemplateView):
         context['district_load_form'] = forms.DistrictSelectForm()
         context['district_form'] = forms.DistrictListForm(
             session.current_district)
-        context['labels'] = app_settings.LABELS['demand_district']
         context['wizard'] = Wizard([None] * 4, current=0)
+        context['demand_label'] = session.demand_type.label()
         return context
 
     def get(self, request, *args, **kwargs):

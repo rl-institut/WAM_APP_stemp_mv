@@ -1,6 +1,7 @@
 {% extends "stemp/base_side.html" %}
 
 {% load staticfiles %}
+{% load labels %}
 
 {% block body-class %}u-vh--100{% endblock %}
 
@@ -12,8 +13,8 @@
 
 <div class="scen-create__description">
   <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Heizung.svg' %}" alt="Icon Heizung"></div>
-  <h2 class="scen-create__header">Heizungsoptionen</h2>
-  <p class="scen-create__text show-for-large">Wählen Sie eine Heizung aus, mit der Sie das Viertelszenario berechnen können.</p>
+  <h2 class="scen-create__header">{% label 'technology:title' %}</h2>
+  <p class="scen-create__text show-for-large">{% label 'technology:text' %}</p>
 </div>
 
 {% endblock %}

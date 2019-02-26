@@ -1,6 +1,5 @@
 
 import sqlahelper
-import celery.result
 import logging
 
 from stemp.app_settings import SCENARIO_MODULES

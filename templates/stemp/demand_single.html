@@ -1,20 +1,21 @@
 {% extends "stemp/base_side.html" %}
 
 {% load staticfiles %}
+{% load labels %}
 {% load crispy_forms_tags %}
 
 {% block body-class %}u-vh--100{% endblock %}
 
 {% block left_side %}
 
-<h1>{{labels.index}}</h1>
+<div class="cell"><h1>{{demand_label}}</h1></div>
 
 {{wizard}}
 
 <div class="scen-create__description">
   <div class="scen-create__icon"><img src="{% static 'stemp/img/icons_custom/Enavi_Einzelhaus.svg' %}" alt="Icon Einzelhaus"></div>
-  <h2 class="scen-create__header">{{labels.title}}</h2>
-  <p class="scen-create__text show-for-large">{{labels.text}}</p>
+  <h2 class="scen-create__header">{% if is_district_hh %}{% label 'demand_single:District:title' %}{% else %}{% label 'demand_single:Single:title' %}{% endif %}</h2>
+  <p class="scen-create__text show-for-large">{% if is_district_hh %}{% label 'demand_single:District:text' %}{% else %}{% label 'demand_single:Single:text' %}{% endif %}</p>
 </div>
 
 {% endblock %}
