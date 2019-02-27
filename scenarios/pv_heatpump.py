@@ -206,7 +206,7 @@ class Scenario(basic_setup.BaseScenario):
             },
             outputs={self.sub_b_th_warmwater: Flow()},
             conversion_factors={
-                self.sub_b_th_warmwater: 0.9  # FIXME: Parameter dynamic
+                self.sub_b_th_warmwater: parameters['Boiler']['efficiency']
             }
         )
         self.energysystem.add(
