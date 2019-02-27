@@ -78,9 +78,12 @@ class ComparisonDataframe(Dataframe):
 
     def __style_color(self, row):
         row_style = []
+        row_range = row.max() - row.min()
+        if abs(row_range) < 1e-14:
+            return [''] * len(row)
         for value in row:
             color_index = numpy.digitize(
-                [(value - row.min()) / (row.max() - row.min())],
+                [(value - row.min()) / row_range],
                 self.bins
             )[0]
             color_index = min(color_index, len(RESULT_COLORS) - 1)
