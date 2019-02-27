@@ -25,14 +25,16 @@ class Aggregation(ABC):
             if not isinstance(k, str)
         }
 
+    @staticmethod
+    def _get_result_label(result):
+        scenario_name = SCENARIO_PARAMETERS[
+            result.scenario.Scenario.name.lower()
+        ]
+        return f"{scenario_name['LABELS']['name']}<br><small>Szenario #{result.result_id}</small>"
+
     def aggregate(self, results):
         aggregated_data = OrderedDict(
-            (
-                SCENARIO_PARAMETERS[
-                    result.scenario.Scenario.name.lower()
-                ]['LABELS']['name'],
-                self._get_data(result)
-            )
+            (self._get_result_label(result), self._get_data(result))
             for result in results
         )
         df = pandas.DataFrame(aggregated_data)
@@ -147,9 +149,7 @@ class TechnologieComparison(Aggregation):
     def aggregate(self, results):
         df = pandas.DataFrame()
         for result in results:
-            labels = SCENARIO_PARAMETERS[
-                result.scenario.Scenario.name.lower()]['LABELS']
-            series = pandas.Series(name=labels['name'])
+            series = pandas.Series(name=self._get_result_label(result))
 
             # Add data from analyzers:
             for category, analyzer in self.analyzer.items():
@@ -164,6 +164,8 @@ class TechnologieComparison(Aggregation):
             series['Primärenergie'] = pe.energy
 
             # Add pros and cons:
+            labels = SCENARIO_PARAMETERS[
+                result.scenario.Scenario.name.lower()]['LABELS']
             pros = labels.get('pros', [])
             cons = labels.get('cons', [])
             series['Vorteile'] = '<br>'.join(map(
