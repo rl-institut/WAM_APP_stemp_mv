@@ -269,19 +269,25 @@ class Scenario(basic_setup.BaseScenario):
             lambda x: x[0].name == 'b_gas',
             param_results.keys()
         ))
+        _, excess_node = next(filter(
+            lambda x: x[1] is not None and x[1].name == 'excess_th',
+            param_results.keys()
+        ))
 
         # Calculate thermic contribution to primary factor:
-        demand = sum(
-            node_results.result[demand_node]['input'].values())
-        gas_input = sum(
-            node_results.result[b_gas]['output'].values())
+        demand = sum(node_results.result[demand_node]['input'].values())
+        excess = sum(node_results.result[excess_node]['input'].values())
+        gas_input = sum(node_results.result[b_gas]['output'].values())
         el_output = node_results.result[bhkw]['output'][b_bhkw_el]
         pf_gas = param_results[(bhkw, b_demand_th)]['scalars']['pf']
         pf_net = param_results[(bhkw, b_bhkw_el)]['scalars']['pf']
 
-        pf = (
-            pf_gas * gas_input / demand -
-            pf_net * (0.9 * el_output / demand - 0.05)
+        pf = max(
+            0,
+            (
+                pf_gas * gas_input / (demand + excess) -
+                pf_net * (0.9 * el_output / (demand + excess) - 0.05)
+            )
         )
         primary_energy = demand * pf
         return pe(energy=primary_energy, factor=pf)
