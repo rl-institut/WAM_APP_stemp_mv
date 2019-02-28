@@ -487,7 +487,18 @@ class AdressesView(TemplateView):
                     'index_col': 0,
                     'sep': ';',
                     'encoding': 'latin_1',
-                }
+                },
+                links=['Link']
+            ),
+            'funding': CSVWidget(
+                'stemp/texts/förderprogramme.csv',
+                'Förderprogramme',
+                csv_kwargs={
+                    'index_col': 0,
+                    'sep': ';',
+                    'encoding': 'latin_1',
+                },
+                links=['Link']
             ),
         }
 

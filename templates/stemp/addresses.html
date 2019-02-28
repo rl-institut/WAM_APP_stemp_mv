@@ -3,7 +3,12 @@
 
 {% block content %}
 <div class="grid-x">
-  {{contacts}}
+  <div class="cell">
+    {{contacts}}
+  </div>
+  <div class="cell">
+    {{funding}}
+  </div>
 </div>
 <div>
   <a class="btn btn-cta btn-submit" href="{% url 'stemp:result' %}">Zurück zu den Ergebnissen</a>
