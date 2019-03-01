@@ -150,11 +150,14 @@
                 <div class="cell technology__header">
                   <h2 style="font-size: 1.2rem">Warmwasserverbrauch</h2>
                 </div>
+                <div class="cell">
+                  {{form.hotwater_hc}}
+                </div>
                 <div class="cell technology__img">
                   <img src="{% static 'stemp/img/Warmwasserverbrauch.svg' %}">
                 </div>
                 <div class="cell technology__text">
-                  {% label 'demand:warmwater' app='stemp' %}
+                  {% label 'demand:warmwater' app='stemp' safe=True%}
                 </div>
               </div>
               <button class="close-button" data-close aria-label="Schließen" type="button">

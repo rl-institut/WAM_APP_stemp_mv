@@ -9,12 +9,12 @@ from django.forms import (
 )
 from crispy_forms.helper import FormHelper
 
+from utils.highcharts import Highchart
 from stemp import constants
 from stemp.fields import HouseholdField, SubmitField
 from stemp.widgets import (
     DynamicRadioWidget, SliderInput, DistrictSubmitWidget,
-    TechnologyWidget
-)
+    TechnologyWidget)
 from stemp.models import (Household, Simulation, District)
 
 
@@ -300,6 +300,55 @@ class HouseholdForm(ModelForm):
             self.house_type_fix = only_house_type
         self.helper = FormHelper()
         self.helper.template = 'forms/household_form.html'
+        self.hotwater_hc = self.create_hotwater_chart()
+
+    @staticmethod
+    def create_hotwater_chart():
+        water = [
+            ['Baden / Duschen / Körperpflege', 44.28],
+            ['Toilette', 33.21],
+            ['Wäsche waschen', 14.76],
+            ['Kleingewerbeanteil', 11.07],
+            ['Geschirrspülen', 7.38],
+            ['Raumreinigung / Auto / Garten', 7.38],
+            ['Essen / Trinken', 4.92]
+        ]
+        water_hc = Highchart()
+        water_hc.set_options(
+            'title', {'text': 'Trinkwasserverbrauch pro Person'})
+        water_hc.set_options(
+            'subtitle',
+            {
+                'text': (
+                    'Durchschnittswerte bezogen ' +
+                    'auf die Wasserabgabe an Haushalte'
+                )
+            }
+        )
+        water_hc.set_options(
+            'colors',
+            [
+                'LightCoral',
+                'DeepSkyBlue',
+                'IndianRed',
+                'DodgerBlue',
+                'Salmon',
+                'SkyBlue',
+                'SteelBlue'
+            ]
+        )
+        water_hc.set_options(
+            'plotOptions',
+            {
+                'pie': {
+                    'dataLabels': {
+                        'format': '{point.name}: {y} l',
+                    }
+                }
+            }
+        )
+        water_hc.add_data_set(water, series_type='pie')
+        return water_hc
 
 
 class HouseholdSelectForm(Form):
