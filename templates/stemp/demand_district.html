@@ -90,6 +90,7 @@
   <form method="post">
     {% csrf_token %}
     {{district_load_form}}
+    <button type="button" class="btn btn--hollow btn--small" data-close="load_modal">Abbrechen</button>
     <input type="submit" class="btn btn-cta btn-submit" name="load_district" value="Laden">
   </form>
 </div>
