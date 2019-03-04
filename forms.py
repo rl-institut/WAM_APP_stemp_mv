@@ -373,7 +373,7 @@ class HouseholdSelectForm(Form):
 class DistrictSelectForm(Form):
     district = ModelChoiceField(
         queryset=District.objects.all(),
-        label='Quartier',
+        label='Gespeicherte Viertel',
         initial=0,
         widget=Select()
     )
