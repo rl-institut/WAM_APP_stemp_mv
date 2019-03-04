@@ -18,9 +18,9 @@ BHKW_FULL_LOAD_HOURS = 5000
 
 ResultColor = namedtuple('ResultColor', ['quality', 'percentage', 'style'])
 RESULT_COLORS = (
-    ResultColor('good', 0.2, 'background-color: #0A6164; color: $white;'),
+    ResultColor('good', 0.2, 'background-color: #0A6164; color: #fefefe;'),
     ResultColor('neutral', 0.6, 'background-color: #E6E1BD;'),
-    ResultColor('bad', 0.2, 'background-color: #DA4225; color: $white;'),
+    ResultColor('bad', 0.2, 'background-color: #DA4225; color: #fefefe;'),
 )
 assert sum([r.percentage for r in RESULT_COLORS]) == 1
 
