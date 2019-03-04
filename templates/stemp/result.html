@@ -53,8 +53,10 @@
     </div>
 
     <script src="{% static 'stemp/foundation/js/app.js' %}"></script>
-    {% for visualization in visualizations %}
-      {{visualization.media}}
-    {% endfor %}
+    <script>
+      {% for visualization in visualizations %}
+        {{visualization.media}}
+      {% endfor %}
+    </script>
   </body>
 </html>
