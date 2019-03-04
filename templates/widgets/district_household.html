@@ -4,7 +4,7 @@
 <div class="cell house-component house-component--district">
   <div class="grid-x">
     <div class="cell medium-2 house-component__input">
-      <input class="input-group-field hh" type="number" name="{{widget.attrs.household.id}}" value="{{widget.attrs.count}}" min="1" onchange="district_changed();">
+      <input class="input-group-field hh" type="number" name="{{widget.attrs.household.id}}" value="{{widget.attrs.count}}" min="1" onkeydown="return (event.keyCode!=13);" onchange="district_changed();">
     </div>
     <div class="cell medium-10">
       <ul class="accordion" data-accordion data-allow-all-closed="true">
