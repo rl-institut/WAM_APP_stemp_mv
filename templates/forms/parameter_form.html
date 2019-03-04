@@ -5,10 +5,13 @@
 <ul class="accordion" data-accordion>
   {% for field_group in field_groups %}
     <li class="accordion-item" data-accordion-item>
-      <a href="#" class="accordion-title">{% label 'technologies:labels:'|add:field_group.grouper app='stemp' %}</a>
+      <a href="#" class="accordion-title">
+        {% label 'technologies:labels:'|add:field_group.grouper app='stemp' %}{% if field_group.grouper in form.error_groups %} - <font color="red">Fehlerhafte Eingaben gefunden</font>{% endif %}
+      </a>
       <div class="accordion-content" data-tab-content>
         <div class="grid-x grid-margin-x">
           {% for field in field_group.list %}
+          {% if field.errors %}<div class="cell"><font color="red">{{field.errors}}</font></div>{% endif %}
             {{field}}
           {% endfor %}
         </div>

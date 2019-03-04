@@ -63,6 +63,10 @@ class ParameterForm(Form):
 
     @staticmethod
     def __init_field(parameter_data, scenario):
+        error_messages = {
+            'required': (
+                'Falsche Eingabe. Bitte geben Sie einen gültigen Wert an.')
+        }
         attributes = ('label', 'description', 'parameter_type', 'unit')
         attrs = {
             attr_name: parameter_data[attr_name]
@@ -70,7 +74,10 @@ class ParameterForm(Form):
             if attr_name in parameter_data
         }
         if parameter_data['value_type'] == 'boolean':
-            field = BooleanField(initial=bool(parameter_data['value']))
+            field = BooleanField(
+                initial=bool(parameter_data['value']),
+                error_messages=error_messages
+            )
         elif parameter_data['value_type'] == 'float':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
                 step_size = parameter_data.get('step_size', "0.1")
@@ -86,24 +93,33 @@ class ParameterForm(Form):
                     ),
                     initial=float(parameter_data['value']),
                     min_value=min_value,
-                    max_value=float(parameter_data['max'])
+                    max_value=float(parameter_data['max']),
+                    error_messages=error_messages
                 )
             else:
-                field = FloatField(initial=parameter_data['value'])
+                field = FloatField(
+                    initial=parameter_data['value'],
+                    error_messages=error_messages
+                )
         elif parameter_data['value_type'] == 'integer':
             if all(map(lambda x: x in parameter_data, ('min', 'max'))):
                 field = IntegerField(
                     widget=SliderInput(attrs=attrs),
                     initial=int(parameter_data['value']),
                     min_value=int(parameter_data['min']),
-                    max_value=int(parameter_data['max'])
+                    max_value=int(parameter_data['max']),
+                    error_messages=error_messages
                 )
             else:
-                field = IntegerField(initial=int(parameter_data['value']))
+                field = IntegerField(
+                    initial=int(parameter_data['value']),
+                    error_messages=error_messages
+                )
         elif parameter_data['value_type'] == 'hidden':
             field = CharField(
                 widget=HiddenInput,
-                initial=parameter_data['value']
+                initial=parameter_data['value'],
+                error_messages=error_messages
             )
         else:
             raise TypeError(
@@ -213,6 +229,14 @@ class ParameterForm(Form):
                     changed[category][parameter] = ValueUnit(val, unit)
         changed.default_factory = None
         return changed
+
+    def error_groups(self):
+        if self.is_bound:
+            return {
+                field.field.group
+                for field in self
+                if len(field.errors) > 0
+            }
 
 
 class HouseholdForm(ModelForm):

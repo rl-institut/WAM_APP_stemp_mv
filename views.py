@@ -298,10 +298,13 @@ class ParameterView(TemplateView):
             )
         return parameters
 
-    def get_context_data(self, session, **kwargs):
-        context = super(ParameterView, self).get_context_data(**kwargs)
-        context['parameter_form'] = forms.ParameterForm(
-            self.get_scenario_parameters(session))
+    def get_context_data(self, session, parameter_form=None, **kwargs):
+        context = {}
+        if parameter_form is None:
+            context['parameter_form'] = forms.ParameterForm(
+                self.get_scenario_parameters(session))
+        else:
+            context['parameter_form'] = parameter_form
         context['demand_label'] = session.demand_type.label()
         context['demand_name'] = session.get_demand().name
         context['wizard'] = Wizard(
@@ -327,7 +330,8 @@ class ParameterView(TemplateView):
         parameters = self.get_scenario_parameters(session)
         parameter_form = forms.ParameterForm(parameters, request.POST)
         if not parameter_form.is_valid():
-            raise ValueError('Invalid scenario parameters')
+            context = self.get_context_data(session, parameter_form)
+            return self.render_to_response(context)
 
         for scenario in session.scenarios:
             scenario.parameter.update(
