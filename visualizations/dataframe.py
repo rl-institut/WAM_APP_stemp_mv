@@ -42,19 +42,19 @@ class Dataframe(VisualizationTemplate):
 class ComparisonDataframe(Dataframe):
     formatters = {
         'Wärmekosten': lambda x: (
-                f'<pre>{x:.2f}' + f"{' €/kWh':<7}</pre>"),
+                f'<pre>{"{:.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' €/kWh':<7}</pre>"),
         'Investitionskosten': lambda x: (
-                f'<pre>{x:,.0f}' + f"{' €':<7}</pre>"),
+                f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' €':<7}</pre>"),
         'CO2 Emissionen': lambda x: (
-                f'<pre>{x:,.0f}' + f"{' g/kWh':<7}</pre>"),
+                f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' g/kWh':<7}</pre>"),
         'Brennstoffkosten': lambda x: (
-                f'<pre>{x:,.0f}' + f"{' €/Jahr':<7}</pre>"),
+                f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' €/Jahr':<7}</pre>"),
         'Primärenergiefaktor': lambda x: (
-            f'<pre>{x:.1f}' + f"{'':<7}</pre>" if x <= 1.3
-            else f'<pre>1.3 ({x:.1f})*' + f"{'':<7}</pre>"
+            f'<pre>{"{:.1f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{'':<7}</pre>" if x <= 1.3
+            else f'<pre>1,3 ({"{:.1f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")})*' + f"{'':<7}</pre>"
         ),
         'Primärenergie': lambda x: (
-            f'<pre>{x:,.0f}' + f"{' kWh':<7}</pre>"),
+            f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' kWh':<7}</pre>"),
     }
     colored = (
         'Wärmekosten',
