@@ -25,20 +25,35 @@
               Ergebnisse
             </h1>
             {% if not visualizations %}
-              <h2>Keine Ergebnisse gefunden</h2>
+              {% if results_not_found %}
+                <h2>Folgende Ergebnisse konnten nicht gefunden werden:</h2>
+                <ul class="list">
+                  {% for result_id in results_not_found %}
+                    <li>#{{result_id}}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <h2>Keine Ergebnisse gefunden</h2>
+              {% endif %}
             {% endif %}
           </div>
 
-          <div class="panel callout radius">
-            <b>Achtung!</b> Falls ein Viertel betrachtet wird, sind die zusätzlichen Kosten für die Errichtung eines lokalen Wärmenetzes nicht berücksichtigt.
-          </div>
+          {% if visualizations %}
+            <div class="panel callout radius">
+              <b>Achtung!</b> Falls ein Viertel betrachtet wird, sind die zusätzlichen Kosten für die Errichtung eines lokalen Wärmenetzes nicht berücksichtigt.
+            </div>
+          {% endif %}
 
           {% for visualization in visualizations %}
             <div class="cell results--chart" style="margin-top: 2rem">
               {{visualization}}
             </div>
           {% endfor %}
-          <div align="center">*: Regulatorisch ist der Primärenergiefaktor auf 1.3 begrenzt. Der rechnerische Primärenergiefaktor ist in Klammern angegeben.</div>
+          {% if visualizations %}
+            <div align="center">
+              *: Regulatorisch ist der Primärenergiefaktor auf 1.3 begrenzt. Der rechnerische Primärenergiefaktor ist in Klammern angegeben.
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>

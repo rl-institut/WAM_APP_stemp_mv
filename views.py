@@ -12,7 +12,7 @@ from utils.widgets import Wizard, CSVWidget, OrbitWidget
 from user_sessions.utils import check_session_method
 from stemp import app_settings
 from stemp.constants import DemandType
-from stemp.models import Household
+from stemp.models import Household, Simulation
 from stemp.oep_models import OEPScenario
 from stemp import models, forms
 from stemp.results import results
@@ -418,6 +418,15 @@ class ResultView(TemplateView):
         result_ids = kwargs.get('results')
 
         if result_ids is not None:
+            # Check if results exist:
+            results_not_found = [
+                result_id
+                for result_id in result_ids
+                if not Simulation.objects.filter(result_id=result_id).exists()
+            ]
+            if len(results_not_found) > 0:
+                return self.render_to_response(
+                    {'results_not_found': results_not_found})
             context = self.get_context_data(result_ids)
             # Render list of given results:
             return self.render_to_response(context)
