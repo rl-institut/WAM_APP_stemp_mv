@@ -249,6 +249,7 @@ class HouseholdForm(ModelForm):
         ),
         label='Anzahl Personen im Haushalt',
         initial=constants.DEFAULT_NUMBER_OF_PERSONS,
+        error_messages={'required': 'Bitte geben Sie einen gültigen Wert ein.'}
     )
     heat_demand_hand = IntegerField(
         widget=NumberInput(
@@ -287,7 +288,16 @@ class HouseholdForm(ModelForm):
             'name': {
                 'required': (
                     'Bitte geben Sie einen Namen für den neuen Haushalt an.')
-            }
+            },
+            'roof_area': {
+                'required': 'Bitte geben Sie einen gültigen Wert ein.'
+            },
+            'square_meters': {
+                'required': 'Bitte geben Sie einen gültigen Wert ein.'
+            },
+            'heat_demand': {
+                'required': 'Bitte geben Sie einen gültigen Wert ein.'
+            },
         }
 
     class Media:
