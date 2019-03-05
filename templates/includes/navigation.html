@@ -20,9 +20,10 @@
           <li>
             <a class="anchor-text--light" href="#">Über uns</a>
             <ul class="menu vertical">
-              <li><a class="anchor-text--light" href="#">Kontakt</a></li>
-              <li><a class="anchor-text--light" href="#">Impressum</a></li>
-              <li><a class="anchor-text--light" href="#">Datenschutz</a></li>
+              <li><a class="anchor-text--light" href="{% url 'stemp:index' %}">Startseite</a></li>
+              <li><a class="anchor-text--light" href="{% url 'stemp:contact' %}">Kontakt</a></li>
+              <li><a class="anchor-text--light" href="{% url 'stemp:impressum' %}">Impressum</a></li>
+              <li><a class="anchor-text--light" href="{% url 'stemp:privacy' %}">Datenschutz</a></li>
               <li><a class="anchor-text--light" href="{% url 'stemp:sources' %}">Quellen</a></li>
             </ul>
           </li>

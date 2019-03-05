@@ -480,6 +480,18 @@ class PendingView(TemplateView):
         }
 
 
+class ContactView(TemplateView):
+    template_name = 'stemp/contact.html'
+
+
+class PrivacyView(TemplateView):
+    template_name = 'stemp/privacy_statement.html'
+
+
+class ImpressumView(TemplateView):
+    template_name = 'stemp/impressum.html'
+
+
 class AdressesView(TemplateView):
     template_name = 'stemp/addresses.html'
 

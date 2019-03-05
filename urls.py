@@ -1,6 +1,7 @@
 
-from django.urls import path, register_converter
 import cursive_re
+
+from django.urls import path, register_converter
 
 from wam.admin import wam_admin_site
 from meta import models
@@ -40,6 +41,9 @@ app_name = 'stemp'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+    path('contact/', views.ContactView.as_view(), name='contact'),
+    path('privacy/', views.PrivacyView.as_view(), name='privacy'),
+    path('impressum/', views.ImpressumView.as_view(), name='impressum'),
     path('sources/', AppListView.as_view(
         model=models.Source, app_name='stemp'), name='sources'),
     path('assumptions/', AssumptionsView.as_view(
