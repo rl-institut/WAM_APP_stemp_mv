@@ -125,7 +125,11 @@ class Scenario(basic_setup.BaseScenario):
         epc = annuity(capex, lifetime, wacc)
         hp_invest = Investment(ep_costs=epc)
         hp_invest.capex = capex
-        COP = heat.cop_heating_floor(timeseries['temp'], type_hp='air')
+        COP = heat.cop_heating_floor(
+            timeseries['temp'],
+            type_hp='air',
+            cop_max=4
+        )
 
         # Oemof safety - COP shall not be zero!
         COP.clip(lower=1e-10, inplace=True)
