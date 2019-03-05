@@ -474,7 +474,8 @@ class PendingView(TemplateView):
                 [
                     OrbitWidget.OrbitItem(d[0], d[1]['Beschreibung'])
                     for d in data.iterrows()
-                ]
+                ],
+                orbit_class='orbit orbit--white'
             )
         }
 
