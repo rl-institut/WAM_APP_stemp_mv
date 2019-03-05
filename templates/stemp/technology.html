@@ -33,6 +33,19 @@
             <h3>{{demand_name}}</h3>
           </div>
 
+          <div class="cell checkbox-wrap">
+            <div class="grid-x">
+              <div class="cell small-9 medium-4 medium-offset-4 u-text--left checkbox-wrap__header">
+                <div>
+                  Technologien
+                </div>
+              </div>
+              <div class="cell small-3 medium-2 checkbox-wrap__header">
+                Informationen
+              </div>
+            </div>
+          </div>
+
           {% for field in technology %}
             {{field}}
           {% endfor %}
