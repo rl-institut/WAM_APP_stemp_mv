@@ -1,5 +1,6 @@
 
-<div id="{{div_id}}"{%for k, v in div_kwargs %} {k}="{v}"{% endfor %}>
+<div id="{{div_id}}" class="table-scroll" {%for k, v in div_kwargs %} {k}="{v}"{% endfor %}>
   <label for="{{div_id}}">{{title}}</label>
+  Hallo halo
   {{data|safe}}
 </div>
