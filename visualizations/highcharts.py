@@ -224,7 +224,7 @@ class LCOEHighchart(HCCosts):
     def __init__(self, data):
         super(LCOEHighchart, self).__init__()
         self.set_dict_options(self.setup)
-        self.add_pandas_data_set(data)
+        self.add_pandas_data_set(data, series_type='column')
         self.set_options('title', {'text': 'Wärmekosten'})
         self.set_options('subtitle', {'text': 'Euro pro Kilowattstunde'})
         self.set_options(
