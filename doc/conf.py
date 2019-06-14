@@ -12,20 +12,22 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-import django
-sys.path.insert(0, os.path.abspath('./../../'))
-print('Pfad', os.path.abspath('./../../'))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
-django.setup()
+# import os
+# import sys
+# sys.path.insert(0, os.path.abspath('..'))
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 
+# -- Configure Django --------------------------------------------------------
+# import django
+# django.setup()
+
+# autodoc_mock_imports = ['stemp.migrations']
 
 # -- Project information -----------------------------------------------------
 
 project = 'StEmp-MV'
-copyright = '2019, Hendrik Huyskens, Bryan Lancien'
-author = 'Hendrik Huyskens, Bryan Lancien'
+copyright = '2019, Reiner Lemoine Institut'
+author = 'Reiner Lemoine Institut'
 
 # The short X.Y version
 version = ''
@@ -44,9 +46,33 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.extlinks',
+    'sphinx.ext.graphviz'
 ]
+
+# Napoleon settings
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = False
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_apidoc = False
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = False
+napoleon_use_param = True
+napoleon_use_rtype = True
+napoleon_use_keyword = False
+
+# Dictionary of external links
+extlinks = {
+    'pandas': (
+        'http://pandas.pydata.org/pandas-docs/stable/api.html#%s',
+        'pandas.'
+    )
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -65,15 +91,16 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = 'de'
+language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+# This pattern also affects html_static_path and html_extra_path .
+exclude_patterns = [
+    '_build', 'Thumbs.db', '.DS_Store', 'whatsnew/*', 'files/*']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = 'sphinx'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -81,7 +108,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -135,8 +162,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'StEmp-MV.tex', 'StEmp-MV Documentation',
-     'Hendrik Huyskens, Bryan Lancien', 'manual'),
+    (
+        master_doc,
+        'StEmp-MV.tex',
+        'StEmp-MV Documentation',
+        'Reiner Lemoine Institut',
+        'manual'
+    ),
 ]
 
 
@@ -145,8 +177,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'stemp-mv', 'StEmp-MV Documentation',
-     [author], 1)
+    (master_doc, 'stemp-abw', 'StEmp-ABW Documentation', [author], 1)
 ]
 
 
@@ -156,33 +187,16 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'StEmp-MV', 'StEmp-MV Documentation',
-     author, 'StEmp-MV', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        'StEmp-MV',
+        'StEmp-MV Documentation',
+        author,
+        'StEmp-MV',
+        'One line description of project.',
+        'Miscellaneous'
+    ),
 ]
 
 
-# -- Options for Epub output -------------------------------------------------
-
-# Bibliographic Dublin Core info.
-epub_title = project
-
-# The unique identifier of the text. This can be a ISBN number
-# or the project homepage.
-#
-# epub_identifier = ''
-
-# A unique identification for the text.
-#
-# epub_uid = ''
-
-# A list of files that should not be packed into the epub file.
-epub_exclude_files = ['search.html']
-
-
 # -- Extension configuration -------------------------------------------------
-
-# -- Options for intersphinx extension ---------------------------------------
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
