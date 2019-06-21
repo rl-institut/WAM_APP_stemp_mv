@@ -39,6 +39,7 @@ class DemandSingleView(TemplateView):
         context = super(DemandSingleView, self).get_context_data()
         hh_id = self.request.GET.get('hh_id')
         hh = Household.objects.get(pk=hh_id) if hh_id else None
+        context['edit_hh'] = hh_id is not None
         context['household_form'] = forms.HouseholdForm(
             self.only_house_type, instance=hh)
         context['list_form'] = forms.HouseholdSelectForm(self.only_house_type)

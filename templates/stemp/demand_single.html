@@ -28,9 +28,10 @@
       <main class="cell medium-10 main-content-wrap">
         <div class="grid-x align-center" id="tabs">
           <div class="cell scen-create__form u-text--center">
-            <h3>Mein Haushalt</h3>
+            <h3>{% if edit_hh %}Haushalt ändern{% else %}Mein Haushalt{% endif %}</h3>
           </div>
 
+          {% if not edit_hh %}
           <div class="cell medium-10 large-8 tabs-btn">
             <ul>
               <li>
@@ -45,6 +46,7 @@
               </li>
             </ul>
           </div>
+          {% endif %}
 
           <!-- QUESTIONS START -->
           <div class="cell reveal-house__questions scen-padding-btm hh-component" id="tabs-1">
@@ -56,6 +58,7 @@
           </div>
           <!-- QUESTIONS END -->
 
+          {% if not edit_hh %}
           <!-- LIST START -->
           <div class="cell medium-10 medium-offset-1 large-8 large-offset-2 reveal-house__list" id="tabs-2">
             <div class="grid-x">
@@ -67,6 +70,7 @@
             </div>
           </div>
           <!-- LIST END -->
+          {% endif %}
 
         </div>
       </main>
@@ -75,10 +79,18 @@
 
     {% if is_district_hh %}
       {% url 'stemp:demand_district' as back_url%}
-      {% include 'includes/button_section.html' with back_url=back_url done_label='Hinzufügen' done_class='btn btn-apply btn-apply--secondary' done_icon='icon ion-android-add icon--small' done_function='done();' %}
+      {% if edit_hh %}
+        {% include 'includes/button_section.html' with back_url=back_url done_label='Ändern' done_function='done();' %}
+      {% else %}
+        {% include 'includes/button_section.html' with back_url=back_url done_label='Hinzufügen' done_class='btn btn-apply btn-apply--secondary' done_icon='icon ion-android-add icon--small' done_function='done();' %}
+      {% endif %}
     {% else %}
       {% url 'stemp:demand_selection' as back_url%}
-      {% include 'includes/button_section.html' with back_url=back_url done_function='done();' %}
+      {% if edit_hh %}
+        {% include 'includes/button_section.html' with back_url=back_url done_label='Ändern' done_function='done();' %}
+      {% else %}
+        {% include 'includes/button_section.html' with back_url=back_url done_function='done();' %}
+      {% endif %}
     {% endif %}
   </div>
 </div>
