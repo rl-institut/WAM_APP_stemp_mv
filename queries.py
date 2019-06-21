@@ -145,7 +145,7 @@ def insert_heat_demand():
 
 
 def insert_dhw_timeseries():
-    NUM_PERSONS = 10
+    NUM_PERSONS = 30
 
     session = sqlahelper.get_session()
 

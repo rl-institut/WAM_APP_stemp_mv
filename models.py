@@ -108,7 +108,7 @@ class Household(models.Model):
         verbose_name='Jährlicher Wärmebedarf',
         validators=[
             MaxValueValidator(
-                1e5,
+                5e5,
                 message=(
                     'Der jährliche, mögliche Heizwärmebedarf ist auf ein '
                     'Limit von %(limit_value)s kWh begrenzt.'
@@ -121,7 +121,7 @@ class Household(models.Model):
             MinValueValidator(
                 1, message='Mindestens eine Person muss im Haushalt leben.'),
             MaxValueValidator(
-                10,
+                30,
                 message='Bitte nur maximal %(limit_value)s Personen angeben.'
             )
         ],
@@ -130,7 +130,7 @@ class Household(models.Model):
         verbose_name='Quadratmeter',
         validators=[
             MaxValueValidator(
-                1e3,
+                2e3,
                 message=(
                     'Die Angabe der Quadratmeter ist auf %(limit_value)s qm '
                     'begrenzt.'
