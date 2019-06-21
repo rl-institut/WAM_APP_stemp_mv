@@ -34,6 +34,15 @@
   <div class="cell small-9 medium-10 house__content-text">
     <p>Jährlicher Energiebedarf (Warmwasser): <b> {{household.warm_water_demand|floatformat:"0"}} kW/h</b></p>
   </div>
+  {% if in_district %}
+    <a href="{% url 'stemp:demand_district_household' %}?hh_id={{household.id}}">
+      <i class="icon ion-android-create icon--small"></i> Ändern
+    </a>
+  {% else %}
+    <a href="{% url 'stemp:demand_single' %}?hh_id={{household.id}}">
+      <i class="icon ion-android-create icon--small"></i> Ändern
+    </a>
+  {% endif %}
   {% if deletable %}
   <div class="cell house__content-delete">
     <button class="u-inline-block delete-btn" type="submit" name="trash" value="{{household.id}}">

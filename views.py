@@ -2,7 +2,7 @@
 import os
 import pandas
 
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView
 from django.urls import reverse
 
@@ -37,7 +37,10 @@ class DemandSingleView(TemplateView):
 
     def get_context_data(self):
         context = super(DemandSingleView, self).get_context_data()
-        context['household_form'] = forms.HouseholdForm(self.only_house_type)
+        hh_id = self.request.GET.get('hh_id')
+        hh = Household.objects.get(pk=hh_id) if hh_id else None
+        context['household_form'] = forms.HouseholdForm(
+            self.only_house_type, instance=hh)
         context['list_form'] = forms.HouseholdSelectForm(self.only_house_type)
         context['is_district_hh'] = self.is_district_hh
         context['wizard'] = Wizard([None] * 4, current=0)
@@ -62,7 +65,10 @@ class DemandSingleView(TemplateView):
         hh_id = None
         form = request.POST['form']
         if form == 'house':
-            hh_form = forms.HouseholdForm(None, request.POST)
+            if 'hh_instance' in request.POST:
+                hh_id = get_object_or_404(
+                    Household, id=request.POST['hh_instance'])
+            hh_form = forms.HouseholdForm(None, request.POST, instance=hh_id)
             if hh_form.is_valid():
                 hh = hh_form.save()
                 hh_id = hh.id

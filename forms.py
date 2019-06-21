@@ -251,6 +251,15 @@ class HouseholdForm(ModelForm):
         initial=constants.DEFAULT_NUMBER_OF_PERSONS,
         error_messages={'required': 'Bitte geben Sie einen gültigen Wert ein.'}
     )
+    square_meters_hand = IntegerField(
+        widget=NumberInput(
+            attrs={
+                'class': "input input-group-field input--s",
+                'id': 'sm_hand'
+            }
+        ),
+        label='Manuell eingeben'
+    )
     heat_demand_hand = IntegerField(
         widget=NumberInput(
             attrs={
@@ -304,23 +313,42 @@ class HouseholdForm(ModelForm):
         js = ('stemp/js/household.js',)
 
     def __init__(self, only_house_type=None, *args, **kwargs):
-        kwargs['initial'] = {
-            'square_meters': (
-                constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON
-            ),
-            'warm_water_per_day': (
-                constants.WarmwaterConsumption.Medium.in_liters()
-            ),
-            'heat_demand_hand': (
-                constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON *
-                constants.ENERGY_PER_QM_PER_YEAR[constants.HouseType.EFH.name]
-            ),
-            'roof_area_hand': round(constants.get_roof_square_meters(
-                constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON,
-                constants.HouseType.EFH
-            ))
-        }
+        instance = kwargs.get('instance')
+        if instance is None:
+            kwargs['initial'] = {
+                'square_meters_hand': (
+                    constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON
+                ),
+                'heat_demand_hand': (
+                        constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON *
+                        constants.ENERGY_PER_QM_PER_YEAR[
+                            constants.HouseType.EFH.name]
+                ),
+                'roof_area_hand': round(constants.get_roof_square_meters(
+                    constants.DEFAULT_NUMBER_OF_PERSONS * constants.QM_PER_PERSON,
+                    constants.HouseType.EFH
+                ))
+            }
+            warm_water_slider_start = constants.WarmwaterConsumption.Medium.value
+        else:
+            kwargs['initial'] = {
+                'square_meters_hand': instance.square_meters,
+                'heat_demand_hand': instance.heat_demand,
+                'roof_area_hand': instance.roof_area
+            }
+            warm_water_slider_start = constants.WarmwaterConsumption.from_liters(instance.warm_water_per_day).value
         super(HouseholdForm, self).__init__(*args, **kwargs)
+        self.fields['warm_water_slider'] = CharField(
+            widget=TextInput(
+                attrs={
+                    'id': 'warmWaterSlider',
+                    'data-from': warm_water_slider_start
+                }
+            )
+        )
+        if instance is not None:
+            self.fields['hh_instance'] = CharField(
+                widget=HiddenInput(attrs={'value': instance.id}))
         if only_house_type is not None:
             self.fields['house_type'] = CharField(
                 label='Haustyp',
@@ -466,7 +494,7 @@ class DistrictListForm(Form):
         if hh_dict is not None:
             for hh_id, count in hh_dict.items():
                 household = Household.objects.get(pk=hh_id)
-                hh_field = HouseholdField(household, count)
+                hh_field = HouseholdField(household, count, in_district=True)
                 hh_field.group = household.house_type
                 self.fields[hh_id] = hh_field
         self.fields['add_efh'] = SubmitField(

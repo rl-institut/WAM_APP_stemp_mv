@@ -12,6 +12,7 @@
         <label class="form__label" for="id_name">
           <font color="darkred">{{form.name.errors}}</font>
           {{form.name}}
+          {{form.hh_instance}}
         </label>
       </div>
     </div>
@@ -36,7 +37,7 @@
           <font color="darkred">{{form.square_meters.errors}}</font>
           <ul class="menu vertical">
             <li>
-              <input type="radio" checked="" name="sm" value="auto" id="radio_sm_auto" required>
+              <input type="radio" name="sm" value="auto" id="radio_sm_auto" required {% if not form.hh_instance %}checked=""{% endif %}>
               <label for="radio_sm_auto" class="form__label">Standardwert</label>
               <div class="input-group input-disabled">
                 <input class="input-group-field input input--s" type="text" readonly step="any" id="sm_auto">
@@ -44,10 +45,10 @@
               </div>
             </li>
             <li>
-              <input type="radio" name="sm" value="hand" id="radio_sm_hand">
-              <label for="radio_sm_hand" class="form__label">Manuell eingeben</label>
+              <input type="radio" name="sm" value="hand" id="radio_sm_hand" {% if form.hh_instance %}checked=""{% endif %}>
+              <label for="radio_sm_hand" class="form__label">{{form.square_meters_hand.label}}</label>
                 <div class="input-group">
-                  <input class="input-group-field input input--s" type="number" value="88" step="any" id="sm_hand">
+                  {{form.square_meters_hand}}
                   <span class="input-group-label">qm</span>
                 </div>
             </li>
@@ -76,7 +77,7 @@
               <font color="darkred">{{form.heat_demand.errors}}</font>
               <ul class="menu vertical">
                 <li>
-                  <input type="radio" name="heat" checked="" value="person" id="radio_heat_auto" required>
+                  <input type="radio" name="heat" value="person" id="radio_heat_auto" required {% if not form.hh_instance %}checked=""{% endif %}>
                   <label for="radio_heat_auto" class="form__label">Standardwert</label>
                   <div class="input-group">
                     <input class="input-group-field input input--s" type="text" readonly step="any" id="heat_auto">
@@ -84,7 +85,7 @@
                   </div>
                 </li>
                 <li>
-                  <input type="radio" name="heat" value="hand" id="radio_heat_hand">
+                  <input type="radio" name="heat" value="hand" id="radio_heat_hand" {% if form.hh_instance %}checked=""{% endif %}>
                   <label for="radio_heat_hand" class="form__label">{{form.heat_demand_hand.label}}</label>
                   <div id="hand">
                     <div class="input-group">
@@ -127,9 +128,9 @@
                   <div class="grid-x parameter-slider">
                     <div class="cell large-8">
                       <p class="parameter-slider__label">
-                        Täglicher Verbrauch
+                        Täglicher Verbrauch {{warm_water_slider_start}}
                       </p>
-                      <input id="warmWaterSlider" value="" />
+                      {{form.warm_water_slider}}
                     </div>
                   </div>
                 </li>
@@ -196,7 +197,7 @@
               <font color="darkred">{{form.roof_area.errors}}</font>
               <ul class="menu vertical" id="roof-area-form">
                 <li>
-                  <input type="radio" name="roof" checked="" value="auto" id="radio_roof_auto" required>
+                  <input type="radio" name="roof" value="auto" id="radio_roof_auto" required {% if not form.hh_instance %}checked=""{% endif %}>
                   <label for="radio_roof_auto" class="form__label">Standardwert</label>
                   <div class="input-group">
                     <input class="input-group-field input input--m" type="text" id="roof_auto" readonly step="any" required>
@@ -204,7 +205,7 @@
                   </div>
                 </li>
                 <li>
-                  <input type="radio" name="roof" value="hand" id="radio_roof_hand">
+                  <input type="radio" name="roof" value="hand" id="radio_roof_hand" {% if form.hh_instance %}checked=""{% endif %}>
                   <label for="radio_roof_hand" class="form__label">{{form.roof_area_hand.label}}</label>
                   <div class="input-group">
                     {{form.roof_area_hand}}

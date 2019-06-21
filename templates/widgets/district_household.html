@@ -17,7 +17,7 @@
             </div>
           </a>
           <div class="accordion-content house__content" data-tab-content>
-            {% include 'includes/summary_household.html' with household=widget.attrs.household deletable=widget.attrs.deletable%}
+            {% include 'includes/summary_household.html' with household=widget.attrs.household in_district=widget.attrs.in_district deletable=widget.attrs.deletable%}
           </div>
         </li>
       </ul>

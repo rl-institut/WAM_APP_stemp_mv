@@ -37,6 +37,14 @@ class WarmwaterConsumption(Enum):
             WarmwaterConsumption.High: 109,
         }.get(self)
 
+    @staticmethod
+    def from_liters(liters):
+        return {
+            43: WarmwaterConsumption.Low,
+            66: WarmwaterConsumption.Medium,
+            109: WarmwaterConsumption.High
+        }.get(liters)
+
 
 class HouseType(Enum):
     EFH = 'Einfamilienhaus'

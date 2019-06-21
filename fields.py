@@ -7,9 +7,10 @@ from stemp.widgets import HouseholdWidget, SubmitWidget
 class HouseholdField(Field):
     widget = HouseholdWidget
 
-    def __init__(self, hh, count=1):
+    def __init__(self, hh, count=1, in_district=False):
         self.household = hh
         self.count = count
+        self.in_district = in_district
         super(HouseholdField, self).__init__()
 
     def widget_attrs(self, widget):
@@ -21,6 +22,7 @@ class HouseholdField(Field):
         return {
             'household': self.household,
             'count': self.count,
+            'in_district': self.in_district,
             'deletable': True
         }
 

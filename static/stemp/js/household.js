@@ -15,7 +15,6 @@ $("#warmWaterSlider").ionRangeSlider(
     min: 0,
     max: 2,
     step: 1,
-    from: 1,
     grid: true,
     values: ["Gering", "Mittel", "Stark"],
   }
