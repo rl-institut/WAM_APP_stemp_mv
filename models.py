@@ -40,6 +40,30 @@ class Simulation(models.Model):
         )
         return '(' + ','.join(ids) + ')'
 
+    @classmethod
+    def delete_containing_household(cls, hh_id):
+        districts = Household.objects.get(pk=hh_id).district_set.all()
+        for district in districts:
+            simulations = cls.objects.filter(
+                parameter__data__contains={
+                    'demand': {
+                        'type': constants.DemandType.District,
+                        'index': district.id
+                    }
+                }
+            )
+            for simulation in simulations:
+                simulation.delete()
+        for simulation in cls.objects.filter(
+            parameter__data__contains={
+                'demand': {
+                    'type': constants.DemandType.Single,
+                    'index': hh_id
+                }
+            }
+        ):
+            simulation.delete()
+
 
 class HeatProfile(models.Model):
     name = models.CharField(max_length=255)

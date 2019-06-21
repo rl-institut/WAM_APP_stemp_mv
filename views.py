@@ -73,6 +73,7 @@ class DemandSingleView(TemplateView):
             if hh_form.is_valid():
                 hh = hh_form.save()
                 hh_id = hh.id
+                Simulation.delete_containing_household(hh_id)
             else:
                 context = self.get_context_data()
                 context['household_form'] = hh_form
