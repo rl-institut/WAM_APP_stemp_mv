@@ -138,3 +138,11 @@ class UserSession(object):
             return DistrictStatus.Unchanged
         else:
             return DistrictStatus.Changed
+
+    def __str__(self):
+        return (
+            f'Scenarios: {",".join([scenario.name for scenario in self.scenarios])}, '
+            f'Demand-Type: {self.demand_type}, '
+            f'Demand-ID: {self.demand_id}, '
+            f'District: {self.current_district}'
+        )
