@@ -4,6 +4,7 @@ import cursive_re
 from django.urls import path, register_converter
 
 from wam.admin import wam_admin_site
+from utils.views import FeedbackView
 from meta import models
 from meta.views import AppListView, AssumptionsView
 from stemp import constants
@@ -41,6 +42,7 @@ app_name = 'stemp'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+    path('feedback/', FeedbackView.as_view(app_name='stemp'), name='feedback'),
     path('contact/', views.ContactView.as_view(), name='contact'),
     path('privacy/', views.PrivacyView.as_view(), name='privacy'),
     path('impressum/', views.ImpressumView.as_view(), name='impressum'),
