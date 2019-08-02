@@ -28,6 +28,13 @@ logging.getLogger().setLevel(logging.INFO)
 META_PATH = os.path.join(os.path.dirname(__file__), 'metadata')
 
 
+def get_meta_from_json(metaname):
+    metafile = os.path.join(META_PATH, f'{metaname}.json')
+    with open(metafile) as json_data:
+        meta = json.load(json_data)
+    return meta
+
+
 def __get_temperature():
     return pandas.read_csv(
         os.path.join(os.path.dirname(__file__), 'data', 'temperature.txt'),
@@ -55,12 +62,9 @@ def insert_pv_and_temp():
     session = sqlahelper.get_session()
 
     temperature = __get_temperature()
-    temp_meta_file = os.path.join(META_PATH, 'dwd_temperature.json')
-    with open(temp_meta_file) as json_data:
-        meta = json.load(json_data)
     temp = oep_models.OEPTimeseries(
         name='Temperature',
-        meta_data=meta,
+        meta_data=get_meta_from_json('dwd_temperature'),
         data=temperature['TT_TU']
     )
 
@@ -71,12 +75,9 @@ def insert_pv_and_temp():
     )
     pv_system = 'LG290G3_ABB_tlt34_az180_alb02'
     pv_feedin = pv_feedin.swaplevel(axis=1)[pv_system]['2014']
-    pv_meta_file = os.path.join(META_PATH, 'pv_feedin.json')
-    with open(pv_meta_file) as json_data:
-        meta = json.load(json_data)
     pv = oep_models.OEPTimeseries(
         name='PV',
-        meta_data=meta,
+        meta_data=get_meta_from_json('pv_feedin'),
         data=pv_feedin
     )
     with transaction.manager:
@@ -218,17 +219,35 @@ def delete_stored_simulations():
         session.query(oemof_results.OemofData).delete()
 
 
+def insert_sources():
+    c_timeseries = Category(
+        name='Zeitreihen',
+        description='Quellen der verwendeten Zeitreihen'
+    )
+    c_timeseries.save()
+
+    Source(
+        meta_data=get_meta_from_json('pv_feedin'),
+        app_name='stemp',
+        category=c_timeseries
+    ).save()
+
+    Source(
+        meta_data=get_meta_from_json('dwd_temperature'),
+        app_name='stemp',
+        category=c_timeseries
+    ).save()
+
+
 def insert_assumptions():
+    # Warmwasser
     c_hot_water = Category(
         name='Warmwasser',
         description='Annahmen rund um den Warmwasserverbrauch'
     )
     c_hot_water.save()
-    hot_water_meta_file = os.path.join(META_PATH, 'hot_water_energy.json')
-    with open(hot_water_meta_file) as json_data:
-        meta = json.load(json_data)
     hot_water_energy_source = Source(
-        meta_data=meta,
+        meta_data=get_meta_from_json('hot_water_energy'),
         app_name='stemp',
         category=c_hot_water
     )
@@ -249,6 +268,79 @@ def insert_assumptions():
     )
     hot_water_energy.save()
 
+    # Primärfaktoren
+    c_pf = Category(
+        name='Primärenergie',
+        description='Primärenergiefaktoren'
+    )
+    c_pf.save()
+    pf = Source(
+        meta_data=get_meta_from_json('primärenergiefaktoren'),
+        app_name='stemp',
+        category=c_pf
+    )
+    pf.save()
+    Assumption(
+        name='Primärenergiefaktor: Erdas',
+        description='Primärenergiefaktor für Erdgas',
+        value=1.1,
+        unit='',
+
+        app_name='stemp',
+        category=c_pf,
+        source=pf
+    ).save()
+    Assumption(
+        name='Primärenergiefaktor: Heizöl',
+        description='Primärenergiefaktor für Heizöl',
+        value=1.1,
+        unit='',
+
+        app_name='stemp',
+        category=c_pf,
+        source=pf
+    ).save()
+    Assumption(
+        name='Primärenergiefaktor: Biogas',
+        description='Primärenergiefaktor für Biogas',
+        value=0.5,
+        unit='',
+
+        app_name='stemp',
+        category=c_pf,
+        source=pf
+    ).save()
+    Assumption(
+        name='Primärenergiefaktor: Holz',
+        description='Primärenergiefaktor für Holz',
+        value=0.2,
+        unit='',
+
+        app_name='stemp',
+        category=c_pf,
+        source=pf
+    ).save()
+    Assumption(
+        name='Primärenergiefaktor: allgemeiner Strommix',
+        description='Primärenergiefaktor für allgemeinen Strommix',
+        value=2.4,
+        unit='',
+
+        app_name='stemp',
+        category=c_pf,
+        source=pf
+    ).save()
+    Assumption(
+        name='Primärenergiefaktor: Verdrängungsstrommix',
+        description='Primärenergiefaktor für Verdrängungsstrommix',
+        value=2.8,
+        unit='',
+
+        app_name='stemp',
+        category=c_pf,
+        source=pf
+    ).save()
+
 
 @click.command()
 @click.argument('commands', nargs=-1)
@@ -258,6 +350,8 @@ def execute(commands):
     for command in commands:
         if command == 'heat':
             insert_heat_demand()
+        elif command == 'sources':
+            insert_sources()
         elif command == 'assumptions':
             insert_assumptions()
         elif command == 'households':
