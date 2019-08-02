@@ -208,7 +208,7 @@ Die Technologien werden qualitativ verglichen; dazu werden die Technologien farb
    :align: center
 
 .. warning::
-  Der qualtitative Vergleich findet nur unter den ausgewählten Szenarien statt!
+  Der qualitative Vergleich findet nur unter den ausgewählten Szenarien statt!
   Generelle qualitative Aussagen über einzelne Szenarien können dadurch nicht getroffen werden.
   Werden zum Beispiel nur Technologien mit sehr hohen Investitionskosten verglichen, werden die Investionskosten einer Technologie als "gut" eingestuft, obwohl diese im Vergleich mit einer anderen (nicht ausgwählten) Technologie eventuell sehr viel schlechter wären.
 
