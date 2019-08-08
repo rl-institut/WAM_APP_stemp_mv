@@ -21,13 +21,14 @@
           <li class="show-for-small-only"><a class="anchor-text--light" href="index.html">Startseite</a></li>
           <li><a class="anchor-text--light" href="{% url 'stemp:demand_selection' %}">Neues Szenario</a></li>
           <li>
-            <a class="anchor-text--light" href="#">Über uns</a>
+            <a class="anchor-text--light" href="#">Menü</a>
             <ul class="menu vertical">
-              <li><a class="anchor-text--light" href="{% url 'stemp:index' %}">Startseite</a></li>
-              <li><a class="anchor-text--light" href="{% url 'stemp:contact' %}">Kontakt</a></li>
-              <li><a class="anchor-text--light" href="{% url 'stemp:impressum' %}">Impressum</a></li>
-              <li><a class="anchor-text--light" href="{% url 'stemp:privacy' %}">Datenschutz</a></li>
-              <li><a class="anchor-text--light" href="{% url 'stemp:sources' %}">Quellen</a></li>
+              <li><a class="anchor-text--light" href="{% url 'stemp:sources' %}"><i class ="icon ion-document-text icon--small"></i> Quellen</a></li>
+                  <li><a class="anchor-text--light" href="https://wam-app-stemp-mv.readthedocs.io" target="_blank" rel=”noopener noreferrer”><i class ="icon ion-document icon--small"></i> Dokumentation</a></li>
+                  <li><a class="anchor-text--light" href="https://github.com/rl-institut/WAM_APP_stemp_mv" target="_blank" rel=”noopener noreferrer”><i class ="icon ion-social-github icon--small"></i> Quellcode</a></li>
+                  <li><a class="anchor-text--light" style="color: #F2994A;" href="{% url 'stemp:feedback' %}" target="_blank"><i class ="icon ion-chatbubbles icon--small"></i> Feedback</a></li>
+                  <li><a class="anchor-text--light" href="{% url 'stemp:contact' %}"><i class ="icon ion-chatbubbles icon--small"></i> Kontakt</a></li>
+                  <li><a class="anchor-text--light" href="{% url 'stemp:impressum' %}"><i class ="icon ion-filing icon--small"></i> Impressum</a></li>
             </ul>
           </li>
         </ul>
