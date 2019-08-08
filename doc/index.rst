@@ -23,7 +23,6 @@ Inhalt:
    usage
    installation_and_setup
    energy_system
-   scenarios_and_methods
    data
    tool_transfer
    developer

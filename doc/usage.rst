@@ -137,7 +137,7 @@ Zur Verfügung stehen in der aktuellen Version folgende Technologien:
 * Photovoltaik + Wärmepumpe + elektrischer Boiler
 
 Erläuterungen zur Funktionsweise der einzelnen Technologien können per Klick auf das jeweilige Technologie-Symbol eingesehen werden.
-Die Technologien und die daraus resultierenden Szenarien werden unter :ref:`scenarios_label` genauer betrachtet.
+Die Technologien und die daraus resultierenden Szenarien werden unter :ref:`energy_system_label` genauer betrachtet.
 Für alle ausgewählten Technologien können anschließend die Parameter angepasst werden (siehe `Anpassung der Parameter`_).
 Auf der Ergebnisseite (siehe `Ergebnisse`_) werden schließlich die ausgewählten Technologien untereinander verglichen.
 

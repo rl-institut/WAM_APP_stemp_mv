@@ -19,9 +19,6 @@ Für die Optimierung wird das vom RLI mitentwickelte
 eingesetzt. oemof ist ein freies, offenes und gut dokumentiertes Framework für
 die Modellierung und Optimierung von Energieversorgungssystemen.
 
-Technologien
-------------
-
 Im folgenden werden die zugrundeliegenden Energiesystememodelle für jede Technologie dargestellt und erläutert.
 Grundlage für alle Szenarien (mit leichter Abweichung im Falle des PV/Wärmepumpen-Szenarios) ist das folgende Verbrauchermodell:
 
@@ -38,7 +35,7 @@ Auf diesem Grundmodell aufbauend werden, je nach Technologie, verschiedene Heizs
 .. note:: Im Falle eines Viertels werden alle verwendeten Haushalte zu einem einzelnen Haushalt zusammengefasst. Die verschiedenen Wärmebedarfe werden dabei übereinandergelegt und aufsummiert.
 
 Gas-/Öl-/Holzhackschnitzelheizung
-#################################
+---------------------------------
 
 Über eine einfache Leitung und eine angeschlossene Heizung (einfacher Transformator) wird der Wärmebedarf versorgt.
 Das zugrundeliegende Modell für Gas-, Öl- und Holzhackschnitzel (Modell ist für alle drei Technologien identisch) ist wie folgt:
@@ -49,7 +46,7 @@ Das zugrundeliegende Modell für Gas-, Öl- und Holzhackschnitzel (Modell ist f�
    :align: center
 
 Blockheizkraftwerk
-##################
+------------------
 
 Das Modell für ein Blockheizkraftwerk (Erdgas und Biogas) beinhaltet zwei zusätzliche Stromleitungen.
 Die (lokale) Stromerzeugung des Kraftwerks kann mithilfe eines Transformators (gewinnbringend) in das Stromnetz eingespeist werden.
@@ -66,7 +63,7 @@ Zusätzlich zum Blockheizkraftwerk ist eine einfache Gasheizung installiert, die
   Das Blockheizkraftwerk könnte dann nicht mehr wirtschaftlich betrieben werden.
 
 Photovoltaik-Wärmepumpe
-#######################
+-----------------------
 
 Für die Photovoltaik-Wärmepumpen-Technologie muss das Verbrauchermodell angepasst werden.
 Der Wärmedarf muss nach Warmwasser und Heizung getrennt werden, da die Wärmepumpe allein nicht die nötige Heizwärme für Warmwasser bereitstellen kann.
