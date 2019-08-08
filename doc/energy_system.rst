@@ -10,10 +10,9 @@ könnte, ist in Wirklichkeit ein Energiesystemmodell, das mit Hilfe einer
 linearen Optimierung gelöst wird.
 
 Die Eingangsparameter für das Modell sind einerseits vorberechnete Daten wie
-beispielsweise Zeitreihen zur Einspeisung oder Heizwärebedarf und andererseits
-die durch den/die BenutzerIn einstellbaren Größen wie z.B. installierte
-Windleistung. Die Ergebnisse werden im Anschluss an die Optimierung aufbereitet
-und im Tool dargestellt.
+beispielsweise Zeitreihen zur Einspeisung oder Heizwärmebedarf und andererseits
+die durch den/die BenutzerIn einstellbaren Größen wie z.B. Erdgaspreis oder Installationskosten der Technologien.
+Die Ergebnisse werden im Anschluss an die Optimierung aufbereitet und im Tool dargestellt.
 
 Für die Optimierung wird das vom RLI mitentwickelte
 `Open Energy System Modelling Framework (oemof) <https://oemof.readthedocs.io/en/stable/index.html>`_
@@ -80,19 +79,3 @@ Der elektrische Boiler und die Wärmepumpe können Strom über die lokale Stroml
    :width: 600 px
    :alt: Haushalt benutzerdefiniert oder aus Liste
    :align: center
-
-Vereinfachungen
----------------
-
-Aus verschiedenen Gründen sind Vereinfachungen notwendig, um ein sinnvolles
-Gleichgewicht aus Genauigkeit und Rechenzeit herzustellen. Methodische
-Vereinfachungen finden Sie unter :ref:`scenarios_label`.
-
-:Perfect Foresight:
-    Aus den gegebenen Randbedingungen wird ein Gesamtproblem erstellt, der
-    Zustand aller Komponenten des Energiesystems wie z.B. Erzeuger ist zu
-    jedem Zeitpunkt bekannt (im Gegensatz zu bspw. zu
-    Rolling-Horizon-Verfahren)
-
-:add more:
-    Text
