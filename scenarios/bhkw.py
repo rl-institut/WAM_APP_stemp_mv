@@ -3,7 +3,7 @@ from oemof.solph import Flow, Bus, Investment, Transformer
 from oemof.tools.economics import annuity
 
 from stemp.scenarios import basic_setup
-from stemp.constants import BHKW_FULL_LOAD_HOURS
+from stemp.constants import BHKW_FULL_LOAD_HOURS, BHKW_OPTIMISATION_STEP
 from stemp.scenarios.basic_setup import AdvancedLabel, pe
 
 
@@ -141,14 +141,13 @@ class Scenario(basic_setup.BaseScenario):
 
         # Search for optimum bkhw-size starting at minimum (full-load-hours):
         x_start = BHKW_FULL_LOAD_HOURS - 2
+        demand_left = demand.iloc[:BHKW_FULL_LOAD_HOURS]
         while True:
             bhkw_size = demand.iloc[x_start]
-            partial_load_left = -(
-                    demand.iloc[:BHKW_FULL_LOAD_HOURS] - bhkw_size
-            ).clip(upper=0).sum()
+            partial_load_left = -(demand_left - bhkw_size).clip(upper=0).sum()
             if partial_load_left > partial_load_right:
                 break
-            x_start -= 1
+            x_start -= BHKW_OPTIMISATION_STEP
         return demand.iloc[x_start + 1]
 
     @staticmethod

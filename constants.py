@@ -15,6 +15,7 @@ DEFAULT_NUMBER_OF_PERSONS = 2
 DEFAULT_LITER_PER_DAY_WITHOUT_SHOWER = 22
 
 BHKW_FULL_LOAD_HOURS = 5000
+BHKW_OPTIMISATION_STEP = 10
 
 ResultColor = namedtuple('ResultColor', ['quality', 'percentage', 'style'])
 RESULT_COLORS = (
