@@ -11,6 +11,7 @@ import oedialect
 
 from django.core.wsgi import get_wsgi_application
 
+from wam.settings import BASE_DIR
 from stemp.db_population import assumptions
 from stemp.db_population import sources
 from stemp.db_population.utils import get_meta_from_json
@@ -27,7 +28,7 @@ from stemp.scenarios import basic_setup
 
 def __get_temperature():
     return pandas.read_csv(
-        os.path.join(os.path.dirname(__file__), "data", "temperature.txt"),
+        os.path.join(BASE_DIR, "stemp", "data", "temperature.txt"),
         index_col=[1],
         delimiter=";",
         parse_dates=[1],
@@ -60,7 +61,7 @@ def insert_pv_and_temp():
     )
 
     pv_feedin = pandas.read_csv(
-        os.path.join(os.path.dirname(__file__), "data", "pv_normalized.csv"),
+        os.path.join(BASE_DIR, "stemp", "data", "pv_normalized.csv"),
         index_col=[0],
         header=[0, 1],
     )
@@ -140,7 +141,8 @@ def insert_dhw_timeseries():
     for consumption in constants.WarmwaterConsumption:
         for p in range(NUM_PERSONS):
             hot_water_file = os.path.join(
-                os.path.dirname(__file__),
+                BASE_DIR,
+                "stemp",
                 "data",
                 "hot_water",
                 f"Warmwasser_{consumption.in_liters()}l_{p + 1}_DHW.txt",
