@@ -128,5 +128,7 @@
   {{household_form.media}}
   <script src="{% static 'highcharts/code/highcharts.js' %}"></script>
   <script>{{household_form.hotwater_hc.media}}</script>
-  {{list_form.media}}
+  {% if not edit_hh %}
+    {{list_form.media}}
+  {% endif %}
 {% endblock %}
