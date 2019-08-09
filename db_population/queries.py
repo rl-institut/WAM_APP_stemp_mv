@@ -3,7 +3,6 @@ import click
 import logging
 import pandas
 import sqlahelper
-import json
 import transaction
 import datetime as dt
 
@@ -12,26 +11,18 @@ import oedialect
 
 from django.core.wsgi import get_wsgi_application
 
+from stemp.db_population import assumptions
+from stemp.db_population import sources
+from stemp.db_population.utils import get_meta_from_json
+
 os.environ["DJANGO_SETTINGS_MODULE"] = "wam.settings"
 application = get_wsgi_application()
 
 from db_apps import oemof_results
-from meta.models import Assumption, Source, Category
 from stemp import constants
 from stemp.models import Parameter, Scenario, Household, District
 from stemp import oep_models
 from stemp.scenarios import basic_setup
-
-logging.getLogger().setLevel(logging.INFO)
-
-META_PATH = os.path.join(os.path.dirname(__file__), "metadata")
-
-
-def get_meta_from_json(metaname):
-    metafile = os.path.join(META_PATH, f"{metaname}.json")
-    with open(metafile) as json_data:
-        meta = json.load(json_data)
-    return meta
 
 
 def __get_temperature():
@@ -185,6 +176,14 @@ def insert_default_households():
             household.save()
 
 
+def insert_assumptions():
+    assumptions.insert_assumptions()
+
+
+def insert_sources():
+    sources.insert_sources()
+
+
 def delete_households():
     Household.objects.all().delete()
     District.objects.all().delete()
@@ -210,154 +209,6 @@ def delete_stored_simulations():
         session.query(oemof_results.OemofScalar).delete()
         session.query(oemof_results.OemofSequence).delete()
         session.query(oemof_results.OemofData).delete()
-
-
-def insert_sources():
-    c_timeseries = Category(
-        name="Zeitreihen", description="Quellen der verwendeten Zeitreihen"
-    )
-    c_timeseries.save()
-
-    Source(
-        meta_data=get_meta_from_json("pv_feedin"),
-        app_name="stemp",
-        category=c_timeseries,
-    ).save()
-
-    Source(
-        meta_data=get_meta_from_json("dwd_temperature"),
-        app_name="stemp",
-        category=c_timeseries,
-    ).save()
-
-
-def insert_assumptions():
-    # Warmwasser
-    c_hot_water = Category(
-        name="Warmwasser", description="Annahmen rund um den Warmwasserverbrauch"
-    )
-    c_hot_water.save()
-    hot_water_energy_source = Source(
-        meta_data=get_meta_from_json("hot_water_energy"),
-        app_name="stemp",
-        category=c_hot_water,
-    )
-    hot_water_energy_source.save()
-    hot_water_energy = Assumption(
-        name="Warmwasserenergie",
-        description=(
-            "Benötigte Energie um einen Liter Wasser von 5° auf 55° zu "
-            "erhitzen. Dieser Wert wird benutzt, um den durch Warmwasser "
-            "benötigten Wärmebedarf auszurechnen."
-        ),
-        value=constants.ENERGY_PER_LITER,
-        unit="kWh/l",
-        app_name="stemp",
-        category=c_hot_water,
-        source=hot_water_energy_source,
-    )
-    hot_water_energy.save()
-
-    # Technologieparameter
-    c_params = Category(name="Technologieparameter", description="Parameter für die verschiedenen Technologien")
-    c_params.save()
-    ise = Source(
-        meta_data=get_meta_from_json("ise_stromgestehungskosten"),
-        app_name="stemp",
-        category=c_params,
-    )
-    ise.save()
-    Assumption(
-        name="Investitionskosten: PV",
-        description="Investitionskosten für Photovoltaikanlagen",
-        value=1300,
-        unit="€/kW",
-        app_name="stemp",
-        category=c_params,
-        source=ise,
-    )
-    Assumption(
-        name="Betriebskosten: PV",
-        description="Betriebskosten für Photovoltaikanlagen",
-        value=32.5,
-        unit="€/kW/a",
-        app_name="stemp",
-        category=c_params,
-        source=ise,
-    )
-    Assumption(
-        name="Lebenszeit: PV",
-        description="Lebenszeit für Photovoltaikanlagen",
-        value=25,
-        unit="Jahre",
-        app_name="stemp",
-        category=c_params,
-        source=ise,
-    )
-
-    # Primärfaktoren
-    c_pf = Category(name="Primärenergie", description="Primärenergiefaktoren")
-    c_pf.save()
-    pf = Source(
-        meta_data=get_meta_from_json("primärenergiefaktoren"),
-        app_name="stemp",
-        category=c_pf,
-    )
-    pf.save()
-    Assumption(
-        name="Primärenergiefaktor: Erdas",
-        description="Primärenergiefaktor für Erdgas",
-        value=1.1,
-        unit="",
-        app_name="stemp",
-        category=c_pf,
-        source=pf,
-    ).save()
-    Assumption(
-        name="Primärenergiefaktor: Heizöl",
-        description="Primärenergiefaktor für Heizöl",
-        value=1.1,
-        unit="",
-        app_name="stemp",
-        category=c_pf,
-        source=pf,
-    ).save()
-    Assumption(
-        name="Primärenergiefaktor: Biogas",
-        description="Primärenergiefaktor für Biogas",
-        value=0.5,
-        unit="",
-        app_name="stemp",
-        category=c_pf,
-        source=pf,
-    ).save()
-    Assumption(
-        name="Primärenergiefaktor: Holz",
-        description="Primärenergiefaktor für Holz",
-        value=0.2,
-        unit="",
-        app_name="stemp",
-        category=c_pf,
-        source=pf,
-    ).save()
-    Assumption(
-        name="Primärenergiefaktor: allgemeiner Strommix",
-        description="Primärenergiefaktor für allgemeinen Strommix",
-        value=2.4,
-        unit="",
-        app_name="stemp",
-        category=c_pf,
-        source=pf,
-    ).save()
-    Assumption(
-        name="Primärenergiefaktor: Verdrängungsstrommix",
-        description="Primärenergiefaktor für Verdrängungsstrommix",
-        value=2.8,
-        unit="",
-        app_name="stemp",
-        category=c_pf,
-        source=pf,
-    ).save()
 
 
 @click.command()
@@ -395,4 +246,5 @@ def execute(commands):
 
 
 if __name__ == "__main__":
+    logging.getLogger().setLevel(logging.INFO)
     execute()

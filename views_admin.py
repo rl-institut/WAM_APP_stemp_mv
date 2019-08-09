@@ -1,7 +1,7 @@
 
 from django.views.generic import TemplateView
 
-from stemp import queries
+from stemp.db_population import queries
 
 
 class ManageView(TemplateView):
@@ -43,6 +43,9 @@ class ManageView(TemplateView):
         elif 'insert_assumptions' in request.POST:
             queries.insert_assumptions()
             info = 'Assumptions inserted.'
+        elif 'insert_sources' in request.POST:
+            queries.insert_sources()
+            info = 'Sources inserted.'
         else:
             info = 'Did not found matching command...'
         context = self.get_context_data(info)
