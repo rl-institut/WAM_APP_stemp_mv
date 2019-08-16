@@ -3,57 +3,64 @@
 Installation
 ============
 
-.. warning:: Update nach `Packaging-Entscheidung der WAM <https://github.com/rl-institut/WAM/issues/50>`_
-
 Das Tool kann bei Bedarf auch lokal eingerichtet werden.
+Zur Vereinfachung kann das Tool mittels `Docker <https://www.docker.com/>`_ eingerichtet werden.
 
 Voraussetzungen
 ---------------
 
-- Python Version >=3.6
-- WAM
+* git ist installiert.
+* `Docker <https://docs.docker.com/install/>`_ und `Docker-Compose <https://docs.docker.com/compose/install/>`_ sind installiert.
 
-Installation (Python-Paket)
----------------------------
+Installation
+------------
 
-StEmp-ABW ist als Python-Paket auf PyPI <INSERT LINK> verfügbar und kann über
-das Paketverwaltungsprogrammvon von Python (pip) installiert werden. Wir
-empfehlen die vorherige Einrichtung einer virtuellen Umgebung (`virtual
-environment <https://virtualenv.pypa.io>`_):
+Zunächst muss ein WAM-Server mittels Docker aufgesetzt werden.
+Anschließend kann das StEmp-MV Tool integriert werden.
 
-Virtual environment einrichten (empfohlen):
+Installation der WAM
+####################
 
-.. code-block:: bash
-
-    virtualenv stemp_abw_env
-
-Virtual environment aktivieren und StEmp-Tool installieren:
+Für die Installation wird folgende Ordnerstruktur eingerichtet:
 
 .. code-block:: bash
 
-    source /pfad/zur/venv/bin/activate
-    pip3 install <NAME>
+  wam_docker (Name beliebig)
+  +-- docker (Enthält Docker Konfiguration und WAM-Codebasis)
+  |   +-- docker-compose.yml
+  |   +-- WAM (WAM-Codebasis; hier können später weitere Apps integriert werden)
+  +-- config (Konfiguration für WAM und integrierte Apps)
+  |   +-- config.cfg
 
+.. note::
+  Änderungen an dieser Struktur müssen in der Konfigurationsdatei bzw. in der Docker-Konfiguration (docker-compose.yml) berücksichtigt werden.
 
-Installation (Quellcode)
-------------------------
-
-Die Installation setzt voraus, dass git vorhanden ist.
-
-GitHub-Repository (s.o.) klonen:
-
-.. code-block:: bash
-
-    git clone https://github.com/rl-institut/WAM_APP_stemp_abw.git stemp_abw
-
-Virtual environment aktivieren (Installation s.o.) und StEmp-Tool installieren:
+Die Einrichtung der Ordnerstruktur geschieht folgendermaßen:
 
 .. code-block:: bash
 
-    source /pfad/zur/venv/bin/activate
-    pip3 install -e ./stemp_abw/
+  mkdir docker
+  mkdir config
+  cd docker
+  git clone https://github.com/rl-institut/WAM.git
+  cp WAM/docker-compose.yml .
+  cp WAM/.config/config.cfg ../config/
 
-Daten bereitstellen
--------------------
+Anschließend müssen die beiden Konfigurationsdateien (`docker-compose.yml` und `config.cfg`) angepasst werden.
+Abschließend werden mit folgendem Befehl (aus dem `docker`-Ordner  heraus) die Images erstellt und die Container gestartet:
 
-Noch zu klären auf welchem Weg.. (import DB dump, the "djangonic" way, ...)
+.. code-block:: bash
+
+  sudo docker-compose up -d --build
+
+Der WAM-Server sollte nun unter 127.0.0.1:5000 erreichbar sein.
+
+Einbindung der StEmp-MV App
+###########################
+
+.. code-block:: bash
+  [STEMP]
+    ACTIVATED_SCENARIOS=gas,bhkw,bio_bhkw,oil,woodchip,pv_heatpump
+    ACTIVATED_VISUALIZATIONS=lcoe,ranked_invest,ranked_co2
+    DB_RESULTS=LOCAL
+    DB_SCENARIOS=LOCAL
