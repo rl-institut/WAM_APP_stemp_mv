@@ -219,7 +219,16 @@ def execute(commands):
     if not isinstance(commands, tuple):
         commands = [commands]
     for command in commands:
-        if command == "heat":
+        if command == "all":
+            insert_heat_demand()
+            insert_default_households()
+            insert_dhw_timeseries()
+            insert_pv_and_temp()
+            create_oep_tables()
+            insert_scenarios()
+            insert_sources()
+            insert_assumptions()
+        elif command == "heat":
             insert_heat_demand()
         elif command == "sources":
             insert_sources()
