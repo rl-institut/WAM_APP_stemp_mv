@@ -38,7 +38,6 @@ def add_engine(engine_name):
 DB_DEFAULT_SETUP = {
     'DB_RESULTS': 'DEFAULT',
     'DB_SCENARIOS': 'OEP',
-    'DB_INTERNAL': 'reiners_db'
 }
 
 for setup in DB_DEFAULT_SETUP:
