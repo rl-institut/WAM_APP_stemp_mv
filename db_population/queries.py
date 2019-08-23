@@ -3,6 +3,8 @@ import click
 import logging
 import pandas
 import sqlahelper
+from sqlalchemy.schema import CreateSchema
+from sqlalchemy.exc import ProgrammingError
 import transaction
 import datetime as dt
 
@@ -199,6 +201,10 @@ def delete_oep_tables():
 
 
 def create_oep_tables():
+    try:
+        oep_models.Base.metadata.bind.execute(CreateSchema(oep_models.SCHEMA))
+    except ProgrammingError:
+        pass
     oep_models.Base.metadata.create_all()
 
 
@@ -220,11 +226,11 @@ def execute(commands):
         commands = [commands]
     for command in commands:
         if command == "all":
+            create_oep_tables()
             insert_heat_demand()
             insert_default_households()
             insert_dhw_timeseries()
             insert_pv_and_temp()
-            create_oep_tables()
             insert_scenarios()
             insert_sources()
             insert_assumptions()
