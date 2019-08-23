@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    stemp.db_population
     stemp.doc
     stemp.migrations
     stemp.results
@@ -76,14 +77,6 @@ stemp.oep\_models module
 ------------------------
 
 .. automodule:: stemp.oep_models
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-stemp.queries module
---------------------
-
-.. automodule:: stemp.queries
     :members:
     :undoc-members:
     :show-inheritance:

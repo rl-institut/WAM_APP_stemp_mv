@@ -26,6 +26,7 @@ Inhalt:
    tool_transfer
    developer
    whats_new
+   api/modules
 
 .. 	image:: _static/rli_logo.png
    :height: 80 px
