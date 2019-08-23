@@ -1,8 +1,8 @@
 import json
 import os
+from wam.settings import BASE_DIR
 
-
-META_PATH = os.path.join(os.path.dirname(__file__), "metadata")
+META_PATH = os.path.join(BASE_DIR, "stemp", "metadata")
 
 
 def get_meta_from_json(metaname):
