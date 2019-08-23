@@ -40,14 +40,16 @@ DB_DEFAULT_SETUP = {
     'DB_SCENARIOS': 'OEP',
 }
 
-for setup in DB_DEFAULT_SETUP:
-    add_engine(setup)
+rtd_mode = settings.config['WAM'].get('RTD-MODE', 'False') == 'True'
+if not rtd_mode:
+    for setup in DB_DEFAULT_SETUP:
+        add_engine(setup)
 
-# Add sqlalchemy for oemof_results:
-oemof_results.Base.metadata.bind = sqlahelper.get_engine('DB_RESULTS')
+    # Add sqlalchemy for oemof_results:
+    oemof_results.Base.metadata.bind = sqlahelper.get_engine('DB_RESULTS')
 
-# Add OEP:
-oep_models.Base.metadata.bind = sqlahelper.get_engine('DB_SCENARIOS')
+    # Add OEP:
+    oep_models.Base.metadata.bind = sqlahelper.get_engine('DB_SCENARIOS')
 
 # SCENARIO SETUP:
 ACTIVATED_SCENARIOS = stemp_config.get('ACTIVATED_SCENARIOS', [])
