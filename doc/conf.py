@@ -14,13 +14,15 @@
 #
 
 import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 
 # -- Configure Django --------------------------------------------------------
-# import django
-# django.setup()
+import django
+django.setup()
 
-# autodoc_mock_imports = ['stemp.migrations']
+autodoc_mock_imports = ['stemp.migrations']
 
 # -- Project information -----------------------------------------------------
 
