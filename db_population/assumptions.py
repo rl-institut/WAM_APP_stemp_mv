@@ -1,6 +1,6 @@
 from meta.models import Category, Source, Assumption
 from stemp import constants
-from stemp.db_population.utils import get_meta_from_json
+from stemp.db_population.population_utils import get_meta_from_json
 
 
 def insert_assumptions():

@@ -11,13 +11,13 @@ import oedialect
 
 from django.core.wsgi import get_wsgi_application
 
+os.environ["DJANGO_SETTINGS_MODULE"] = "wam.settings"
+application = get_wsgi_application()
+
 from wam.settings import BASE_DIR
 from stemp.db_population import assumptions
 from stemp.db_population import sources
-from stemp.db_population.utils import get_meta_from_json
-
-os.environ["DJANGO_SETTINGS_MODULE"] = "wam.settings"
-application = get_wsgi_application()
+from stemp.db_population.population_utils import get_meta_from_json
 
 from db_apps import oemof_results
 from stemp import constants
