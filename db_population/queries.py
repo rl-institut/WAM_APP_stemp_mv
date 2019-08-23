@@ -208,6 +208,10 @@ def create_oep_tables():
     oep_models.Base.metadata.create_all()
 
 
+def create_oemof_results_tables():
+    oemof_results.Base.metadata.create_all()
+
+
 def delete_stored_simulations():
     Parameter.objects.all().delete()
     Scenario.objects.all().delete()
@@ -227,6 +231,7 @@ def execute(commands):
     for command in commands:
         if command == "all":
             create_oep_tables()
+            create_oemof_results_tables()
             insert_heat_demand()
             insert_default_households()
             insert_dhw_timeseries()
@@ -250,6 +255,8 @@ def execute(commands):
             insert_scenarios()
         elif command == "oep_tables":
             create_oep_tables()
+        elif command == "oemof_results_tables":
+            create_oemof_results_tables()
         elif command == "delete_households":
             delete_households()
         elif command == "delete_oep_tables":
