@@ -27,6 +27,7 @@ Inhalt:
    developer
    whats_new
    api/modules
+   api/stemp
 
 .. 	image:: _static/rli_logo.png
    :height: 80 px
