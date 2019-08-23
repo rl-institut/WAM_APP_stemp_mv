@@ -121,5 +121,6 @@ Dies geschieht über ein Skript das innerhalb des Docker Containers (der Contain
 
   # Startet eine bash innerhalb des Containers:
   sudo docker exec -it wam bash
+  # Fügt die WAM dem PYTHONPATH hinzu; notwendig damit das queries.py Skript die WAM module nutzen kann
   export PYTHONPATH=$PYTHONPATH:/code
-  python stemp/queries.py all
+  python stemp/db_population/queries.py all
