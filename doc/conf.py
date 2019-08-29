@@ -21,7 +21,7 @@ STEMP_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(STEMP_ROOT)
 # As stemp is cloned under different name, we have to set up a symlink
 os.symlink(
-    os.path.join(STEMP_ROOT, 'WAM_APP_stemp_mv'),
+    os.path.join(STEMP_ROOT, 'doc'),
     os.path.join(STEMP_ROOT, 'stemp')
 )
 
