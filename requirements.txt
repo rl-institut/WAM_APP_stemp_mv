@@ -13,5 +13,5 @@ celery
 Jinja2
 cursive_re
 click
--e git://github.com/henhuy/oemof.git@oemof_kopy#egg=oemof
--e git://github.com/oemof/demandlib#egg=demandlib
+git+https://github.com/henhuy/oemof.git@oemof_kopy#egg=oemof
+git+https://github.com/oemof/demandlib#egg=demandlib
