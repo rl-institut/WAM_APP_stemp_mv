@@ -28,6 +28,7 @@ try:
     )
 except FileExistsError:
     pass
+print(os.listdir(os.path.join(STEMP_ROOT, 'stemp')))
 
 # Set WAM config manually:
 os.environ['WAM_CONFIG_PATH'] = os.path.join(
