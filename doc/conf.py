@@ -14,6 +14,7 @@
 #
 
 import os
+print(os.environ)
 os.environ['PYTHONPATH'] = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 os.environ['WAM_CONFIG_PATH'] = os.path.join(
     os.path.dirname(__file__),
@@ -21,6 +22,7 @@ os.environ['WAM_CONFIG_PATH'] = os.path.join(
 )
 os.environ['WAM_APPS'] = 'stemp'
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
+print(os.environ)
 
 # -- Configure Django --------------------------------------------------------
 import django
