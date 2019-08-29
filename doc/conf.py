@@ -14,21 +14,27 @@
 #
 
 import os
+import sys
+
+# Add stemp tool to path:
 STEMP_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(STEMP_ROOT)
+# As stemp is cloned under different name, we have to set up a symlink
 os.symlink(
     os.path.join(STEMP_ROOT, 'WAM_APP_stemp_mv'),
     os.path.join(STEMP_ROOT, 'stemp')
 )
-os.environ['PYTHONPATH'] = STEMP_ROOT
+
+# Set WAM config manually:
 os.environ['WAM_CONFIG_PATH'] = os.path.join(
     os.path.dirname(__file__),
     'stemp_config.cfg'
 )
 os.environ['WAM_APPS'] = 'stemp'
-os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 
 # -- Configure Django --------------------------------------------------------
 import django
+os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 django.setup()
 
 autodoc_mock_imports = ['stemp.migrations']
