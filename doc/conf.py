@@ -14,11 +14,6 @@
 #
 
 import os
-import sys
-
-STEMP_PATH = os.path.abspath('../..')
-print(STEMP_PATH)
-sys.path.insert(0, STEMP_PATH)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 
 # -- Configure Django --------------------------------------------------------
