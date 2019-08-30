@@ -12,10 +12,8 @@ Es wurde vom `Reiner Lemoine Institut (RLI)
 In dieser Dokumentation finden Sie methodische und technische
 Hintergrundinformationen und Anleitungen.
 
-Inhalt:
-
 .. toctree::
-   :maxdepth: 1
+   :caption: Inhalt
 
    about
    stemp
@@ -26,7 +24,10 @@ Inhalt:
    tool_transfer
    developer
    whats_new
-   api/modules
+
+.. toctree::
+   :caption: API
+
    api/stemp
 
 .. 	image:: _static/rli_logo.png
