@@ -24,7 +24,11 @@ class Mock(MagicMock):
         return MagicMock()
 
 
-MOCK_MODULES = ['django.contrib.gis.gdal', 'django.contrib.gis.gdal.error']
+MOCK_MODULES = [
+    'django.contrib.gis.gdal',
+    'django.contrib.gis.gdal.error',
+    'django.contrib.gis.geos'
+]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
@@ -39,9 +43,6 @@ try:
         os.path.join(STEMP_ROOT, 'doc'),
         os.path.join(STEMP_ROOT, 'stemp')
     )
-    print('Symlink created')
-except FileExistsError:
-    print('Symlink or path already exists')
 
 # Set WAM config manually:
 os.environ['WAM_CONFIG_PATH'] = os.path.join(
