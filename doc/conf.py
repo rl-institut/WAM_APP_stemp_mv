@@ -37,8 +37,9 @@ STEMP_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(STEMP_ROOT)
 # As stemp is cloned under different name, we have to set up a symlink
 # Remove any RTD build relicts:
-os.remove(os.path.join(STEMP_ROOT, 'stemp'))
-try:
+if 'READTHEDOCS' in os.environ:
+    print('Running RTD build commands for stemp docs...')
+    os.remove(os.path.join(STEMP_ROOT, 'stemp'))
     os.symlink(
         os.path.join(STEMP_ROOT, 'doc'),
         os.path.join(STEMP_ROOT, 'stemp')
