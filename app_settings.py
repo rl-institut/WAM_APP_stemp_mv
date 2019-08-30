@@ -40,8 +40,7 @@ DB_DEFAULT_SETUP = {
     'DB_SCENARIOS': 'OEP',
 }
 
-rtd_mode = settings.config['WAM'].get('RTD-MODE', 'False') == 'True'
-if not rtd_mode:
+if 'READTHEDOCS' not in os.environ:
     for setup in DB_DEFAULT_SETUP:
         add_engine(setup)
 
