@@ -1,10 +1,18 @@
+"""
+Module to hold customized django fields
+"""
 
 from django.forms import Field
-from stemp.models import Household
 from stemp.widgets import HouseholdWidget, SubmitWidget
 
 
 class HouseholdField(Field):
+    """
+    Field for households
+
+    Is used in district list and summerization.
+    Shows current household and selected amounts.
+    """
     widget = HouseholdWidget
 
     def __init__(self, hh, count=1, in_district=False):
@@ -28,5 +36,8 @@ class HouseholdField(Field):
 
 
 class SubmitField(Field):
+    """
+    Simple submit field to add submit input
+    """
     def __init__(self, widget=SubmitWidget, **kwargs):
         super(SubmitField, self).__init__(widget=widget, **kwargs)

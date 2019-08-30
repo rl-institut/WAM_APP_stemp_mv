@@ -1,3 +1,6 @@
+"""
+Module to hold customized django forms
+"""
 
 from collections import defaultdict, OrderedDict, namedtuple
 from itertools import chain
@@ -22,6 +25,11 @@ ValueUnit = namedtuple('ValueUnit', ['value', 'unit'])
 
 
 class ChoiceForm(Form):
+    """
+    Customized choice form
+
+    Adds foundation attributes and "onchange" submission.
+    """
     def __init__(
             self, name, label=None, choices=None, submit_on_change=True,
             initial=None, field=ChoiceField, widget=Select, *args, **kwargs
@@ -41,6 +49,11 @@ class ChoiceForm(Form):
 
 
 class TechnologyForm(Form):
+    """
+    Form for technology checkboxes
+
+    Additional information is loaded within TechnologyWidget.
+    """
     def __init__(
             self, name, label=None, choices=None,
             initial=None, information=None, *args, **kwargs
@@ -59,6 +72,14 @@ class TechnologyForm(Form):
 
 
 class ParameterForm(Form):
+    """
+    Form to show a grouped edit form for all possible parameters
+
+    Depending on parameter best fitting field is automatically detected and added
+    to the form. The field type depends on parameter type (int, char, etc.).
+    In case of int ant float types, slider field is added if min and max values are
+    given.
+    """
     delimiter = '-'
 
     @staticmethod
@@ -159,7 +180,30 @@ class ParameterForm(Form):
         self.data = data or {}
 
     def prepared_data(self, scenario=None):
+        """
+        Reads out all (edited) parameters and returns them as dict.
+
+        Dict has the form dict[component: dict[parameter: value]].
+
+        Parameters
+        ----------
+        scenario (str):
+            If given, only parameters used in scenario are returned
+
+        Returns
+        -------
+        dict:
+            Nested dictionary of all related components and their parameter values
+        """
         def belongs_to_scenario():
+            """
+            Checks if current field is used in scenario.
+
+            Returns
+            -------
+            bool:
+                True, if field belongs to scenario; False otherwise.
+            """
             if (
                     scenario is not None and
                     scenario not in self.fields[field_name].scenarios
@@ -184,24 +228,18 @@ class ParameterForm(Form):
 
     @staticmethod
     def get_changed_parameters(parameters, data):
-        """Compare original parameters with user entries and return diffs"""
+        """
+        Compare original parameters with user entries and return diffs
 
-        # Transform parameters and data into comparable shapes
-        # original-shape (to get unit as well):
-        # Dict['category', DICT['parameter', ('value', 'unit')]]
-        # posted-shape:
-        # Dict['category', DICT['parameter', 'value']]
+        Parameters
+        ----------
+        parameters
+        data
 
-        # parameters-shape:
-        # List[
-        #     Tuple[
-        #         'scenario', Dict[
-        #             'category', Dict[
-        #                 'parameter', Dict['attribute', 'value']
-        #             ]
-        #         ]
-        #     ]
-        # ]
+        Returns
+        -------
+
+        """
         original = defaultdict(dict)
         for (_, scenario_params) in parameters:
             for category, category_params in scenario_params.items():

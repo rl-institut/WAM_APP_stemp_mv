@@ -1,4 +1,11 @@
 
+"""
+App-specific settings
+
+These settings are initialized when `wam.settings` are called,
+before app itself gets started.
+"""
+
 import os
 import sqlalchemy
 import sqlahelper
@@ -27,12 +34,24 @@ DEFAULT_PERIODS = int(stemp_config.get('DEFAULT_PERIODS', 8760))
 DB_URL = '{ENGINE}://{USER}:{PASSWORD}@{HOST}:{PORT}'
 
 
-def add_engine(engine_name):
-    db_name = stemp_config.get(engine_name, DB_DEFAULT_SETUP[engine_name])
+def add_engine(db_connection):
+    """
+    Creates and adds DB connection from configuration file by given name
+
+    First, it is checked which db configuration should be used (default, or specified in
+    config file). Second, engine is created by DB parameters for given DB connection
+    and added to slqahelper with connection name.
+
+    Parameters
+    ----------
+    db_connection (str):
+        Database connection to set up
+    """
+    db_name = stemp_config.get(db_connection, DB_DEFAULT_SETUP[db_connection])
     conf = settings.config['DATABASES'][db_name]
     db_url = DB_URL + '/{NAME}' if 'NAME' in conf else DB_URL
     engine = sqlalchemy.create_engine(db_url.format(**conf))
-    sqlahelper.add_engine(engine, engine_name)
+    sqlahelper.add_engine(engine, db_connection)
 
 
 DB_DEFAULT_SETUP = {
@@ -56,6 +75,19 @@ SCENARIO_PATH = os.path.join('stemp', 'scenarios')
 
 
 def import_scenario(scenario):
+    """
+    Scenario with given name is imported from scenario module
+
+    Parameters
+    ----------
+    scenario (str):
+        Name of scenario module
+
+    Returns
+    -------
+    module:
+        Imported scenario module
+    """
     filename = os.path.join(SCENARIO_PATH, scenario)
     splitted = filename.split(os.path.sep)
     module_name = '.'.join(splitted[1:])
@@ -63,6 +95,12 @@ def import_scenario(scenario):
 
 
 class ScenarioModules(object):
+    """
+    Class to import scenario modules once needed
+
+    Scenarios cannot be imported within app_settings as not all resources are yet ready.
+    Therefore, scenario modules are imported once when accessed later.
+    """
     def __init__(self):
         self.modules = {}
 

@@ -1,3 +1,6 @@
+"""
+Collection of stemp-related constants and enumerations
+"""
 
 from collections import namedtuple
 from enum import Enum, IntEnum
@@ -27,11 +30,22 @@ assert sum([r.percentage for r in RESULT_COLORS]) == 1
 
 
 class WarmwaterConsumption(Enum):
+    """
+    Enumeration for Warmwater consumption levels
+    """
     Low = 0
     Medium = 1
     High = 2
 
     def in_liters(self):
+        """
+        Warmwater level in liters
+
+        Returns
+        -------
+        int:
+            Warmwater consumption in liters
+        """
         return {
             WarmwaterConsumption.Low: 43,
             WarmwaterConsumption.Medium: 66,
@@ -40,6 +54,19 @@ class WarmwaterConsumption(Enum):
 
     @staticmethod
     def from_liters(liters):
+        """
+        Returns warmwater consumption level for given liters
+
+        Parameters
+        ----------
+        liters (int):
+            warmwater consumption in liters
+
+        Returns
+        -------
+        WarmwaterConsumption:
+            Warmwater consumption level
+        """
         return {
             43: WarmwaterConsumption.Low,
             66: WarmwaterConsumption.Medium,
@@ -48,26 +75,54 @@ class WarmwaterConsumption(Enum):
 
 
 class HouseType(Enum):
+    """
+    House type enumeration
+    """
     EFH = 'Einfamilienhaus'
     MFH = 'Mehrfamilienhaus'
 
 
 class HeatType(Enum):
+    """
+    Heat type enumeration
+    """
     radiator = 'Heizkörper'
     floor = 'Fussbodenheizung'
 
 
 class DemandType(IntEnum):
+    """
+    Enumeration to differentiate between single household and district
+    """
     Single = 0
     District = 1
 
     def label(self):
+        """
+        Label for given demand type
+
+        Returns
+        -------
+        str:
+            Label of current demand type
+        """
         return {
             DemandType.Single: 'Haushalt erstellen',
             DemandType.District: 'Viertel erstellen'
         }.get(self)
 
     def suffix(self):
+        """
+        Suffix for current demand type
+
+        This is needed in order to load scenario parameters which are dependent on
+        demand type.
+
+        Returns
+        -------
+        str:
+            Demand type suffix
+        """
         return {
             DemandType.Single: 'single',
             DemandType.District: 'district'
@@ -75,12 +130,30 @@ class DemandType(IntEnum):
 
 
 class DistrictStatus(Enum):
+    """
+    District status enumeration
+    """
     New = 'new'
     Changed = 'changed'
     Unchanged = 'unchanged'
 
 
 def get_roof_square_meters(household_square_meters, house_type):
+    """
+    Calculates potential roof square meters available for PV
+
+    Parameters
+    ----------
+    household_square_meters (int):
+        Square meters of current household
+    house_type (HouseType):
+        Single household or district
+
+    Returns
+    -------
+    float:
+        Roof square meters available for PV
+    """
     sm = household_square_meters
     if house_type == HouseType.EFH:
         sm /= 2
