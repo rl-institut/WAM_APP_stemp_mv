@@ -15,6 +15,18 @@
 
 import os
 import sys
+from unittest.mock import MagicMock
+
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+
+MOCK_MODULES = ['django.contrib.gis.gdal.libgdal']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
 
 # Add stemp tool to path:
 STEMP_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -35,14 +47,14 @@ os.environ['WAM_CONFIG_PATH'] = os.path.join(
 )
 os.environ['WAM_APPS'] = 'stemp'
 
-autodoc_mock_imports = ['django.contrib.gis.gdal.libgdal, stemp.migrations']
-
 # -- Configure Django --------------------------------------------------------
 import django
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 django.setup()
 
 # -- Project information -----------------------------------------------------
+
+autodoc_mock_imports = ['stemp.migrations']
 
 project = 'StEmp-MV'
 copyright = '2019, Reiner Lemoine Institut'
