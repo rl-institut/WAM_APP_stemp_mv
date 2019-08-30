@@ -32,13 +32,16 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 STEMP_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(STEMP_ROOT)
 # As stemp is cloned under different name, we have to set up a symlink
+# Remove any RTD build relicts:
+os.remove(os.path.join(STEMP_ROOT, 'stemp'))
 try:
     os.symlink(
         os.path.join(STEMP_ROOT, 'doc'),
         os.path.join(STEMP_ROOT, 'stemp')
     )
+    print('Symlink created')
 except FileExistsError:
-    pass
+    print('Symlink or path already exists')
 
 # Set WAM config manually:
 os.environ['WAM_CONFIG_PATH'] = os.path.join(
