@@ -24,7 +24,7 @@ class Mock(MagicMock):
         return MagicMock()
 
 
-MOCK_MODULES = ['django.contrib.gis.gdal.libgdal']
+MOCK_MODULES = ['django.contrib.gis.gdal', 'django.contrib.gis.gdal.error']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
