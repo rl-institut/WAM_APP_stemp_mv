@@ -7,23 +7,9 @@ Subpackages
 .. toctree::
 
     stemp.db_population
-    stemp.doc
-    stemp.migrations
     stemp.results
     stemp.scenarios
-    stemp.tests
     stemp.visualizations
-
-Submodules
-----------
-
-stemp.admin module
-------------------
-
-.. automodule:: stemp.admin
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 stemp.app\_settings module
 --------------------------
