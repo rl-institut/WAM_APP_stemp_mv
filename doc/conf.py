@@ -37,12 +37,12 @@ os.environ['WAM_CONFIG_PATH'] = os.path.join(
 )
 os.environ['WAM_APPS'] = 'stemp'
 
+autodoc_mock_imports = ['django.contrib.gis.gdal.libgdal, stemp.migrations']
+
 # -- Configure Django --------------------------------------------------------
 import django
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wam.settings'
 django.setup()
-
-autodoc_mock_imports = ['stemp.migrations']
 
 # -- Project information -----------------------------------------------------
 
