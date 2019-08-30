@@ -20,7 +20,6 @@ import sys
 STEMP_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(STEMP_ROOT)
 # As stemp is cloned under different name, we have to set up a symlink
-print(os.listdir(STEMP_ROOT))
 try:
     os.symlink(
         os.path.join(STEMP_ROOT, 'doc'),
@@ -28,7 +27,6 @@ try:
     )
 except FileExistsError:
     pass
-print(os.listdir(os.path.join(STEMP_ROOT, 'stemp')))
 
 # Set WAM config manually:
 os.environ['WAM_CONFIG_PATH'] = os.path.join(
