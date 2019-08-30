@@ -29,15 +29,17 @@ MOCK_MODULES = [
     'django.contrib.gis.gdal.error',
     'django.contrib.gis.geos'
 ]
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
 
 # Add stemp tool to path:
 STEMP_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(STEMP_ROOT)
-# As stemp is cloned under different name, we have to set up a symlink
-# Remove any RTD build relicts:
+
 if 'READTHEDOCS' in os.environ:
+    # Mock modules not available in RTD-build container:
+    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+    # As stemp is cloned under different name, we have to set up a symlink
+    # Remove any RTD build relicts:
     print('Running RTD build commands for stemp docs...')
     os.remove(os.path.join(STEMP_ROOT, 'stemp'))
     os.symlink(
@@ -45,12 +47,12 @@ if 'READTHEDOCS' in os.environ:
         os.path.join(STEMP_ROOT, 'stemp')
     )
 
-# Set WAM config manually:
-os.environ['WAM_CONFIG_PATH'] = os.path.join(
-    os.path.dirname(__file__),
-    'stemp_config.cfg'
-)
-os.environ['WAM_APPS'] = 'stemp'
+    # Set WAM config manually:
+    os.environ['WAM_CONFIG_PATH'] = os.path.join(
+        os.path.dirname(__file__),
+        'stemp_config.cfg'
+    )
+    os.environ['WAM_APPS'] = 'stemp'
 
 # -- Configure Django --------------------------------------------------------
 import django
@@ -213,7 +215,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'stemp-abw', 'StEmp-ABW Documentation', [author], 1)
+    (master_doc, 'stemp-mv', 'StEmp-MV Documentation', [author], 1)
 ]
 
 
