@@ -245,7 +245,6 @@ def execute(commands):
         elif command == "reset_all":
             delete_households()
             delete_oep_tables()
-            delete_scenarios()
             delete_stored_simulations()
             create_all()
         elif command == "heat":
