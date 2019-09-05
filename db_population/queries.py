@@ -222,6 +222,17 @@ def delete_stored_simulations():
         session.query(oemof_results.OemofSequence).delete()
         session.query(oemof_results.OemofData).delete()
 
+def create_all():
+    create_oep_tables()
+    create_oemof_results_tables()
+    insert_heat_demand()
+    insert_default_households()
+    insert_dhw_timeseries()
+    insert_pv_and_temp()
+    insert_scenarios()
+    insert_sources()
+    insert_assumptions()
+
 
 @click.command()
 @click.argument("commands", nargs=-1)
@@ -230,15 +241,13 @@ def execute(commands):
         commands = [commands]
     for command in commands:
         if command == "all":
-            create_oep_tables()
-            create_oemof_results_tables()
-            insert_heat_demand()
-            insert_default_households()
-            insert_dhw_timeseries()
-            insert_pv_and_temp()
-            insert_scenarios()
-            insert_sources()
-            insert_assumptions()
+            create_all()
+        elif command == "reset_all":
+            delete_households()
+            delete_oep_tables()
+            delete_scenarios()
+            delete_stored_simulations()
+            create_all()
         elif command == "heat":
             insert_heat_demand()
         elif command == "sources":
