@@ -126,7 +126,15 @@
   };
   </script>
   {{household_form.media}}
-  <script src="{% static 'highcharts/code/highcharts.js' %}"></script>
+
+  <!--[if lt IE 9]>
+    <script src="https://code.highcharts.com/7.0.3/modules/oldie-polyfills.js"></script>
+  <![endif]-->
+    <script src="https://code.highcharts.com/7.0.3/highcharts.js"></script>
+  <!--[if lt IE 9]>
+    <script src="https://code.highcharts.com/7.0.3/modules/oldie.js"></script>
+  <![endif]-->
+
   <script>{{household_form.hotwater_hc.media}}</script>
   {% if not edit_hh %}
     {{list_form.media}}

@@ -11,7 +11,15 @@
     <title>Stemp Tool: Lützow</title>
     <link rel="stylesheet" type="text/css" href="{% static 'ionicons-2.0.1/css/ionicons.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'stemp/foundation/css/app.css' %}">
-    <script src="{% static 'highcharts/code/highcharts.js' %}"></script>
+
+    <!--[if lt IE 9]>
+      <script src="https://code.highcharts.com/7.0.3/modules/oldie-polyfills.js"></script>
+    <![endif]-->
+      <script src="https://code.highcharts.com/7.0.3/highcharts.js"></script>
+    <!--[if lt IE 9]>
+      <script src="https://code.highcharts.com/7.0.3/modules/oldie.js"></script>
+    <![endif]-->
+
   </head>
   <body>
 
