@@ -8,6 +8,7 @@ from oemof.tools.economics import annuity
 from stemp.oep_models import OEPTimeseries
 from stemp.scenarios import basic_setup, heat
 from stemp.scenarios.basic_setup import AdvancedLabel, pe
+from stemp.constants import PV_MINIMUM
 
 
 def get_timeseries():
@@ -154,7 +155,8 @@ class Scenario(basic_setup.BaseScenario):
         lifetime = parameters['PV']['lifetime']
         opex_fix = parameters['PV']['opex_fix']
         epc = annuity(capex, lifetime, wacc) + opex_fix
-        pv_invest = Investment(ep_costs=epc, maximum=demand.max_pv_size)
+        pv_invest = Investment(
+            ep_costs=epc, minimum=PV_MINIMUM, maximum=demand.max_pv_size)
         pv_invest.capex = capex
         pv = Source(
             label=AdvancedLabel(
