@@ -1,0 +1,105 @@
+{
+  "name": "",
+  "title": "Gas",
+  "identifier": "",
+  "description": "Verschiedene Daten für den Energieträger Gas",
+  "language": "de-DE",
+  "keywords": [
+    "CO2-Emissionsfaktor",
+    "Capex",
+    "Lebensdauer",
+    "Wirkungsgrad",
+    "Gaspreis",
+    "Gas-Brennwertgerät",
+    "Gaspreissteigerung"
+  ],
+  "publicationDate": "2019-12-31",
+  "context": {
+    "homepage": "",
+    "documentation": "",
+    "sourceCode": "",
+    "contact": "",
+    "grantNo": ""
+  },
+  "spatial": {
+    "location": "none",
+    "extent": "Deutschland",
+    "resolution": ""
+  },
+  "temporal": {
+    "referenceDate": "",
+    "start": "",
+    "end": "",
+    "resolution": ""
+  },
+  "sources": [
+    {
+      "title": "AxIOME BAR - Anwendungsorientierte Informationen für Moderne Heizsysteme im Neubau für Planung und Betrieb",
+      "description": "Untersuchung der Kostenverschiedener Heizsysteme fürmoderne Einfamilienhäuser in derRegion Ulm",
+      "path": "https://www.unw-ulm.de/wp-content/uploads/2018/09/AxIOME_BAR_Bericht_Gestehungskosten.pdf",
+      "license": "Namensnennung - Nicht kommerziell - Keine Bearbeitungen 4.0 International (CC BY-NC-ND 4.0) © UNW ",
+      "copyright": "© UNW / 2018"
+    },
+    {
+      "title": "BDEW-Heizkostenvergleich Neubau 2016",
+      "description": "Ein Vergleich der Gesamtkosten verschiedener Systeme zur Heizung und Warmwasserbereitung im Neubau",
+      "path": "https://www.bdew.de/media/documents/BDEW-HKV-Neubau-2016.pdf",
+      "license": "null",
+      "copyright": "© BDEW / 2016"
+    },
+    {
+      "title": "Wirkungs- und Nutzungsgrade von Kesseln",
+      "description": "Niedertemperatur- und Brennwertkessel ",
+      "path": "https://www.baunetzwissen.de/heizung/fachwissen/heizkessel/wirkungs--und-nutzungsgrade-von-kesseln-161184",
+      "license": "null",
+      "copyright": "© Baunetz-Wissen"
+    },
+    {
+      "title": "Lebensdauer einer Heizung",
+      "description": "Informationen zu Verschleiß und Haltbarkeit",
+      "path": "https://praxistipps.focus.de/lebensdauer-einer-heizung-informationen-zu-verschleiss-und-haltbarkeit_98439",
+      "license": "null",
+      "copyright": "© FOCUS Online / 2019"
+    },
+    {
+      "title": "CAPEX",
+      "description": "",
+      "path": "",
+      "license": "",
+      "copyright": ""
+    }
+  ],
+  "licenses": [
+    {
+      "id": "CC-BY-4.0",
+      "name": "CC-BY-4.0",
+      "title": "Creative Commons Attribution 4.0 International",
+      "path": "https://creativecommons.org/licenses/by/4.0/legalcode",
+      "instruction": "You must give credit to the original author of the work, including a URI or hyperlink to the work, this Public license and a copyright notice.",
+      "attribution": "© Reiner Lemoine Institut"
+    }
+  ],
+  "contributors": [],
+  "resources": [],
+  "review": {
+    "path": "none",
+    "badge": "none"
+  },
+  "metaMetadata": {
+    "metadataVersion": "OEP-1.4",
+    "metadataLicense": {
+      "name": "CC0-1.0",
+      "title": "Creative Commons Zero v1.0 Universal",
+      "path": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  },
+  "_comment": {
+    "metadata": "Metadata documentation and explanation (https://github.com/OpenEnergyPlatform/organisation/wiki/metadata)",
+    "dates": "Dates and time must follow the ISO8601 including time zone (YYYY-MM-DD or YYYY-MM-DDThh:mm:ss±hh)",
+    "units": "Use a space between numbers and units (100 m)",
+    "languages": "Languages must follow the IETF (BCP47) format (en-GB, en-US, de-DE)",
+    "licenses": "License name must follow the SPDX License List (https://spdx.org/licenses/)",
+    "review": "Following the OEP Data Review (https://github.com/OpenEnergyPlatform/data-preprocessing/wiki)",
+    "none": "If not applicable use (none)"
+  }
+}

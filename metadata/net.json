@@ -1,0 +1,71 @@
+{
+  "name": "",
+  "title": "Netznutzungsentgelt",
+  "identifier": "",
+  "description": "Nettonutzentgelt aus der Zusammensetzung des Strompreises für Haushaltskunden ",
+  "language": "de-DE",
+  "keywords": [
+    "Netznutzungsentgelt"
+  ],
+  "publicationDate": "2019-12-31",
+  "context": {
+    "homepage": "",
+    "documentation": "",
+    "sourceCode": "",
+    "contact": "",
+    "grantNo": ""
+  },
+  "spatial": {
+    "location": "none",
+    "extent": "Deutschland",
+    "resolution": ""
+  },
+  "temporal": {
+    "referenceDate": "",
+    "start": "",
+    "end": "",
+    "resolution": ""
+  },
+  "sources": [
+    {
+      "title": "Zusammensetzung des Strompreises für Haushaltskunden ",
+      "description": "Zusammensetzung des Strompreises für Haushaltskunden mit einem Jahresverbrauch zwischen 2.500 und 5.000 kWh zum 1. April 2018 (Angaben in Prozent)",
+      "path": "https://www.bmwi.de/Redaktion/DE/Infografiken/Energie/strompreise.html",
+      "license": "Namensnennung-Keine Bearbeitung 3.0 Deutschland (CC BY-ND 3.0 DE) ",
+      "copyright": "© Monitoringbericht 2018 von Bundesnetzagentur und Bundeskartellamt "
+    }
+  ],
+  "licenses": [
+    {
+      "id": "CC-BY-4.0",
+      "name": "CC-BY-4.0",
+      "title": "Creative Commons Attribution 4.0 International",
+      "path": "https://creativecommons.org/licenses/by/4.0/legalcode",
+      "instruction": "You must give credit to the original author of the work, including a URI or hyperlink to the work, this Public license and a copyright notice.",
+      "attribution": "© Reiner Lemoine Institut"
+    }
+  ],
+  "contributors": [],
+  "resources": [],
+  "review": {
+    "path": "none",
+    "badge": "none"
+  },
+  "metaMetadata": {
+    "metadataVersion": "OEP-1.4",
+    "metadataLicense": {
+      "name": "CC0-1.0",
+      "title": "Creative Commons Zero v1.0 Universal",
+      "path": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  },
+  "_comment": {
+    "metadata": "Metadata documentation and explanation (https://github.com/OpenEnergyPlatform/organisation/wiki/metadata)",
+    "dates": "Dates and time must follow the ISO8601 including time zone (YYYY-MM-DD or YYYY-MM-DDThh:mm:ss±hh)",
+    "units": "Use a space between numbers and units (100 m)",
+    "languages": "Languages must follow the IETF (BCP47) format (en-GB, en-US, de-DE)",
+    "licenses": "License name must follow the SPDX License List (https://spdx.org/licenses/)",
+    "review": "Following the OEP Data Review (https://github.com/OpenEnergyPlatform/data-preprocessing/wiki)",
+    "none": "If not applicable use (none)"
+  }
+}

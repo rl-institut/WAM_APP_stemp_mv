@@ -1,0 +1,126 @@
+{
+  "name": "",
+  "title": "Blockheizkraftwerk",
+  "identifier": "",
+  "description": "Verschiedene Daten zu BHKWs in Deutschland",
+  "language": "de-DE",
+  "keywords": [
+    "Capex",
+    "Lebensdauer",
+    "CO2-Emissionsfaktor",
+    "Umrechnugsfaktor elektrisch",
+    "Umrechnungsfaktor thermisch",
+    "Minimallast",
+    "Einspeisevergütung"
+  ],
+  "publicationDate": "2019-12-31",
+  "context": {
+    "homepage": "",
+    "documentation": "",
+    "sourceCode": "",
+    "contact": "",
+    "grantNo": ""
+  },
+  "spatial": {
+    "location": "none",
+    "extent": "Deutschland",
+    "resolution": ""
+  },
+  "temporal": {
+    "referenceDate": "",
+    "start": "",
+    "end": "",
+    "resolution": ""
+  },
+  "sources": [
+    {
+      "title": "BDEW-Heizkostenvergleich Neubau 2016",
+      "description": "Ein Vergleich der Gesamtkosten verschiedener Systeme zur Heizung und Warmwasserbereitung im Neubau",
+      "path": "https://www.bdew.de/media/documents/BDEW-HKV-Neubau-2016.pdf",
+      "license": "null",
+      "copyright": "© BDEW / 2016"
+    },
+    {
+      "title": "Blockheizkraftwerke",
+      "description": "Blockheizkraftwerk Kosten: Grundlage für den wirtschaftlichen Betrieb von Blockheizkraftwerken sind ausbalancierte Kosten und Gewinne. Den Investitionen des eigentlichen BHKWs, seiner zugehörigen Installationen und des Kraftstoffs stehen die Einnahmen aus Wärme- und Stromverkauf gegenüber.",
+      "path": "https://asue.de/blockheizkraftwerke",
+      "license": "null",
+      "copyright": "null"
+    },
+    {
+      "title": "BHKW–Grundlagen",
+      "description": " Bei der konventionellen Energieversorgung werden in der Regel Strom und Wärme getrennt voneinander erzeugt. Der Strom wird überwiegend zentral in großen Kondensationskraftwerken unter Einsatz von Steinkohle, Braunkohle oder Kernenergie produziert und über Fernleitungen an die Verbraucher geliefert. Diese Art der Erzeugung ist stets mit hohen Wärmeverlusten verbunden, da am Ende des Prozesses große Mengen von Kondensations-wärme bei niedrigen Temperaturen ungenutzt an die Umgebung abgeführt werden. Darüber hinaus entstehen Übertragungs-verluste auf dem Weg vom Kraftwerk bis zur Steckdose des Verbrauchers.  Die von den Verbrauchern benötigte Heizwärme, Wärme zur Trinkwassererwärmung sowie auch Prozesswärme in der Industrie werden im Allgemeinen verbrauchernah oder durch die Verbraucher selbst unter Einsatz fossiler Brennstoffe in Kessel-anlagen erzeugt. Dabei können heute mit modernen und richtig ausgelegten Anlagen hohe Nutzungsgrade und entsprechend geringe Verluste erzielt werden.  Betrachtet man die dargestellte Form der getrennten Strom- und Wärmeversorgung zusammengefasst, so ergeben sich aufgrund der hohen Stromerzeugungsverluste keine zufriedenstellenden Gesamtnutzungsgrade.",
+      "path": "https://asue.de/sites/default/files/asue/themen/blockheizkraftwerke/2010/broschueren/06_06_10_bhkw-grundlagen-2010.pdf",
+      "license": "null",
+      "copyright": "null"
+    },
+    {
+      "title": "Wirtschaftlichkeitsbetrachtung für den Einsatz von Kraft-Wärme-Kopplungsanlagen mit fossilen Brennstoffen",
+      "description": "Im folgenden soll nur auf den Einsatz von BHKW näher eingegangen werden, da hier ein Großteil der Anwendungsfälle liegt.  ",
+      "path": "http://www.aachen.de/DE/stadt_buerger/energie/kraftwaermekopplung/material/pdf/01wirtschaftlichkeit_kwk_unternehmen.pdf",
+      "license": "null",
+      "copyright": "© Stadt Aachen"
+    },
+    {
+      "title": "CO2 - Emissionsfaktoren nach Energieträgern",
+      "description": "",
+      "path": "https://lfu.brandenburg.de/cms/detail.php/bb1.c.523833.de",
+      "license": "Namensnennung - Nicht kommerziell - Keine Bearbeitungen 4.0 International (CC BY-NC-ND 4.0)",
+      "copyright": "© Landesamt für Umwelt"
+    },
+    {
+      "title": "Kurzstudie zum Thema Effekte des Ausgleichsvon Stromdefiziten durch Biogasanlagen - Zusammenfassung aktueller Forschungsergebnisse",
+      "description": "Diese Kurzstudie fasst die Zwischenergebnisse laufender, sowiedie Abschlussergebnisse abgeschlossener, Forschungsvorhaben zum Thema knapp zusammen,um diese für den aktuellen politischen-Diskussionsprozess verfügbar zu machen.Dafür werden aufbauend auf einer Residuallastanalyse, Effekte der flexiblen Biogas-und Biomethanverstromung auf 1) die Stromverteilung und Versorgungssicherheit, 2) den fossilen Kraftwerkspark, 3) den Strommarkt sowie 4) sonstige Effekte erläutert.",
+      "path": "http://publica.fraunhofer.de/eprints/urn_nbn_de_0011-n-3644350.pdf",
+      "license": "null",
+      "copyright": "© Fraunhofer-Gesellschaft"
+    },
+    {
+      "title": "KWK-Gesetz: Das gibt es für den erzeugten Strom",
+      "description": "Was macht man mit dem Strom, den ein BHKW produziert? Man kann ihn selbst nutzen, sodass die eigenen Stromkosten sinken. Und es gibt es die Möglichkeit, sich den erzeugten Strom nach dem Kraft-Wärme-Kopplungsgesetz (KWK-Gesetz) bezahlen zu lassen. Wie das nach dem aktuellen KWK-Gesetz 2016 funktioniert, erfahren Sie hier.",
+      "path": "https://www.co2online.de/modernisieren-und-bauen/blockheizkraftwerk-kraft-waerme-kopplung/kwk-gesetz/",
+      "license": "null",
+      "copyright": "© co2online gGmbH"
+    },
+    {
+      "title": "Gesetz für die Erhaltung, die Modernisierung und den Ausbau derKraft-Wärme-Kopplung (Kraft-Wärme-Kopplungsgesetz - KWKG)",
+      "description": "",
+      "path": "https://www.gesetze-im-internet.de/kwkg_2016/KWKG.pdf",
+      "license": "Namensnennung - Nicht kommerziell - Keine Bearbeitungen 4.0 International (CC BY-NC-ND 4.0) ",
+      "copyright": "© Bundesministeriums der Justiz und für Verbraucherschutz"
+    }
+  ],
+  "licenses": [
+    {
+      "id": "CC-BY-4.0",
+      "name": "CC-BY-4.0",
+      "title": "Creative Commons Attribution 4.0 International",
+      "path": "https://creativecommons.org/licenses/by/4.0/legalcode",
+      "instruction": "You must give credit to the original author of the work, including a URI or hyperlink to the work, this Public license and a copyright notice.",
+      "attribution": "© Reiner Lemoine Institut"
+    }
+  ],
+  "contributors": [],
+  "resources": [],
+  "review": {
+    "path": "none",
+    "badge": "none"
+  },
+  "metaMetadata": {
+    "metadataVersion": "OEP-1.4",
+    "metadataLicense": {
+      "name": "CC0-1.0",
+      "title": "Creative Commons Zero v1.0 Universal",
+      "path": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  },
+  "_comment": {
+    "metadata": "Metadata documentation and explanation (https://github.com/OpenEnergyPlatform/organisation/wiki/metadata)",
+    "dates": "Dates and time must follow the ISO8601 including time zone (YYYY-MM-DD or YYYY-MM-DDThh:mm:ss±hh)",
+    "units": "Use a space between numbers and units (100 m)",
+    "languages": "Languages must follow the IETF (BCP47) format (en-GB, en-US, de-DE)",
+    "licenses": "License name must follow the SPDX License List (https://spdx.org/licenses/)",
+    "review": "Following the OEP Data Review (https://github.com/OpenEnergyPlatform/data-preprocessing/wiki)",
+    "none": "If not applicable use (none)"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "name": "",
+  "title": "Photovoltaik",
+  "identifier": "",
+  "description": "Verschiedene daten für Photovoltaik-Anlagen in Deutschland",
+  "language": "de-DE",
+  "keywords": [
+    "CO2- Emissionsfaktor",
+    "Photovoltaik",
+    "Verbrauch",
+    "Einspeisevergütung"
+  ],
+  "publicationDate": "2019-12-31",
+  "context": {
+    "homepage": "",
+    "documentation": "",
+    "sourceCode": "",
+    "contact": "",
+    "grantNo": ""
+  },
+  "spatial": {
+    "location": "none",
+    "extent": "Deutschland",
+    "resolution": ""
+  },
+  "temporal": {
+    "referenceDate": "",
+    "start": "",
+    "end": "",
+    "resolution": ""
+  },
+  "sources": [
+    {
+      "title": "Aktuelle Fakten zur Photovoltaik in Deutschland ",
+      "description": "Deutschland lässt das fossil-nukleare Energiezeitalter hinter sich. Photovoltaik wird in unserer nachhaltigen Energiezukunft eine bedeutende Rolle spielen. Die vorliegende Zusammenstellung aktuellster Fakten, Zahlen und Erkenntnisse soll eine gesamtheitliche Bewertung des Photovoltaik-Ausbaus in Deutschland unterstützen.",
+      "path": "https://www.ise.fraunhofer.de/content/dam/ise/de/documents/publications/studies/aktuelle-fakten-zur-photovoltaik-in-deutschland.pdf",
+      "license": "null",
+      "copyright": "© Fraunhofer - Gesellschaft"
+    },
+    {
+      "title": "BDEW-Heizkostenvergleich Neubau 2016",
+      "description": "Ein Vergleich der Gesamtkosten verschiedener Systeme zur Heizung und Warmwasserbereitung im Neubau",
+      "path": "https://www.bdew.de/media/documents/BDEW-HKV-Neubau-2016.pdf",
+      "license": "null",
+      "copyright": "© BDEW"
+    },
+    {
+      "title": "Aktuelle EEG Vergütungssätze für Photovoltaikanlagen 2019 / 2020",
+      "description": "Die nachfolgende Tabelle enthält die diesem Wert zugrundeliegenden, teilweise korrigierten Monatswerte sowie die für das Folgequartal geltenden Vergütungssätze für PV-Anlagen. Vergütungssätze bei Inbetriebnahme ab Januar 2019 bis Januar 2020 für Anlagen, die keine Erlöse aus der Direktvermarktung (verpflichtend ab 100 kWp Nennleistung) erzielen.",
+      "path": "https://www.photovoltaik4all.de/aktuelle-eeg-verguetungssaetze-fuer-photovoltaikanlagen-2017",
+      "license": "null",
+      "copyright": " © Photovoltaik4all "
+    }
+  ],
+  "licenses": [
+    {
+      "id": "CC-BY-4.0",
+      "name": "CC-BY-4.0",
+      "title": "Creative Commons Attribution 4.0 International",
+      "path": "https://creativecommons.org/licenses/by/4.0/legalcode",
+      "instruction": "You must give credit to the original author of the work, including a URI or hyperlink to the work, this Public license and a copyright notice.",
+      "attribution": "© Reiner Lemoine Institut"
+    }
+  ],
+  "contributors": [],
+  "resources": [],
+  "review": {
+    "path": "none",
+    "badge": "none"
+  },
+  "metaMetadata": {
+    "metadataVersion": "OEP-1.4",
+    "metadataLicense": {
+      "name": "CC0-1.0",
+      "title": "Creative Commons Zero v1.0 Universal",
+      "path": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  },
+  "_comment": {
+    "metadata": "Metadata documentation and explanation (https://github.com/OpenEnergyPlatform/organisation/wiki/metadata)",
+    "dates": "Dates and time must follow the ISO8601 including time zone (YYYY-MM-DD or YYYY-MM-DDThh:mm:ss±hh)",
+    "units": "Use a space between numbers and units (100 m)",
+    "languages": "Languages must follow the IETF (BCP47) format (en-GB, en-US, de-DE)",
+    "licenses": "License name must follow the SPDX License List (https://spdx.org/licenses/)",
+    "review": "Following the OEP Data Review (https://github.com/OpenEnergyPlatform/data-preprocessing/wiki)",
+    "none": "If not applicable use (none)"
+  }
+}
