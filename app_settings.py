@@ -37,7 +37,7 @@ def add_engine(engine_name):
 
 DB_DEFAULT_SETUP = {
     'DB_RESULTS': 'DEFAULT',
-    'DB_SCENARIOS': 'OEP',
+    'DB_SCENARIOS': 'DEFAULT',
 }
 
 for setup in DB_DEFAULT_SETUP:

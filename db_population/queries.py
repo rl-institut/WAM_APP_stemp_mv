@@ -222,6 +222,7 @@ def delete_stored_simulations():
         session.query(oemof_results.OemofSequence).delete()
         session.query(oemof_results.OemofData).delete()
 
+
 def create_all():
     create_oep_tables()
     create_oemof_results_tables()
