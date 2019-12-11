@@ -59,7 +59,11 @@ class Scenario(basic_setup.PrimaryInputScenario):
                     variable_costs=avg_oil_price,
                     investment=invest,
                     is_fossil=True,
-                    co2_emissions=parameters[self.name]['co2_emissions']
+                    co2_emissions=parameters[self.name]['co2_emissions'],
+                    min_size=(
+                            parameters[self.name]['min_size'] /
+                            (parameters[self.name]['efficiency'] / 100)
+                    )
                 )
             },
             outputs={
@@ -75,10 +79,6 @@ class Scenario(basic_setup.PrimaryInputScenario):
             parameters[self.name]['efficiency'] * 100
         )
         oil_heating.pf_net = parameters['General']['pf_net']
-        oil_heating.min_size = (
-            parameters[self.name]['min_size'] /
-            parameters[self.name]['efficiency'] / 100
-        )
         self.energysystem.add(oil_heating)
 
     @classmethod
