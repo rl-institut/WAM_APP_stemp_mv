@@ -4,6 +4,53 @@ from stemp.db_population.population_utils import get_meta_from_json
 
 
 def insert_assumptions():
+    pv()
+    warmwater()
+    primary_factors()
+
+
+def pv():
+    pv_category = Category(
+        name="Photovoltaik",
+        description="Parameter für Photovoltaikanlagen",
+    )
+    pv_category.save()
+    pv_source = Source(
+        meta_data=get_meta_from_json("pv", encoding="ISO-8859-1"),
+        app_name="stemp",
+        category=pv_category,
+    )
+    pv_source.save()
+    Assumption(
+        name="Investitionskosten: PV",
+        description="Investitionskosten für Photovoltaikanlagen",
+        value=1300,
+        unit="€/kW",
+        app_name="stemp",
+        category=pv_category,
+        source=pv_source,
+    )
+    Assumption(
+        name="Betriebskosten: PV",
+        description="Betriebskosten für Photovoltaikanlagen",
+        value=32.5,
+        unit="€/kW/a",
+        app_name="stemp",
+        category=pv_category,
+        source=pv_source,
+    )
+    Assumption(
+        name="Lebenszeit: PV",
+        description="Lebenszeit für Photovoltaikanlagen",
+        value=25,
+        unit="Jahre",
+        app_name="stemp",
+        category=pv_category,
+        source=pv_source,
+    )
+
+
+def warmwater():
     # Warmwasser
     c_hot_water = Category(
         name="Warmwasser", description="Annahmen rund um den Warmwasserverbrauch"
@@ -30,46 +77,8 @@ def insert_assumptions():
     )
     hot_water_energy.save()
 
-    # Technologieparameter
-    c_params = Category(
-        name="Technologieparameter",
-        description="Parameter für die verschiedenen Technologien",
-    )
-    c_params.save()
-    ise = Source(
-        meta_data=get_meta_from_json("ise_stromgestehungskosten"),
-        app_name="stemp",
-        category=c_params,
-    )
-    ise.save()
-    Assumption(
-        name="Investitionskosten: PV",
-        description="Investitionskosten für Photovoltaikanlagen",
-        value=1300,
-        unit="€/kW",
-        app_name="stemp",
-        category=c_params,
-        source=ise,
-    )
-    Assumption(
-        name="Betriebskosten: PV",
-        description="Betriebskosten für Photovoltaikanlagen",
-        value=32.5,
-        unit="€/kW/a",
-        app_name="stemp",
-        category=c_params,
-        source=ise,
-    )
-    Assumption(
-        name="Lebenszeit: PV",
-        description="Lebenszeit für Photovoltaikanlagen",
-        value=25,
-        unit="Jahre",
-        app_name="stemp",
-        category=c_params,
-        source=ise,
-    )
 
+def primary_factors():
     # Primärfaktoren
     c_pf = Category(name="Primärenergie", description="Primärenergiefaktoren")
     c_pf.save()
