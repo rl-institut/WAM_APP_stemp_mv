@@ -9,7 +9,7 @@ class Scenario(PrimaryInputScenario):
     name = 'Gas'
     needed_parameters = {
         'General': ['wacc', 'gas_price', 'gas_rate'],
-        'Gas': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions'],
+        'Gas': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions', 'min_size'],
         'demand': ['index', 'type']
     }
 
@@ -73,6 +73,10 @@ class Scenario(PrimaryInputScenario):
             parameters[self.name]['efficiency'] * 100
         )
         gas_heating.pf_net = parameters['General']['pf_net']
+        gas_heating.min_size = (
+            parameters[self.name]['min_size'] /
+            parameters[self.name]['efficiency'] / 100
+        )
         self.energysystem.add(gas_heating)
 
     @classmethod

@@ -24,8 +24,8 @@ class Scenario(basic_setup.BaseScenario):
     name = 'PV_Heatpump'
     needed_parameters = {
         'General': ['wacc', 'pv_feedin_tariff', 'net_costs'],
-        'PV': ['lifetime', 'capex', 'opex_fix'],
-        'HP': ['lifetime', 'capex'],
+        'PV': ['lifetime', 'capex', 'opex_fix', 'min_size'],
+        'HP': ['lifetime', 'capex', 'min_size'],
         'demand': ['index', 'type']
     }
 
@@ -148,6 +148,7 @@ class Scenario(basic_setup.BaseScenario):
             outputs={self.sub_b_th: Flow()},
             conversion_factors={self.sub_b_th: COP}
         )
+        hp.min_size = parameters['HP']['min_size']
 
         # Add pv system:
         capex = parameters['PV']['capex']
@@ -170,6 +171,7 @@ class Scenario(basic_setup.BaseScenario):
                 )
             }
         )
+        pv.min_size = parameters['PV']['min_size']
 
         # Add transformer to get electricty from net for heat pump:
         t_net_el = Transformer(

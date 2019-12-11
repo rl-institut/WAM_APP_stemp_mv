@@ -11,7 +11,7 @@ class Scenario(basic_setup.PrimaryInputScenario):
     needed_parameters = {
         'General': ['wacc', 'woodchip_price'],
         'Woodchip': [
-            'lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions'],
+            'lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions', 'min_size'],
         'demand': ['index', 'type']
     }
 
@@ -67,6 +67,10 @@ class Scenario(basic_setup.PrimaryInputScenario):
             parameters[self.name]['efficiency'] * 100
         )
         woodchip_heating.pf_net = parameters['General']['pf_net']
+        woodchip_heating.min_size = (
+            parameters[self.name]['min_size'] /
+            parameters[self.name]['efficiency'] / 100
+        )
         self.energysystem.add(woodchip_heating)
 
     @classmethod

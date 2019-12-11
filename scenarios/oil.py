@@ -10,7 +10,7 @@ class Scenario(basic_setup.PrimaryInputScenario):
     name = 'Oil'
     needed_parameters = {
         'General': ['wacc', 'oil_price', 'oil_rate'],
-        'Oil': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions'],
+        'Oil': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions', 'min_size'],
         'demand': ['index', 'type']
     }
 
@@ -75,6 +75,10 @@ class Scenario(basic_setup.PrimaryInputScenario):
             parameters[self.name]['efficiency'] * 100
         )
         oil_heating.pf_net = parameters['General']['pf_net']
+        oil_heating.min_size = (
+            parameters[self.name]['min_size'] /
+            parameters[self.name]['efficiency'] / 100
+        )
         self.energysystem.add(oil_heating)
 
     @classmethod
