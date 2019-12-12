@@ -180,14 +180,6 @@ def insert_default_households():
             household.save()
 
 
-def insert_assumptions():
-    assumptions.insert_assumptions()
-
-
-def insert_sources():
-    sources.insert_sources()
-
-
 def delete_households():
     Household.objects.all().delete()
     District.objects.all().delete()
@@ -231,8 +223,8 @@ def create_all():
     insert_dhw_timeseries()
     insert_pv_and_temp()
     insert_scenarios()
-    insert_sources()
-    insert_assumptions()
+    sources.insert_sources()
+    assumptions.insert_assumptions()
 
 
 @click.command()
@@ -251,9 +243,9 @@ def execute(commands):
         elif command == "heat":
             insert_heat_demand()
         elif command == "sources":
-            insert_sources()
+            sources.insert_sources()
         elif command == "assumptions":
-            insert_assumptions()
+            assumptions.insert_assumptions()
         elif command == "households":
             insert_default_households()
         elif command == "dhw":
@@ -274,6 +266,8 @@ def execute(commands):
             delete_scenarios()
         elif command == "delete_simulations":
             delete_stored_simulations()
+        elif command == "delete_assumptions":
+            assumptions.delete_assumptions()
         else:
             raise KeyError(f'Unkown command "{command}"')
 

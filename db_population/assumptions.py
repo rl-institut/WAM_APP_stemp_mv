@@ -1,53 +1,470 @@
+
+import logging
+
 from meta.models import Category, Source, Assumption
 from stemp import constants
 from stemp.db_population.population_utils import get_meta_from_json
 
 
+def delete_assumptions():
+    Source.objects.filter(app_name="stemp").delete()
+
+
 def insert_assumptions():
-    pv()
+    technology_category = Category(
+        name="Heiztechnologien", description="Parameter für Heiztechnologien",
+    )
+    technology_category.save()
+    net()
+    gas(technology_category)
+    oil(technology_category)
+    woodchip(technology_category)
+    bhkw(technology_category)
+    pv(technology_category)
+    hp(technology_category)
     warmwater()
     primary_factors()
 
 
-def pv():
-    pv_category = Category(
-        name="Photovoltaik",
-        description="Parameter für Photovoltaikanlagen",
+def net():
+    net_category = Category(
+        name="Stromnetz", description="Annahmen für das Stromnetz",
     )
-    pv_category.save()
+    net_category.save()
+    net_source = Source(
+        meta_data=get_meta_from_json("net", encoding="ISO-8859-1"),
+        app_name="stemp",
+        category=net_category,
+    )
+    net_source.save()
+
+    Assumption(
+        name="Netzkosten",
+        description="Netznutzungsentgelt in E/kWh",
+        value=0.23,
+        unit="€/kWh",
+        app_name="stemp",
+        category=net_category,
+        source=net_source,
+    ).save()
+
+
+def gas(category):
+    gas_source = Source(
+        meta_data=get_meta_from_json("gas", encoding="ISO-8859-1"),
+        app_name="stemp",
+        category=category,
+    )
+    gas_source.save()
+
+    Assumption(
+        name="Investitionskosten",
+        description=(
+            "Investitionskosten für die Gasheizung. "
+            "Annahme berechnet auf Grundlage von BDEW-Quelle (S. 46, 6-FH_typisch_03 Erdgas): "
+            "3800€ (Wärmeerzeuger) / 17.5 kW (Heizlast) ~= 300 €/kW (aufgerundet, da Daten aus Jahr 2016)"
+        ),
+        value=300,
+        unit="€/kW",
+        app_name="stemp",
+        category=category,
+        source=gas_source,
+    ).save()
+    Assumption(
+        name="Erdgaspreis",
+        description="Preis für Erdgas in €/kWh",
+        value=0.057,
+        unit="€/kWh",
+        app_name="stemp",
+        category=category,
+        source=gas_source,
+    ).save()
+    Assumption(
+        name="Gaspreis-Steigerungsrate",
+        description="Gaspreis-Steigerungsrate pro Jahr ",
+        value=3,
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=gas_source,
+    ).save()
+    Assumption(
+        name="Lebenszeit",
+        description="Lebenszeit für Gasheizungen",
+        value=20,
+        unit="Jahre",
+        app_name="stemp",
+        category=category,
+        source=gas_source,
+    ).save()
+    Assumption(
+        name="Effizienz",
+        description="Brennwert der Gasheizung",
+        value=84,
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=gas_source,
+    ).save()
+    Assumption(
+        name="CO2 Emissionsfaktor",
+        description="CO2 Emissionen",
+        value=228,
+        unit="g/kWh",
+        app_name="stemp",
+        category=category,
+        source=gas_source,
+    ).save()
+    logging.info(f'Gas assumptions uploaded.')
+
+
+def oil(category):
+    oil_source = Source(
+        meta_data=get_meta_from_json("oil", encoding="ISO-8859-1"),
+        app_name="stemp",
+        category=category,
+    )
+    oil_source.save()
+
+    Assumption(
+        name="Investitionskosten",
+        description=(
+            "Investitionskosten für die Ölheizung. "
+            "Annahme berechnet auf Grundlage von BDEW-Quelle (S. 46, 6-FH_typisch_07 Heizöl): "
+            "6000€ (Wärmeerzeuger) / 17.5 kW (Heizlast) ~= 400 €/kW (aufgerundet, da Daten aus Jahr 2016)"
+        ),
+        value=400,
+        unit="€/kW",
+        app_name="stemp",
+        category=category,
+        source=oil_source,
+    ).save()
+    Assumption(
+        name="Heizölpreis (Einzelhaushalt)",
+        description=(
+            "Preis für Heizöl in €/kWh. "
+            "Es findet sich ein Heizölpreis von 0.065 €/kwh, "
+            "für einen Einzelhaushalt wird ein leicht verteuerter Preis angenommen."
+        ),
+        value=0.067,
+        unit="€/kWh",
+        app_name="stemp",
+        category=category,
+        source=oil_source,
+    ).save()
+    Assumption(
+        name="Heizölpreis (Viertel)",
+        description=(
+            "Preis für Heizöl in €/kWh. "
+            "Es findet sich ein Heizölpreis von 0.065 €/kwh, "
+            "für ein Viertel wird ein leicht verbilligter Preis angenommen."
+        ),
+        value=0.064,
+        unit="€/kWh",
+        app_name="stemp",
+        category=category,
+        source=oil_source,
+    ).save()
+    Assumption(
+        name="Heizölpreis-Steigerungsrate",
+        description="Heizölpreis-Steigerungsrate pro Jahr ",
+        value=5,
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=oil_source,
+    ).save()
+    Assumption(
+        name="Lebenszeit",
+        description="Lebenszeit für Ölheizungen",
+        value=20,
+        unit="Jahre",
+        app_name="stemp",
+        category=category,
+        source=oil_source,
+    ).save()
+    Assumption(
+        name="Effizienz",
+        description="Brennwert der Ölheizung",
+        value=88,
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=oil_source,
+    ).save()
+    Assumption(
+        name="CO2 Emissionsfaktor",
+        description="CO2 Emissionen",
+        value=312,
+        unit="g/kWh",
+        app_name="stemp",
+        category=category,
+        source=oil_source,
+    ).save()
+    logging.info(f'Oil assumptions uploaded.')
+
+
+def woodchip(category):
+    woodchip_source = Source(
+        meta_data=get_meta_from_json("woodchip", encoding="ISO-8859-1"),
+        app_name="stemp",
+        category=category,
+    )
+    woodchip_source.save()
+
+    Assumption(
+        name="Investitionskosten",
+        description=(
+            "Investitionskosten für die Holzhackschnitzel-Heizung. "
+            "Annahme berechnet auf Grundlage von BDEW-Quelle (S. 52, 6-FH_typisch_13 Pellets): "
+            "(15200 € (Wärmeerzeuger) + 2400 € (Regelung) + 4700 € (Brennstofflagerung) ) / 17.5 kW (Heizlast) ~= 1300 €/kW (aufgerundet, da Daten aus Jahr 2016)"
+        ),
+        value=1300,
+        unit="€/kW",
+        app_name="stemp",
+        category=category,
+        source=woodchip_source,
+    ).save()
+    Assumption(
+        name="Holzhackschnitzel-Preis",
+        description="Preis für Holzhackschnitzel in €/kWh",
+        value=0.032,
+        unit="€/kWh",
+        app_name="stemp",
+        category=category,
+        source=woodchip_source,
+    ).save()
+    Assumption(
+        name="Lebenszeit",
+        description="Lebenszeit für Holzhackschnitzel-Heizungen",
+        value=20,
+        unit="Jahre",
+        app_name="stemp",
+        category=category,
+        source=woodchip_source,
+    ).save()
+    Assumption(
+        name="Effizienz",
+        description="Brennwert der Holzhackschnitzel-Heizungen",
+        value=90,
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=woodchip_source,
+    ).save()
+    Assumption(
+        name="CO2 Emissionsfaktor",
+        description="CO2 Emissionen der Holzhackschnitzel-Heizung",
+        value=29,
+        unit="g/kWh",
+        app_name="stemp",
+        category=category,
+        source=woodchip_source,
+    ).save()
+    logging.info(f'Woodchip assumptions uploaded.')
+
+
+def bhkw(category):
+    bhkw_source = Source(
+        meta_data=get_meta_from_json("bhkw", encoding="ISO-8859-1"),
+        app_name="stemp",
+        category=category,
+    )
+    bhkw_source.save()
+
+    Assumption(
+        name="Investitionskosten",
+        description=(
+            "Investitionskosten für die Erdgas- und Biogas-BHKWs. "
+            "Die Investitionskosten sind als Kostenfunktion abhängig von der Leistung der Anlage hinterlegt. "
+            "Die Daten für die Kostenfunktion stammen von ASUE (siehe Quelle)."
+        ),
+        value="f(Leistung)",
+        unit="€/kW",
+        app_name="stemp",
+        category=category,
+        source=bhkw_source,
+    ).save()
+    Assumption(
+        name="Lebenszeit",
+        description="Lebenszeit für BHKWs",
+        value=15,
+        unit="Jahre",
+        app_name="stemp",
+        category=category,
+        source=bhkw_source,
+    ).save()
+    Assumption(
+        name="Wirkungsgrad (elektrisch)",
+        description=(
+            "Elektrischer Wirkungsgrad des BHKWS."
+            "Der elektrische Wirkungsgrad ist als Funktion abhängig von der Leistung der Anlage hinterlegt. "
+            "Die Daten für die Funktion stammen von ASUE (siehe Quelle)."
+        ),
+        value="f(Leistung)",
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=bhkw_source,
+    ).save()
+    Assumption(
+        name="Wirkungsgrad (thermisch)",
+        description="Thermischer Wirkungsgrad des BHKWS",
+        value=55,
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=bhkw_source,
+    ).save()
+    Assumption(
+        name="CO2 Emissionsfaktor (Erdgas-BHKW)",
+        description="CO2 Emissionen eines Erdgas-BHKWs",
+        value=228,
+        unit="g/kWh",
+        app_name="stemp",
+        category=category,
+        source=bhkw_source,
+    ).save()
+    Assumption(
+        name="CO2 Emissionsfaktor (Biogas-BHKW)",
+        description="CO2 Emissionen eines Biogas-BHKWs",
+        value=71,
+        unit="g/kWh",
+        app_name="stemp",
+        category=category,
+        source=bhkw_source,
+    ).save()
+    Assumption(
+        name="Minimallast (Erdgas-BHKW)",
+        description=(
+            "Das Ergas-BHKW muss eine Mindestleistung abrufen, "
+            "d.h. die Anlage muss mindestens die angegeben Leistung bereitstellen."
+        ),
+        value=20,
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=bhkw_source,
+    ).save()
+    Assumption(
+        name="Minimallast (Biogas-BHKW)",
+        description=(
+            "Das Biogas-BHKW muss eine Mindestleistung abrufen, "
+            "d.h. die Anlage muss mindestens die angegeben Leistung bereitstellen."
+        ),
+        value=0,
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=bhkw_source,
+    ).save()
+    Assumption(
+        name="Einspeisevergütung (BHKW)",
+        description="Einspeisevergütung eines BHKW bei Einspeisung in das Stromnetz",
+        value=0.08,
+        unit="€/kWh",
+        app_name="stemp",
+        category=category,
+        source=bhkw_source,
+    ).save()
+    logging.info(f'BHKW assumptions uploaded.')
+
+
+def pv(category):
     pv_source = Source(
         meta_data=get_meta_from_json("pv", encoding="ISO-8859-1"),
         app_name="stemp",
-        category=pv_category,
+        category=category,
     )
     pv_source.save()
+
     Assumption(
-        name="Investitionskosten: PV",
+        name="Investitionskosten",
         description="Investitionskosten für Photovoltaikanlagen",
         value=1300,
         unit="€/kW",
         app_name="stemp",
-        category=pv_category,
+        category=category,
         source=pv_source,
-    )
+    ).save()
     Assumption(
-        name="Betriebskosten: PV",
-        description="Betriebskosten für Photovoltaikanlagen",
+        name="Betriebskosten",
+        description=(
+            "Betriebskosten für Photovoltaikanlagen. "
+            "Angenommen werden 2.5% der Investitionskosten"
+        ),
         value=32.5,
         unit="€/kW/a",
         app_name="stemp",
-        category=pv_category,
+        category=category,
         source=pv_source,
-    )
+    ).save()
     Assumption(
-        name="Lebenszeit: PV",
+        name="Lebenszeit",
         description="Lebenszeit für Photovoltaikanlagen",
         value=25,
         unit="Jahre",
         app_name="stemp",
-        category=pv_category,
+        category=category,
         source=pv_source,
+    ).save()
+    Assumption(
+        name="CO2 Emissionsfaktor",
+        description="CO2 Emissionen eine Photovoltaikanlage",
+        value=0,
+        unit="g/kWh",
+        app_name="stemp",
+        category=category,
+        source=pv_source,
+    ).save()
+    logging.info(f'PV assumptions uploaded.')
+
+
+def hp(category):
+    hp_source = Source(
+        meta_data=get_meta_from_json("heatpump", encoding="ISO-8859-1"),
+        app_name="stemp",
+        category=category,
     )
+    hp_source.save()
+
+    Assumption(
+        name="Investitionskosten",
+        description="Investitionskosten für Luft-Wärmepumpen",
+        value=1200,
+        unit="€/kW",
+        app_name="stemp",
+        category=category,
+        source=hp_source,
+    ).save()
+    Assumption(
+        name="Lebenszeit",
+        description="Lebenszeit für Luft-Wärmepumpen",
+        value=20,
+        unit="Jahre",
+        app_name="stemp",
+        category=category,
+        source=hp_source,
+    ).save()
+    Assumption(
+        name="CO2 Emissionsfaktor",
+        description="CO2 Emissionen einer Luft-Wärmepumpe",
+        value=476,
+        unit="g/kWh",
+        app_name="stemp",
+        category=category,
+        source=hp_source,
+    ).save()
+    Assumption(
+        name="Wirkungsgrad (Warmwasser-Boiler)",
+        description="Annahme für den Wirkungsgrad eines elektrischen Warmwasser-Boilers",
+        value=90,
+        unit="%",
+        app_name="stemp",
+        category=category,
+        source=hp_source,
+    ).save()
+    logging.info(f'HP assumptions uploaded.')
 
 
 def warmwater():
@@ -76,6 +493,7 @@ def warmwater():
         source=hot_water_energy_source,
     )
     hot_water_energy.save()
+    logging.info(f'Warmwwater assumptions uploaded.')
 
 
 def primary_factors():
@@ -142,3 +560,4 @@ def primary_factors():
         category=c_pf,
         source=pf,
     ).save()
+    logging.info(f'Primary factor assumptions uploaded.')
