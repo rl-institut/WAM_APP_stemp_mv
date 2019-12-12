@@ -57,6 +57,10 @@ def gas(category):
     )
     gas_source.save()
 
+    assumption_category = Category(
+        name="Gasheizung", description="Parameter für die Gasheizung",
+    )
+    assumption_category.save()
     Assumption(
         name="Investitionskosten",
         description=(
@@ -67,7 +71,7 @@ def gas(category):
         value=300,
         unit="€/kW",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=gas_source,
     ).save()
     Assumption(
@@ -76,7 +80,7 @@ def gas(category):
         value=0.057,
         unit="€/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=gas_source,
     ).save()
     Assumption(
@@ -85,7 +89,7 @@ def gas(category):
         value=3,
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=gas_source,
     ).save()
     Assumption(
@@ -94,7 +98,7 @@ def gas(category):
         value=20,
         unit="Jahre",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=gas_source,
     ).save()
     Assumption(
@@ -103,7 +107,7 @@ def gas(category):
         value=84,
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=gas_source,
     ).save()
     Assumption(
@@ -112,7 +116,7 @@ def gas(category):
         value=228,
         unit="g/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=gas_source,
     ).save()
     logging.info(f'Gas assumptions uploaded.')
@@ -125,7 +129,10 @@ def oil(category):
         category=category,
     )
     oil_source.save()
-
+    assumption_category = Category(
+        name="Ölheizung", description="Parameter für die Ölheizung",
+    )
+    assumption_category.save()
     Assumption(
         name="Investitionskosten",
         description=(
@@ -136,7 +143,7 @@ def oil(category):
         value=400,
         unit="€/kW",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=oil_source,
     ).save()
     Assumption(
@@ -149,7 +156,7 @@ def oil(category):
         value=0.067,
         unit="€/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=oil_source,
     ).save()
     Assumption(
@@ -162,7 +169,7 @@ def oil(category):
         value=0.064,
         unit="€/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=oil_source,
     ).save()
     Assumption(
@@ -171,7 +178,7 @@ def oil(category):
         value=5,
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=oil_source,
     ).save()
     Assumption(
@@ -180,7 +187,7 @@ def oil(category):
         value=20,
         unit="Jahre",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=oil_source,
     ).save()
     Assumption(
@@ -189,7 +196,7 @@ def oil(category):
         value=88,
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=oil_source,
     ).save()
     Assumption(
@@ -198,7 +205,7 @@ def oil(category):
         value=312,
         unit="g/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=oil_source,
     ).save()
     logging.info(f'Oil assumptions uploaded.')
@@ -211,7 +218,10 @@ def woodchip(category):
         category=category,
     )
     woodchip_source.save()
-
+    assumption_category = Category(
+        name="Holzhackschnitzelheizung", description="Parameter für die Holzhackschnitzelheizung",
+    )
+    assumption_category.save()
     Assumption(
         name="Investitionskosten",
         description=(
@@ -222,7 +232,7 @@ def woodchip(category):
         value=1300,
         unit="€/kW",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=woodchip_source,
     ).save()
     Assumption(
@@ -231,7 +241,7 @@ def woodchip(category):
         value=0.032,
         unit="€/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=woodchip_source,
     ).save()
     Assumption(
@@ -240,7 +250,7 @@ def woodchip(category):
         value=20,
         unit="Jahre",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=woodchip_source,
     ).save()
     Assumption(
@@ -249,7 +259,7 @@ def woodchip(category):
         value=90,
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=woodchip_source,
     ).save()
     Assumption(
@@ -258,7 +268,7 @@ def woodchip(category):
         value=29,
         unit="g/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=woodchip_source,
     ).save()
     logging.info(f'Woodchip assumptions uploaded.')
@@ -271,7 +281,10 @@ def bhkw(category):
         category=category,
     )
     bhkw_source.save()
-
+    assumption_category = Category(
+        name="Blockheizkraftwerk (BHKW, Erdgas & Biogas)", description="Parameter für Blockheizkraftwerke",
+    )
+    assumption_category.save()
     Assumption(
         name="Investitionskosten",
         description=(
@@ -282,7 +295,7 @@ def bhkw(category):
         value="f(Leistung)",
         unit="€/kW",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=bhkw_source,
     ).save()
     Assumption(
@@ -291,7 +304,7 @@ def bhkw(category):
         value=15,
         unit="Jahre",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=bhkw_source,
     ).save()
     Assumption(
@@ -304,7 +317,7 @@ def bhkw(category):
         value="f(Leistung)",
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=bhkw_source,
     ).save()
     Assumption(
@@ -313,7 +326,7 @@ def bhkw(category):
         value=55,
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=bhkw_source,
     ).save()
     Assumption(
@@ -322,7 +335,7 @@ def bhkw(category):
         value=228,
         unit="g/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=bhkw_source,
     ).save()
     Assumption(
@@ -331,7 +344,7 @@ def bhkw(category):
         value=71,
         unit="g/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=bhkw_source,
     ).save()
     Assumption(
@@ -343,7 +356,7 @@ def bhkw(category):
         value=20,
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=bhkw_source,
     ).save()
     Assumption(
@@ -355,7 +368,7 @@ def bhkw(category):
         value=0,
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=bhkw_source,
     ).save()
     Assumption(
@@ -364,7 +377,7 @@ def bhkw(category):
         value=0.08,
         unit="€/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=bhkw_source,
     ).save()
     logging.info(f'BHKW assumptions uploaded.')
@@ -377,14 +390,17 @@ def pv(category):
         category=category,
     )
     pv_source.save()
-
+    assumption_category = Category(
+        name="Photovoltaik", description="Parameter für die Photovoltaikanlage",
+    )
+    assumption_category.save()
     Assumption(
         name="Investitionskosten",
         description="Investitionskosten für Photovoltaikanlagen",
         value=1300,
         unit="€/kW",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=pv_source,
     ).save()
     Assumption(
@@ -396,7 +412,7 @@ def pv(category):
         value=32.5,
         unit="€/kW/a",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=pv_source,
     ).save()
     Assumption(
@@ -405,7 +421,7 @@ def pv(category):
         value=25,
         unit="Jahre",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=pv_source,
     ).save()
     Assumption(
@@ -414,7 +430,7 @@ def pv(category):
         value=0,
         unit="g/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=pv_source,
     ).save()
     logging.info(f'PV assumptions uploaded.')
@@ -427,14 +443,17 @@ def hp(category):
         category=category,
     )
     hp_source.save()
-
+    assumption_category = Category(
+        name="Luft-Wärmepumpe", description="Parameter für die Luft-Wärmepumpe",
+    )
+    assumption_category.save()
     Assumption(
         name="Investitionskosten",
         description="Investitionskosten für Luft-Wärmepumpen",
         value=1200,
         unit="€/kW",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=hp_source,
     ).save()
     Assumption(
@@ -443,7 +462,7 @@ def hp(category):
         value=20,
         unit="Jahre",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=hp_source,
     ).save()
     Assumption(
@@ -452,7 +471,7 @@ def hp(category):
         value=476,
         unit="g/kWh",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=hp_source,
     ).save()
     Assumption(
@@ -461,7 +480,7 @@ def hp(category):
         value=90,
         unit="%",
         app_name="stemp",
-        category=category,
+        category=assumption_category,
         source=hp_source,
     ).save()
     logging.info(f'HP assumptions uploaded.')
