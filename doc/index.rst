@@ -23,7 +23,6 @@ Hintergrundinformationen und Anleitungen.
    data
    tool_transfer
    developer
-   whats_new
 
 .. toctree::
    :caption: API
