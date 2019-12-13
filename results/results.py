@@ -43,6 +43,7 @@ class ResultAggregations(object):
         self.results = [Result(result_id) for result_id in result_ids]
         self.aggregations = aggregations
         self.init_scenarios()
+        self.apply_minimum_size()
         self.analyze()
 
     def init_scenarios(self):
@@ -55,6 +56,19 @@ class ResultAggregations(object):
                 advanced_label=basic_setup.AdvancedLabel
             )
         sa_session.close()
+
+    def apply_minimum_size(self):
+        for result in self.results:
+            for nodes, values in result.data[1].items():
+                try:
+                    min_size = result.data[0][nodes]["scalars"]["min_size"]
+                except KeyError:
+                    pass
+                else:
+                    if "invest" in values["scalars"]:
+                        values["scalars"]["invest"] = max(
+                            values["scalars"]["invest"], min_size
+                        )
 
     def analyze(self):
         for result in self.results:

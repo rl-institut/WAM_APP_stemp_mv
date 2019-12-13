@@ -180,14 +180,6 @@ def insert_default_households():
             household.save()
 
 
-def insert_assumptions():
-    assumptions.insert_assumptions()
-
-
-def insert_sources():
-    sources.insert_sources()
-
-
 def delete_households():
     Household.objects.all().delete()
     District.objects.all().delete()
@@ -208,6 +200,10 @@ def create_oep_tables():
     oep_models.Base.metadata.create_all()
 
 
+def create_oemof_results_tables():
+    oemof_results.Base.metadata.create_all()
+
+
 def delete_stored_simulations():
     Parameter.objects.all().delete()
     Scenario.objects.all().delete()
@@ -219,6 +215,18 @@ def delete_stored_simulations():
         session.query(oemof_results.OemofData).delete()
 
 
+def create_all():
+    create_oep_tables()
+    create_oemof_results_tables()
+    insert_heat_demand()
+    insert_default_households()
+    insert_dhw_timeseries()
+    insert_pv_and_temp()
+    insert_scenarios()
+    sources.insert_sources()
+    assumptions.insert_assumptions()
+
+
 @click.command()
 @click.argument("commands", nargs=-1)
 def execute(commands):
@@ -226,20 +234,18 @@ def execute(commands):
         commands = [commands]
     for command in commands:
         if command == "all":
-            create_oep_tables()
-            insert_heat_demand()
-            insert_default_households()
-            insert_dhw_timeseries()
-            insert_pv_and_temp()
-            insert_scenarios()
-            insert_sources()
-            insert_assumptions()
+            create_all()
+        elif command == "reset_all":
+            delete_households()
+            delete_oep_tables()
+            delete_stored_simulations()
+            create_all()
         elif command == "heat":
             insert_heat_demand()
         elif command == "sources":
-            insert_sources()
+            sources.insert_sources()
         elif command == "assumptions":
-            insert_assumptions()
+            assumptions.insert_assumptions()
         elif command == "households":
             insert_default_households()
         elif command == "dhw":
@@ -250,6 +256,8 @@ def execute(commands):
             insert_scenarios()
         elif command == "oep_tables":
             create_oep_tables()
+        elif command == "oemof_results_tables":
+            create_oemof_results_tables()
         elif command == "delete_households":
             delete_households()
         elif command == "delete_oep_tables":
@@ -258,6 +266,8 @@ def execute(commands):
             delete_scenarios()
         elif command == "delete_simulations":
             delete_stored_simulations()
+        elif command == "delete_assumptions":
+            assumptions.delete_assumptions()
         else:
             raise KeyError(f'Unkown command "{command}"')
 

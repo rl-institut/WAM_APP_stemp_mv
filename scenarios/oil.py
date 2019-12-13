@@ -10,7 +10,7 @@ class Scenario(basic_setup.PrimaryInputScenario):
     name = 'Oil'
     needed_parameters = {
         'General': ['wacc', 'oil_price', 'oil_rate'],
-        'Oil': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions'],
+        'Oil': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions', 'min_size'],
         'demand': ['index', 'type']
     }
 
@@ -59,7 +59,11 @@ class Scenario(basic_setup.PrimaryInputScenario):
                     variable_costs=avg_oil_price,
                     investment=invest,
                     is_fossil=True,
-                    co2_emissions=parameters[self.name]['co2_emissions']
+                    co2_emissions=parameters[self.name]['co2_emissions'],
+                    min_size=(
+                            parameters[self.name]['min_size'] /
+                            (parameters[self.name]['efficiency'] / 100)
+                    )
                 )
             },
             outputs={

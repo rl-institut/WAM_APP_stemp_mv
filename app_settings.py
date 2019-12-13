@@ -56,7 +56,7 @@ def add_engine(db_connection):
 
 DB_DEFAULT_SETUP = {
     'DB_RESULTS': 'DEFAULT',
-    'DB_SCENARIOS': 'OEP',
+    'DB_SCENARIOS': 'DEFAULT',
 }
 
 if 'READTHEDOCS' not in os.environ:
