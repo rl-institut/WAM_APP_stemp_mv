@@ -6,17 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0027_auto_20180709_0923'),
+        ("stemp", "0027_auto_20180709_0923"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='question',
-            name='house_type',
-            field=models.CharField(choices=[('EFH', 'Einfamilienhaus'), ('MFH', 'Mehrfamilienhaus')], default='EFH', max_length=3),
+            model_name="question",
+            name="house_type",
+            field=models.CharField(
+                choices=[("EFH", "Einfamilienhaus"), ("MFH", "Mehrfamilienhaus")],
+                default="EFH",
+                max_length=3,
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='question',
-            unique_together={('number_of_persons', 'house_type')},
+            name="question", unique_together={("number_of_persons", "house_type")},
         ),
     ]

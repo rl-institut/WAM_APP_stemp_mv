@@ -9,25 +9,37 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0006_auto_20180301_0918'),
+        ("stemp", "0006_auto_20180301_0918"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DistrictHouseholds',
+            name="DistrictHouseholds",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.IntegerField()),
-                ('district', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.District')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("amount", models.IntegerField()),
+                (
+                    "district",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="stemp.District"
+                    ),
+                ),
             ],
         ),
-        migrations.RemoveField(
-            model_name='household',
-            name='districts',
-        ),
+        migrations.RemoveField(model_name="household", name="districts",),
         migrations.AddField(
-            model_name='districthouseholds',
-            name='household',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.Household'),
+            model_name="districthouseholds",
+            name="household",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="stemp.Household"
+            ),
         ),
     ]

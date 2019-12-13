@@ -7,28 +7,54 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0037_auto_20190214_1508'),
+        ("stemp", "0037_auto_20190214_1508"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='household',
-            name='heat_demand',
-            field=models.FloatField(validators=[django.core.validators.MaxValueValidator(500000.0, message='Der jährliche, mögliche Heizwärmebedarf ist auf ein Limit von %(limit_value)s kWh begrenzt.')], verbose_name='Jährlicher Wärmebedarf'),
+            model_name="household",
+            name="heat_demand",
+            field=models.FloatField(
+                validators=[
+                    django.core.validators.MaxValueValidator(
+                        500000.0,
+                        message="Der jährliche, mögliche Heizwärmebedarf ist auf ein Limit von %(limit_value)s kWh begrenzt.",
+                    )
+                ],
+                verbose_name="Jährlicher Wärmebedarf",
+            ),
         ),
         migrations.AlterField(
-            model_name='household',
-            name='number_of_persons',
-            field=models.IntegerField(validators=[django.core.validators.MinValueValidator(1, message='Mindestens eine Person muss im Haushalt leben.'), django.core.validators.MaxValueValidator(30, message='Bitte nur maximal %(limit_value)s Personen angeben.')]),
+            model_name="household",
+            name="number_of_persons",
+            field=models.IntegerField(
+                validators=[
+                    django.core.validators.MinValueValidator(
+                        1, message="Mindestens eine Person muss im Haushalt leben."
+                    ),
+                    django.core.validators.MaxValueValidator(
+                        30,
+                        message="Bitte nur maximal %(limit_value)s Personen angeben.",
+                    ),
+                ]
+            ),
         ),
         migrations.AlterField(
-            model_name='household',
-            name='square_meters',
-            field=models.IntegerField(validators=[django.core.validators.MaxValueValidator(2000.0, message='Die Angabe der Quadratmeter ist auf %(limit_value)s qm begrenzt.')], verbose_name='Quadratmeter'),
+            model_name="household",
+            name="square_meters",
+            field=models.IntegerField(
+                validators=[
+                    django.core.validators.MaxValueValidator(
+                        2000.0,
+                        message="Die Angabe der Quadratmeter ist auf %(limit_value)s qm begrenzt.",
+                    )
+                ],
+                verbose_name="Quadratmeter",
+            ),
         ),
         migrations.AlterField(
-            model_name='household',
-            name='warm_water_per_day',
-            field=models.IntegerField(verbose_name='Warmwasserbedarf'),
+            model_name="household",
+            name="warm_water_per_day",
+            field=models.IntegerField(verbose_name="Warmwasserbedarf"),
         ),
     ]

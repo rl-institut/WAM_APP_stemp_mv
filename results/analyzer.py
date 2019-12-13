@@ -2,7 +2,7 @@ from oemof.solph import analyzer as an
 
 
 class TotalInvestmentAnalyzer(an.Analyzer):
-    requires = ('results', 'param_results')
+    requires = ("results", "param_results")
     depends_on = (an.SizeAnalyzer,)
 
     def analyze(self, *args):
@@ -11,7 +11,7 @@ class TotalInvestmentAnalyzer(an.Analyzer):
         try:
             psc = self.psc(args)
             size = seq_result[args]
-            invest = psc['investment_capex']
+            invest = psc["investment_capex"]
         except KeyError:
             return
         result = invest * size
@@ -20,7 +20,7 @@ class TotalInvestmentAnalyzer(an.Analyzer):
 
 
 class CO2Analyzer(an.Analyzer):
-    requires = ('results', 'param_results')
+    requires = ("results", "param_results")
     depends_on_former = (an.NodeBalanceAnalyzer,)
 
     def __init__(self):
@@ -32,8 +32,8 @@ class CO2Analyzer(an.Analyzer):
         # Find all demands:
         for node, node_balance in nb_result.items():
             try:
-                if node.tags is not None and 'demand' in node.tags:
-                    self.demand += sum(node_balance['input'].values())
+                if node.tags is not None and "demand" in node.tags:
+                    self.demand += sum(node_balance["input"].values())
             except AttributeError:
                 pass
 
@@ -43,7 +43,7 @@ class CO2Analyzer(an.Analyzer):
         try:
             psc = self.psc(args)
             flow = seq_result[args]
-            co2 = psc['co2_emissions']
+            co2 = psc["co2_emissions"]
         except KeyError:
             return
         result = co2 * flow / self.demand
@@ -59,7 +59,7 @@ class LCOEAutomatedDemandAnalyzer(an.LCOEAnalyzer):
         # Find all demands:
         for nodes in self.analysis.param_results:
             try:
-                if nodes[1].tags is not None and 'demand' in nodes[1].tags:
+                if nodes[1].tags is not None and "demand" in nodes[1].tags:
                     self.load_sinks.append(nodes[1])
             except AttributeError:
                 pass
@@ -74,7 +74,7 @@ class FossilCostsAnalyzer(an.Analyzer):
         vc_result = self._get_dep_result(an.VariableCostAnalyzer)
         try:
             psc = self.psc(args)
-            if psc['is_fossil']:
+            if psc["is_fossil"]:
                 result = vc_result[args]
             else:
                 return

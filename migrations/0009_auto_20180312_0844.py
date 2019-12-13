@@ -9,18 +9,18 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0008_household_districts'),
+        ("stemp", "0008_household_districts"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='scenario',
-            name='last_change',
+            model_name="scenario",
+            name="last_change",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AddField(
-            model_name='simulation',
-            name='date',
+            model_name="simulation",
+            name="date",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
     ]

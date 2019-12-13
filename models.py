@@ -1,4 +1,3 @@
-
 import pandas
 import sqlahelper
 import transaction
@@ -16,7 +15,7 @@ class Parameter(models.Model):
     data = JSONField(unique=True)
 
     def __str__(self):
-        return self.__class__.__name__ + '#' + str(self.id)
+        return self.__class__.__name__ + "#" + str(self.id)
 
 
 class Scenario(models.Model):
@@ -34,11 +33,8 @@ class Simulation(models.Model):
     date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        ids = map(
-            str,
-            [self.scenario, self.parameter, self.result_id]
-        )
-        return '(' + ','.join(ids) + ')'
+        ids = map(str, [self.scenario, self.parameter, self.result_id])
+        return "(" + ",".join(ids) + ")"
 
     @classmethod
     def delete_containing_household(cls, hh_id):
@@ -46,9 +42,9 @@ class Simulation(models.Model):
         for district in districts:
             simulations = cls.objects.filter(
                 parameter__data__contains={
-                    'demand': {
-                        'type': constants.DemandType.District,
-                        'index': district.id
+                    "demand": {
+                        "type": constants.DemandType.District,
+                        "index": district.id,
                     }
                 }
             )
@@ -56,10 +52,7 @@ class Simulation(models.Model):
                 simulation.delete()
         for simulation in cls.objects.filter(
             parameter__data__contains={
-                'demand': {
-                    'type': constants.DemandType.Single,
-                    'index': hh_id
-                }
+                "demand": {"type": constants.DemandType.Single, "index": hh_id}
             }
         ):
             simulation.delete()
@@ -70,9 +63,9 @@ class HeatProfile(models.Model):
     profile = ArrayField(models.FloatField(), size=8760, null=True)
 
     layout = {
-        'x_title': 'Zeit [h]',
-        'y_title': 'Wärmeverbrauch [kWh]',
-        'title': 'Wärmeverbrauch'
+        "x_title": "Zeit [h]",
+        "y_title": "Wärmeverbrauch [kWh]",
+        "title": "Wärmeverbrauch",
     }
 
     def __str__(self):
@@ -80,8 +73,8 @@ class HeatProfile(models.Model):
 
 
 class DistrictHouseholds(models.Model):
-    district = models.ForeignKey('District', on_delete=models.CASCADE)
-    household = models.ForeignKey('Household', on_delete=models.CASCADE)
+    district = models.ForeignKey("District", on_delete=models.CASCADE)
+    household = models.ForeignKey("Household", on_delete=models.CASCADE)
     amount = models.IntegerField()
 
 
@@ -92,70 +85,66 @@ class Household(models.Model):
         max_length=22,
         unique=True,
         error_messages={
-            'unique': (
-                'Es ist schon ein Haushalt mit diesem Namen vorhanden - '
-                'bitte einen neuen Namen auswählen'
+            "unique": (
+                "Es ist schon ein Haushalt mit diesem Namen vorhanden - "
+                "bitte einen neuen Namen auswählen"
             )
-        }
+        },
     )
     house_type = models.CharField(
         max_length=3,
         choices=((ht.name, ht.value) for ht in constants.HouseType),
-        default='EFH',
-        verbose_name='Haustyp'
+        default="EFH",
+        verbose_name="Haustyp",
     )
     heat_demand = models.FloatField(
-        verbose_name='Jährlicher Wärmebedarf',
+        verbose_name="Jährlicher Wärmebedarf",
         validators=[
             MaxValueValidator(
                 5e5,
                 message=(
-                    'Der jährliche, mögliche Heizwärmebedarf ist auf ein '
-                    'Limit von %(limit_value)s kWh begrenzt.'
-                )
+                    "Der jährliche, mögliche Heizwärmebedarf ist auf ein "
+                    "Limit von %(limit_value)s kWh begrenzt."
+                ),
             )
-        ]
+        ],
     )
     number_of_persons = models.IntegerField(
         validators=[
             MinValueValidator(
-                1, message='Mindestens eine Person muss im Haushalt leben.'),
+                1, message="Mindestens eine Person muss im Haushalt leben."
+            ),
             MaxValueValidator(
-                30,
-                message='Bitte nur maximal %(limit_value)s Personen angeben.'
-            )
+                30, message="Bitte nur maximal %(limit_value)s Personen angeben."
+            ),
         ],
     )
     square_meters = models.IntegerField(
-        verbose_name='Quadratmeter',
+        verbose_name="Quadratmeter",
         validators=[
             MaxValueValidator(
                 2e3,
                 message=(
-                    'Die Angabe der Quadratmeter ist auf %(limit_value)s qm '
-                    'begrenzt.'
-                )
+                    "Die Angabe der Quadratmeter ist auf %(limit_value)s qm "
+                    "begrenzt."
+                ),
             )
-        ]
+        ],
     )
     heat_type = models.CharField(
         choices=((ht.name, ht.value) for ht in constants.HeatType),
-        default='radiator',
+        default="radiator",
         max_length=10,
-        verbose_name='Heizungsmodell'
+        verbose_name="Heizungsmodell",
     )
-    warm_water_per_day = models.IntegerField(
-        verbose_name='Warmwasserbedarf'
-    )
+    warm_water_per_day = models.IntegerField(verbose_name="Warmwasserbedarf")
     roof_area = models.FloatField(
-        verbose_name='Verfügbare Dachfläche für Photovoltaik',
+        verbose_name="Verfügbare Dachfläche für Photovoltaik",
         validators=[
             MaxValueValidator(
-                400,
-                'Die verfügbare Dachfläche ist auf %(limit_value)s qm '
-                'begrenzt.'
+                400, "Die verfügbare Dachfläche ist auf %(limit_value)s qm " "begrenzt."
             )
-        ]
+        ],
     )
 
     def get_oep_timeseries(self, name):
@@ -164,9 +153,11 @@ class Household(models.Model):
             with transaction.manager:
                 self.timeseries = {
                     name: pandas.Series(
-                        session.query(
-                            oep_models.OEPTimeseries
-                        ).filter_by(name=house_type.value).first().data)
+                        session.query(oep_models.OEPTimeseries)
+                        .filter_by(name=house_type.value)
+                        .first()
+                        .data
+                    )
                     for house_type in constants.HouseType
                 }
         return self.timeseries[name]
@@ -178,13 +169,15 @@ class Household(models.Model):
     def annual_hot_water_demand(self):
         session = sqlahelper.get_session()
         with transaction.manager:
-            hot_water = session.query(oep_models.OEPHotWater).filter_by(
-                    liter=self.warm_water_per_day * self.number_of_persons
-            ).first()
+            hot_water = (
+                session.query(oep_models.OEPHotWater)
+                .filter_by(liter=self.warm_water_per_day * self.number_of_persons)
+                .first()
+            )
             if hot_water is None:
                 raise KeyError(
-                    f'No hot water profile found for '
-                    f'liter={self.warm_water_per_day}'
+                    f"No hot water profile found for "
+                    f"liter={self.warm_water_per_day}"
                 )
             return pandas.Series(hot_water.data)
 
@@ -193,8 +186,8 @@ class Household(models.Model):
 
     def annual_total_demand(self):
         return (
-                self.heat_demand * self.get_heat_demand_profile() +
-                self.annual_hot_water_demand()
+            self.heat_demand * self.get_heat_demand_profile()
+            + self.annual_hot_water_demand()
         )
 
     def annual_heat_demand(self):
@@ -213,8 +206,7 @@ class Household(models.Model):
 
 class District(models.Model):
     name = models.CharField(max_length=22)
-    households = models.ManyToManyField(
-        'Household', through='DistrictHouseholds')
+    households = models.ManyToManyField("Household", through="DistrictHouseholds")
 
     def __str__(self):
         return self.name
@@ -222,8 +214,7 @@ class District(models.Model):
     def add_households(self, households):
         for hh_id, amount in households.items():
             hh = Household.objects.get(pk=hh_id)
-            district_hh = DistrictHouseholds(
-                district=self, household=hh, amount=amount)
+            district_hh = DistrictHouseholds(district=self, household=hh, amount=amount)
             district_hh.save()
 
     def annual_total_demand(self):

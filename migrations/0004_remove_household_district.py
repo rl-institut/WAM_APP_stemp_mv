@@ -8,12 +8,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0003_add_household_predefined'),
+        ("stemp", "0003_add_household_predefined"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='household',
-            name='district',
-        ),
+        migrations.RemoveField(model_name="household", name="district",),
     ]

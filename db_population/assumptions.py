@@ -1,4 +1,3 @@
-
 import logging
 
 from meta.models import Category, Source, Assumption
@@ -27,9 +26,7 @@ def insert_assumptions():
 
 
 def net():
-    net_category = Category(
-        name="Stromnetz", description="Annahmen für das Stromnetz",
-    )
+    net_category = Category(name="Stromnetz", description="Annahmen für das Stromnetz",)
     net_category.save()
     net_source = Source(
         meta_data=get_meta_from_json("net", encoding="ISO-8859-1"),
@@ -119,7 +116,7 @@ def gas(category):
         category=assumption_category,
         source=gas_source,
     ).save()
-    logging.info(f'Gas assumptions uploaded.')
+    logging.info(f"Gas assumptions uploaded.")
 
 
 def oil(category):
@@ -208,7 +205,7 @@ def oil(category):
         category=assumption_category,
         source=oil_source,
     ).save()
-    logging.info(f'Oil assumptions uploaded.')
+    logging.info(f"Oil assumptions uploaded.")
 
 
 def woodchip(category):
@@ -219,7 +216,8 @@ def woodchip(category):
     )
     woodchip_source.save()
     assumption_category = Category(
-        name="Holzhackschnitzelheizung", description="Parameter für die Holzhackschnitzelheizung",
+        name="Holzhackschnitzelheizung",
+        description="Parameter für die Holzhackschnitzelheizung",
     )
     assumption_category.save()
     Assumption(
@@ -271,7 +269,7 @@ def woodchip(category):
         category=assumption_category,
         source=woodchip_source,
     ).save()
-    logging.info(f'Woodchip assumptions uploaded.')
+    logging.info(f"Woodchip assumptions uploaded.")
 
 
 def bhkw(category):
@@ -282,7 +280,8 @@ def bhkw(category):
     )
     bhkw_source.save()
     assumption_category = Category(
-        name="Blockheizkraftwerk (BHKW, Erdgas & Biogas)", description="Parameter für Blockheizkraftwerke",
+        name="Blockheizkraftwerk (BHKW, Erdgas & Biogas)",
+        description="Parameter für Blockheizkraftwerke",
     )
     assumption_category.save()
     Assumption(
@@ -380,7 +379,7 @@ def bhkw(category):
         category=assumption_category,
         source=bhkw_source,
     ).save()
-    logging.info(f'BHKW assumptions uploaded.')
+    logging.info(f"BHKW assumptions uploaded.")
 
 
 def pv(category):
@@ -433,7 +432,7 @@ def pv(category):
         category=assumption_category,
         source=pv_source,
     ).save()
-    logging.info(f'PV assumptions uploaded.')
+    logging.info(f"PV assumptions uploaded.")
 
 
 def hp(category):
@@ -483,7 +482,7 @@ def hp(category):
         category=assumption_category,
         source=hp_source,
     ).save()
-    logging.info(f'HP assumptions uploaded.')
+    logging.info(f"HP assumptions uploaded.")
 
 
 def warmwater():
@@ -512,7 +511,7 @@ def warmwater():
         source=hot_water_energy_source,
     )
     hot_water_energy.save()
-    logging.info(f'Warmwwater assumptions uploaded.')
+    logging.info(f"Warmwwater assumptions uploaded.")
 
 
 def primary_factors():
@@ -579,4 +578,4 @@ def primary_factors():
         category=c_pf,
         source=pf,
     ).save()
-    logging.info(f'Primary factor assumptions uploaded.')
+    logging.info(f"Primary factor assumptions uploaded.")

@@ -13,85 +13,203 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='District',
+            name="District",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='HeatProfile',
+            name="HeatProfile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('profile', django.contrib.postgres.fields.ArrayField(base_field=models.FloatField(), null=True, size=8760)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "profile",
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.FloatField(), null=True, size=8760
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Household',
+            name="Household",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('load_demand', models.FloatField(verbose_name='Jährlicher Strombedarf')),
-                ('heat_demand', models.FloatField(verbose_name='Jährlicher Wärmebedarf')),
-                ('district', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.District')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "load_demand",
+                    models.FloatField(verbose_name="Jährlicher Strombedarf"),
+                ),
+                (
+                    "heat_demand",
+                    models.FloatField(verbose_name="Jährlicher Wärmebedarf"),
+                ),
+                (
+                    "district",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="stemp.District"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LoadProfile',
+            name="LoadProfile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('profile', django.contrib.postgres.fields.ArrayField(base_field=models.FloatField(), null=True, size=8760)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "profile",
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.FloatField(), null=True, size=8760
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Parameter',
+            name="Parameter",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data', django.contrib.postgres.fields.jsonb.JSONField(unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("data", django.contrib.postgres.fields.jsonb.JSONField(unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Result',
+            name="Result",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data', django.contrib.postgres.fields.jsonb.JSONField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("data", django.contrib.postgres.fields.jsonb.JSONField()),
             ],
         ),
         migrations.CreateModel(
-            name='Scenario',
+            name="Scenario",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Setup',
+            name="Setup",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data', django.contrib.postgres.fields.jsonb.JSONField(unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("data", django.contrib.postgres.fields.jsonb.JSONField(unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Simulation',
+            name="Simulation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('parameter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.Parameter')),
-                ('result', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='stemp.Result')),
-                ('scenario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.Scenario')),
-                ('setup', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.Setup')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "parameter",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="stemp.Parameter",
+                    ),
+                ),
+                (
+                    "result",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="stemp.Result",
+                    ),
+                ),
+                (
+                    "scenario",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="stemp.Scenario"
+                    ),
+                ),
+                (
+                    "setup",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="stemp.Setup"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='household',
-            name='load_profile',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.LoadProfile'),
+            model_name="household",
+            name="load_profile",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="stemp.LoadProfile"
+            ),
         ),
     ]

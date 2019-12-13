@@ -1,4 +1,3 @@
-
 import sqlahelper
 import logging
 
@@ -33,8 +32,7 @@ class SessionSimulation(object):
         -------
         int: Simulation ID if results were found, else None
         """
-        for simulation in Simulation.objects.filter(
-                scenario__name=self.name):
+        for simulation in Simulation.objects.filter(scenario__name=self.name):
 
             # Check if result is outdated:
             if simulation.date < simulation.scenario.last_change:
@@ -51,15 +49,13 @@ class SessionSimulation(object):
 
     def load_or_simulate(self):
         self.include_demand()
-        
+
         # Check if results already exist:
         result_id = self.check_for_result()
         if result_id is not None:
             self.result_id = result_id
         else:
-            self.pending = (
-                simulate_energysystem.delay(self.name, self.parameter)
-            )
+            self.pending = simulate_energysystem.delay(self.name, self.parameter)
 
     def is_pending(self):
         if self.pending is None:
@@ -68,7 +64,7 @@ class SessionSimulation(object):
             try:
                 self.result_id = self.pending.get()
             except Exception:
-                logging.exception('Simulation task failed')
+                logging.exception("Simulation task failed")
                 self.result_id = None
             return False
         return True
@@ -80,25 +76,19 @@ class SessionSimulation(object):
 
         # Store oemeof results via SQLAlchemy:
         sa_session = sqlahelper.get_session()
-        result_id = store_results(
-            sa_session,
-            param_results,
-            results
-        )
+        result_id = store_results(sa_session, param_results, results)
         sa_session.close()
 
         # Store simulation in Django ORM:
         Simulation.objects.get_or_create(
-            scenario=scenario,
-            parameter=parameter,
-            result_id=result_id
+            scenario=scenario, parameter=parameter, result_id=result_id
         )
         return result_id
 
     def include_demand(self):
-        self.parameter['demand'] = {
-            'type': self.session.demand_type,
-            'index': self.session.demand_id
+        self.parameter["demand"] = {
+            "type": self.session.demand_type,
+            "index": self.session.demand_id,
         }
 
 
@@ -142,7 +132,7 @@ class UserSession(object):
     def __str__(self):
         return (
             f'Scenarios: {",".join([scenario.name for scenario in self.scenarios])}, '
-            f'Demand-Type: {self.demand_type}, '
-            f'Demand-ID: {self.demand_id}, '
-            f'District: {self.current_district}'
+            f"Demand-Type: {self.demand_type}, "
+            f"Demand-ID: {self.demand_id}, "
+            f"District: {self.current_district}"
         )

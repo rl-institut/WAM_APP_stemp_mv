@@ -7,33 +7,73 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0036_auto_20190207_1139'),
+        ("stemp", "0036_auto_20190207_1139"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='household',
-            name='heat_demand',
-            field=models.FloatField(validators=[django.core.validators.MaxValueValidator(100000.0, message='Der jährliche, mögliche Heizwärmebedarf ist auf ein Limit von %(limit_value)s kWh begrenzt.')], verbose_name='Jährlicher Wärmebedarf'),
+            model_name="household",
+            name="heat_demand",
+            field=models.FloatField(
+                validators=[
+                    django.core.validators.MaxValueValidator(
+                        100000.0,
+                        message="Der jährliche, mögliche Heizwärmebedarf ist auf ein Limit von %(limit_value)s kWh begrenzt.",
+                    )
+                ],
+                verbose_name="Jährlicher Wärmebedarf",
+            ),
         ),
         migrations.AlterField(
-            model_name='household',
-            name='name',
-            field=models.CharField(error_messages={'unique': 'Es ist schon ein Haushalt mit diesem Namen vorhanden - bitte einen neuen Namen auswählen'}, max_length=22, unique=True),
+            model_name="household",
+            name="name",
+            field=models.CharField(
+                error_messages={
+                    "unique": "Es ist schon ein Haushalt mit diesem Namen vorhanden - bitte einen neuen Namen auswählen"
+                },
+                max_length=22,
+                unique=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='household',
-            name='number_of_persons',
-            field=models.IntegerField(validators=[django.core.validators.MinValueValidator(1, message='Mindestens eine Person muss im Haushalt leben.'), django.core.validators.MaxValueValidator(10, message='Bitte nur maximal %(limit_value)s Personen angeben.')]),
+            model_name="household",
+            name="number_of_persons",
+            field=models.IntegerField(
+                validators=[
+                    django.core.validators.MinValueValidator(
+                        1, message="Mindestens eine Person muss im Haushalt leben."
+                    ),
+                    django.core.validators.MaxValueValidator(
+                        10,
+                        message="Bitte nur maximal %(limit_value)s Personen angeben.",
+                    ),
+                ]
+            ),
         ),
         migrations.AlterField(
-            model_name='household',
-            name='roof_area',
-            field=models.FloatField(validators=[django.core.validators.MaxValueValidator(400, 'Die verfügbare Dachfläche ist auf %(limit_value)s qm begrenzt.')], verbose_name='Verfügbare Dachfläche für Photovoltaik'),
+            model_name="household",
+            name="roof_area",
+            field=models.FloatField(
+                validators=[
+                    django.core.validators.MaxValueValidator(
+                        400,
+                        "Die verfügbare Dachfläche ist auf %(limit_value)s qm begrenzt.",
+                    )
+                ],
+                verbose_name="Verfügbare Dachfläche für Photovoltaik",
+            ),
         ),
         migrations.AlterField(
-            model_name='household',
-            name='square_meters',
-            field=models.IntegerField(validators=[django.core.validators.MaxValueValidator(1000.0, message='Die Angabe der Quadratmeter ist auf %(limit_value)s qm begrenzt.')], verbose_name='Quadratmeter'),
+            model_name="household",
+            name="square_meters",
+            field=models.IntegerField(
+                validators=[
+                    django.core.validators.MaxValueValidator(
+                        1000.0,
+                        message="Die Angabe der Quadratmeter ist auf %(limit_value)s qm begrenzt.",
+                    )
+                ],
+                verbose_name="Quadratmeter",
+            ),
         ),
     ]

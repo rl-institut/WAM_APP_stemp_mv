@@ -7,25 +7,59 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0015_simulation_date'),
+        ("stemp", "0015_simulation_date"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Question',
+            name="Question",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number_of_person', models.IntegerField()),
-                ('question_household', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, to='stemp.Household')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("number_of_person", models.IntegerField()),
+                (
+                    "question_household",
+                    models.OneToOneField(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="stemp.Household",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='QuestionHouseholds',
+            name="QuestionHouseholds",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('default', models.BooleanField()),
-                ('household', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.Household')),
-                ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stemp.Question')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("default", models.BooleanField()),
+                (
+                    "household",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="stemp.Household",
+                    ),
+                ),
+                (
+                    "question",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="stemp.Question"
+                    ),
+                ),
             ],
         ),
     ]

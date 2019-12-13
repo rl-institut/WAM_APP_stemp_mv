@@ -12,6 +12,7 @@ class HouseholdField(Field):
     Is used in district list and summary. Shows current household and
     selected amounts.
     """
+
     widget = HouseholdWidget
 
     def __init__(self, hh, count=1, in_district=False):
@@ -36,14 +37,15 @@ class HouseholdField(Field):
         Field.
         """
         return {
-            'household': self.household,
-            'count': self.count,
-            'in_district': self.in_district,
-            'deletable': True
+            "household": self.household,
+            "count": self.count,
+            "in_district": self.in_district,
+            "deletable": True,
         }
 
 
 class SubmitField(Field):
     """Simple submit field to add submit input"""
+
     def __init__(self, widget=SubmitWidget, **kwargs):
         super(SubmitField, self).__init__(widget=widget, **kwargs)

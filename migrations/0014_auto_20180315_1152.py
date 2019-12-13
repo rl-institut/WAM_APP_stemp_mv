@@ -8,21 +8,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0013_auto_20180312_1338'),
+        ("stemp", "0013_auto_20180312_1338"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='simulation',
-            name='result',
-        ),
+        migrations.RemoveField(model_name="simulation", name="result",),
         migrations.AddField(
-            model_name='simulation',
-            name='result_id',
+            model_name="simulation",
+            name="result_id",
             field=models.IntegerField(default=1),
             preserve_default=False,
         ),
-        migrations.DeleteModel(
-            name='Result',
-        ),
+        migrations.DeleteModel(name="Result",),
     ]

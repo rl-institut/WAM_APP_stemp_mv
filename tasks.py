@@ -13,14 +13,10 @@ from db_apps import oemof_results
 @app.task
 def simulate_energysystem(scenario_module, parameters):
     module = SCENARIO_MODULES[scenario_module]
-    energysystem = create_energysystem(
-        module,
-        **parameters
-    )
+    energysystem = create_energysystem(module, **parameters)
     simulation_fct = get_simulation_function(module)
     result, param_result = simulation_fct(energysystem)
-    result_id = store_results(
-        scenario_module, parameters, result, param_result)
+    result_id = store_results(scenario_module, parameters, result, param_result)
     return result_id
 
 
@@ -31,17 +27,11 @@ def store_results(name, parameters, results, param_results):
 
     # Store oemeof results via SQLAlchemy:
     sa_session = sqlahelper.get_session()
-    result_id = oemof_results.store_results(
-        sa_session,
-        param_results,
-        results
-    )
+    result_id = oemof_results.store_results(sa_session, param_results, results)
     sa_session.close()
 
     # Store simulation in Django ORM:
     Simulation.objects.get_or_create(
-        scenario=scenario,
-        parameter=parameter,
-        result_id=result_id
+        scenario=scenario, parameter=parameter, result_id=result_id
     )
     return result_id

@@ -7,23 +7,31 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0017_auto_20180412_0953'),
+        ("stemp", "0017_auto_20180412_0953"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='questionhousehold',
-            name='default',
+            model_name="questionhousehold",
+            name="default",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='questionhousehold',
-            name='household',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='question_household', to='stemp.Household'),
+            model_name="questionhousehold",
+            name="household",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="question_household",
+                to="stemp.Household",
+            ),
         ),
         migrations.AlterField(
-            model_name='questionhousehold',
-            name='question',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='question_household', to='stemp.Question'),
+            model_name="questionhousehold",
+            name="question",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="question_household",
+                to="stemp.Question",
+            ),
         ),
     ]

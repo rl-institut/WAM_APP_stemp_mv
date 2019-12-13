@@ -7,44 +7,48 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0032_auto_20181025_1536'),
+        ("stemp", "0032_auto_20181025_1536"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='questionhousehold',
-            name='household',
-        ),
-        migrations.RemoveField(
-            model_name='questionhousehold',
-            name='question',
-        ),
-        migrations.DeleteModel(
-            name='Question',
+        migrations.RemoveField(model_name="questionhousehold", name="household",),
+        migrations.RemoveField(model_name="questionhousehold", name="question",),
+        migrations.DeleteModel(name="Question",),
+        migrations.AddField(
+            model_name="household",
+            name="heat_type",
+            field=models.CharField(
+                choices=[("radiator", "Heizkörper"), ("floor", "Fussbodenheizung")],
+                default="radiator",
+                max_length=10,
+            ),
         ),
         migrations.AddField(
-            model_name='household',
-            name='heat_type',
-            field=models.CharField(choices=[('radiator', 'Heizkörper'), ('floor', 'Fussbodenheizung')], default='radiator', max_length=10),
+            model_name="household",
+            name="house_type",
+            field=models.CharField(
+                choices=[("EFH", "Einfamilienhaus"), ("MFH", "Mehrfamilienhaus")],
+                default="EFH",
+                max_length=3,
+            ),
         ),
         migrations.AddField(
-            model_name='household',
-            name='house_type',
-            field=models.CharField(choices=[('EFH', 'Einfamilienhaus'), ('MFH', 'Mehrfamilienhaus')], default='EFH', max_length=3),
-        ),
-        migrations.AddField(
-            model_name='household',
-            name='number_of_persons',
-            field=models.IntegerField(default=1, validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(10)]),
+            model_name="household",
+            name="number_of_persons",
+            field=models.IntegerField(
+                default=1,
+                validators=[
+                    django.core.validators.MinValueValidator(1),
+                    django.core.validators.MaxValueValidator(10),
+                ],
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='household',
-            name='square_meters',
+            model_name="household",
+            name="square_meters",
             field=models.IntegerField(default=44),
             preserve_default=False,
         ),
-        migrations.DeleteModel(
-            name='QuestionHousehold',
-        ),
+        migrations.DeleteModel(name="QuestionHousehold",),
     ]

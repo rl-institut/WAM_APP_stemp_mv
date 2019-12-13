@@ -6,20 +6,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0026_remove_household_predefined'),
+        ("stemp", "0026_remove_household_predefined"),
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='question',
-            unique_together=set(),
-        ),
-        migrations.RemoveField(
-            model_name='question',
-            name='at_home',
-        ),
-        migrations.RemoveField(
-            model_name='question',
-            name='modernized',
-        ),
+        migrations.AlterUniqueTogether(name="question", unique_together=set(),),
+        migrations.RemoveField(model_name="question", name="at_home",),
+        migrations.RemoveField(model_name="question", name="modernized",),
     ]

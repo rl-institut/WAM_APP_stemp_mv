@@ -1,4 +1,3 @@
-
 import numpy
 import pandas
 from collections import OrderedDict
@@ -10,7 +9,7 @@ from stemp.app_settings import LABELS
 
 
 class Dataframe(VisualizationTemplate):
-    template_name = 'visualizations/dataframe.html'
+    template_name = "visualizations/dataframe.html"
 
     def __init__(self, title, data=None):
         self.title = title
@@ -25,8 +24,8 @@ class Dataframe(VisualizationTemplate):
 
     def get_context(self, **kwargs):
         context = super(Dataframe, self).get_context(**kwargs)
-        context['title'] = self.title
-        context['data'] = self.render_data()
+        context["title"] = self.title
+        context["data"] = self.render_data()
         return context
 
     @staticmethod
@@ -41,35 +40,47 @@ class Dataframe(VisualizationTemplate):
 
 class ComparisonDataframe(Dataframe):
     formatters = {
-        'Wärmekosten': lambda x: (
-                f'<pre>{"{:.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' €/kWh':<7}</pre>"),
-        'Investitionskosten': lambda x: (
-                f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' €':<7}</pre>"),
-        'CO2 Emissionen': lambda x: (
-                f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' g/kWh':<7}</pre>"),
-        'Brennstoffkosten': lambda x: (
-                f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' €/Jahr':<7}</pre>"),
-        'Primärenergiefaktor': lambda x: (
-            f'<pre>{"{:.1f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{'':<7}</pre>" if x <= 1.3
-            else f'<pre>1,3 ({"{:.1f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")})*' + f"{'':<7}</pre>"
+        "Wärmekosten": lambda x: (
+            f'<pre>{"{:.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}'
+            + f"{' €/kWh':<7}</pre>"
         ),
-        'Primärenergie': lambda x: (
-            f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}' + f"{' kWh':<7}</pre>"),
+        "Investitionskosten": lambda x: (
+            f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}'
+            + f"{' €':<7}</pre>"
+        ),
+        "CO2 Emissionen": lambda x: (
+            f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}'
+            + f"{' g/kWh':<7}</pre>"
+        ),
+        "Brennstoffkosten": lambda x: (
+            f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}'
+            + f"{' €/Jahr':<7}</pre>"
+        ),
+        "Primärenergiefaktor": lambda x: (
+            f'<pre>{"{:.1f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}'
+            + f"{'':<7}</pre>"
+            if x <= 1.3
+            else f'<pre>1,3 ({"{:.1f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")})*'
+            + f"{'':<7}</pre>"
+        ),
+        "Primärenergie": lambda x: (
+            f'<pre>{"{:,.0f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}'
+            + f"{' kWh':<7}</pre>"
+        ),
     }
     colored = (
-        'Wärmekosten',
-        'Investitionskosten',
-        'Brennstoffkosten',
-        'CO2 Emissionen',
-        'Primärenergiefaktor',
-        'Primärenergie',
+        "Wärmekosten",
+        "Investitionskosten",
+        "Brennstoffkosten",
+        "CO2 Emissionen",
+        "Primärenergiefaktor",
+        "Primärenergie",
     )
-    information = {k: v for k, v in LABELS['result']['information'].items()}
+    information = {k: v for k, v in LABELS["result"]["information"].items()}
 
     def __init__(self, data):
         super(ComparisonDataframe, self).__init__(
-            'Technologievergleich',
-            data=data,
+            "Technologievergleich", data=data,
         )
         self.bins = list(accumulate([r.percentage for r in RESULT_COLORS]))
 
@@ -80,12 +91,11 @@ class ComparisonDataframe(Dataframe):
         row_style = []
         row_range = row.max() - row.min()
         if abs(row_range) < 1e-14:
-            return [''] * len(row)
+            return [""] * len(row)
         for value in row:
-            color_index = numpy.digitize(
-                [(value - row.min()) / row_range],
-                self.bins
-            )[0]
+            color_index = numpy.digitize([(value - row.min()) / row_range], self.bins)[
+                0
+            ]
             color_index = min(color_index, len(RESULT_COLORS) - 1)
             row_style.append(RESULT_COLORS[color_index].style)
         return row_style
@@ -106,10 +116,7 @@ class ComparisonDataframe(Dataframe):
     def render_data(self):
         # Exchange columns with columns plus information:
         columns_dict = OrderedDict(
-            [
-                (i, self.__create_column_name_with_info(i))
-                for i in self.data.index
-            ]
+            [(i, self.__create_column_name_with_info(i)) for i in self.data.index]
         )
         self.data.index = pandas.Index(columns_dict.values())
 
@@ -119,7 +126,7 @@ class ComparisonDataframe(Dataframe):
             {
                 columns_dict[column]: formatter
                 for column, formatter in self.formatters.items()
-            }
+            },
         )
 
         if len(self.data.columns) > 1:
@@ -127,24 +134,18 @@ class ComparisonDataframe(Dataframe):
                 self.__style_color,
                 axis=1,
                 subset=pandas.IndexSlice[
-                    [columns_dict[colored] for colored in self.colored],
-                    :
-                ]
+                    [columns_dict[colored] for colored in self.colored], :
+                ],
             )
         pro_con_align = [
             {
                 "selector": f"td.data.row{row}.col{col}",
-                "props": [("text-align", "left")]
+                "props": [("text-align", "left")],
             }
             for row in range(6, 8)
             for col in range(len(self.data.columns))
         ]
         styler.set_table_styles(
-            [
-                {
-                    "selector": "td",
-                    "props": [("text-align", "right")]
-                },
-            ] + pro_con_align
+            [{"selector": "td", "props": [("text-align", "right")]},] + pro_con_align
         )
         return styler.render()

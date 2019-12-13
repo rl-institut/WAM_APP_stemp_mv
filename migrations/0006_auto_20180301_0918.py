@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0005_household_districts'),
+        ("stemp", "0005_household_districts"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='household',
-            name='districts',
-            field=models.ManyToManyField(to='stemp.District'),
+            model_name="household",
+            name="districts",
+            field=models.ManyToManyField(to="stemp.District"),
         ),
     ]

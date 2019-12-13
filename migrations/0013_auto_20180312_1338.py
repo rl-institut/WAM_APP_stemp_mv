@@ -9,23 +9,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0012_remove_simulation_name'),
+        ("stemp", "0012_remove_simulation_name"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='result',
-            name='data',
-        ),
+        migrations.RemoveField(model_name="result", name="data",),
         migrations.AddField(
-            model_name='result',
-            name='param_result',
+            model_name="result",
+            name="param_result",
             field=django.contrib.postgres.fields.jsonb.JSONField(default={}),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='result',
-            name='result',
+            model_name="result",
+            name="result",
             field=django.contrib.postgres.fields.jsonb.JSONField(default={}),
             preserve_default=False,
         ),
