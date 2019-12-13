@@ -9,7 +9,7 @@ class Scenario(PrimaryInputScenario):
     name = 'Gas'
     needed_parameters = {
         'General': ['wacc', 'gas_price', 'gas_rate'],
-        'Gas': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions'],
+        'Gas': ['lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions', 'min_size'],
         'demand': ['index', 'type']
     }
 
@@ -56,7 +56,11 @@ class Scenario(PrimaryInputScenario):
                     variable_costs=avg_gas_price,
                     investment=invest,
                     is_fossil=True,
-                    co2_emissions=parameters[self.name]['co2_emissions']
+                    co2_emissions=parameters[self.name]['co2_emissions'],
+                    min_size=(
+                            parameters[self.name]['min_size'] /
+                            (parameters[self.name]['efficiency'] / 100)
+                    )
                 )
             },
             outputs={

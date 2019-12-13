@@ -11,7 +11,7 @@ class Scenario(basic_setup.PrimaryInputScenario):
     needed_parameters = {
         'General': ['wacc', 'woodchip_price'],
         'Woodchip': [
-            'lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions'],
+            'lifetime', 'capex', 'opex', 'efficiency', 'co2_emissions', 'min_size'],
         'demand': ['index', 'type']
     }
 
@@ -51,7 +51,11 @@ class Scenario(basic_setup.PrimaryInputScenario):
                     variable_costs=parameters['General']['woodchip_price'],
                     investment=invest,
                     is_fossil=True,
-                    co2_emissions=parameters[self.name]['co2_emissions']
+                    co2_emissions=parameters[self.name]['co2_emissions'],
+                    min_size=(
+                            parameters[self.name]['min_size'] /
+                            (parameters[self.name]['efficiency'] / 100)
+                    )
                 )
             },
             outputs={

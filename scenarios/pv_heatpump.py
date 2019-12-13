@@ -24,8 +24,8 @@ class Scenario(basic_setup.BaseScenario):
     name = 'PV_Heatpump'
     needed_parameters = {
         'General': ['wacc', 'pv_feedin_tariff', 'net_costs'],
-        'PV': ['lifetime', 'capex', 'opex_fix'],
-        'HP': ['lifetime', 'capex'],
+        'PV': ['lifetime', 'capex', 'opex_fix', 'min_size'],
+        'HP': ['lifetime', 'capex', 'min_size'],
         'demand': ['index', 'type']
     }
 
@@ -142,7 +142,8 @@ class Scenario(basic_setup.BaseScenario):
             inputs={
                 sub_b_el: Flow(
                     investment=hp_invest,
-                    co2_emissions=parameters['HP']['co2_emissions']
+                    co2_emissions=parameters['HP']['co2_emissions'],
+                    min_size = parameters['HP']['min_size']
                 )
             },
             outputs={self.sub_b_th: Flow()},
@@ -166,7 +167,8 @@ class Scenario(basic_setup.BaseScenario):
                     actual_value=timeseries['pv'],
                     fixed=True,
                     investment=pv_invest,
-                    co2_emissions=parameters['PV']['co2_emissions']
+                    co2_emissions=parameters['PV']['co2_emissions'],
+                    min_size=parameters['PV']['min_size']
                 )
             }
         )
