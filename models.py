@@ -163,7 +163,7 @@ class Household(models.Model):
             session = sqlahelper.get_session()
             with transaction.manager:
                 self.timeseries = {
-                    name: pandas.Series(
+                    house_type.value: pandas.Series(
                         session.query(
                             oep_models.OEPTimeseries
                         ).filter_by(name=house_type.value).first().data)
