@@ -15,6 +15,18 @@ Base = declarative_base()
 
 
 class OEPScenario(Base):
+    """
+    Contains all parameters related to scenarios
+
+    scenario: Related scenario name (gas/oil/...)
+    component: Component which parameter belongs to (gas/bus/demand/...)
+    unit: unit of given param
+    parameter_type: costs/technologies - is used to distinguish parameters
+        (different colors are used in parameters page)
+    parameter: Name of the parameter
+    value_type: int/str/float
+    value: Value of given parameter
+    """
     __tablename__ = "kopernikus_simulation_parameter"
     __table_args__ = {"schema": SCHEMA}
 
@@ -29,6 +41,13 @@ class OEPScenario(Base):
 
     @classmethod
     def get_scenario_parameters(cls, scenario_name, demand_type):
+        """
+        All scenario parameters for given scenario name and demand type are fetched
+
+        Scenario parameters are chained with default attributes;
+        thus, default parameter values are used as fallback values, if scenario does not
+        define special/individual values.
+        """
         session = sqlahelper.get_session()
         with transaction.manager:
             scenario_parameters = (
@@ -69,6 +88,7 @@ class OEPScenario(Base):
 
 
 class OEPTimeseries(Base):
+    """Model to hold timeseries with related metadata (json)"""
     __tablename__ = "kopernikus_timeseries"
     __table_args__ = {"schema": SCHEMA}
 
@@ -86,6 +106,7 @@ with open(temp_meta_file) as meta_file:
 
 
 class OEPHotWater(Base):
+    """Model to hold hot water timeseries related to given liter"""
     __tablename__ = "kopernikus_warmwasser"
     __table_args__ = {"schema": SCHEMA, "comment": dhw_meta}
 
