@@ -4,10 +4,12 @@ def calc_hp_heating_supply_temp(temp, heating_system, **kwargs):
     temperature.
     For ambient temperatures below t_heat_period the supply temperature
     increases linearly to t_sup_max with decreasing ambient temperature.
-    Parameters
-    temp -- pandas Series with ambient temperature
-    heating_system -- string specifying the heating system (floor heating or
-        radiator)
+
+    Parameters:
+        temp: pandas.Series
+            Timeseries of ambient temperature
+    heating_system: str
+        specifies the heating system (floor heating or radiator)
     """
     # outdoor temp upto which is heated:
     t_heat_period = kwargs.get("t_heat_period", 20)
