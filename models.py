@@ -98,14 +98,16 @@ class Household(models.Model):
     """
     Household model contains all data to a single household
 
-    name: Name of the household
-    house_type: EFH (Einfamilienhaus) or MFH (Mehrfamilienhaus)
-    heat_demand: Total annual heat demand
-    number_of_persons: Persons belonging to the household
-    square_meters: Square meters of household
-    heat_type: radiator or floor
-    warm_water_per_day: Daily warm water consumption
-    roof_area: Potential photovoltaik area on roof of household
+    Attributes
+    ----------
+    name (str): Name of the household
+    house_type (str): EFH (Einfamilienhaus) or MFH (Mehrfamilienhaus)
+    heat_demand (float): Total annual heat demand
+    number_of_persons (int): Persons belonging to the household
+    square_meters (int): Square meters of household
+    heat_type (str): radiator or floor
+    warm_water_per_day (int): Daily warm water consumption
+    roof_area (float): Potential photovoltaik area on roof of household
     """
     timeseries = None
 
@@ -269,8 +271,9 @@ class District(models.Model):
         """
         Adds multiple households to the district
 
-        Parameters:
-            households: dict[int, int]
+        Parameters
+        ----------
+            households (dict[int, int]):
                 Dictionary containing household-id as key and amount of this household
                 type as value
         """
