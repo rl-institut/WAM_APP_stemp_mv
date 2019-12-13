@@ -113,7 +113,7 @@ class ParameterForm(Form):
     @staticmethod
     def __init_field(parameter_data, scenario):
         error_messages = {
-            "required": ("Falsche Eingabe. Bitte geben Sie einen gültigen Wert an.")
+            "required": "Falsche Eingabe. Bitte geben Sie einen gültigen Wert an."
         }
         attributes = ("label", "description", "parameter_type", "unit")
         attrs = {
@@ -336,7 +336,7 @@ class HouseholdForm(ModelForm):
         }
         error_messages = {
             "name": {
-                "required": ("Bitte geben Sie einen Namen für den neuen Haushalt an.")
+                "required": "Bitte geben Sie einen Namen für den neuen Haushalt an."
             },
             "roof_area": {"required": "Bitte geben Sie einen gültigen Wert ein."},
             "square_meters": {"required": "Bitte geben Sie einen gültigen Wert ein."},
