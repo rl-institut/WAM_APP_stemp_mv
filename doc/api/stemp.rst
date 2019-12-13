@@ -130,12 +130,3 @@ stemp.widgets module
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: stemp
-    :members:
-    :undoc-members:
-    :show-inheritance:
