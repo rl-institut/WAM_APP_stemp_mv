@@ -1,3 +1,10 @@
+"""
+Database models to store scenario parameters and timeseries (including hot water).
+
+Initially these models should be seperated from WAM-server and migrated to OEP instead.
+But due to OEP-latency, models are migrated to WAM-serverr right now.
+"""
+
 import os
 from collections import defaultdict, OrderedDict, ChainMap
 import sqlahelper

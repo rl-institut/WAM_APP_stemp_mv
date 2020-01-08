@@ -1,3 +1,7 @@
+"""
+Database models to set up households and districts and to store simulations including
+related scenario, parameters and results
+"""
 
 import pandas
 import sqlahelper
