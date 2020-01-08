@@ -85,6 +85,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.extlinks",
     "sphinx.ext.graphviz",
+    "celery.contrib.sphinx"
 ]
 
 # Napoleon settings
