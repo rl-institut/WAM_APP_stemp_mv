@@ -45,7 +45,7 @@ def add_engine(db_connection):
 
     Parameters
     ----------
-    db_connection (str):
+    db_connection : str
         Database connection to set up
     """
     db_name = stemp_config.get(db_connection, DB_DEFAULT_SETUP[db_connection])
@@ -81,12 +81,12 @@ def import_scenario(scenario):
 
     Parameters
     ----------
-    scenario (str):
+    scenario : str
         Name of scenario module
 
     Returns
     -------
-    module:
+    module
         Imported scenario module
     """
     filename = os.path.join(SCENARIO_PATH, scenario)

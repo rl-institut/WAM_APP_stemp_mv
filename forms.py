@@ -206,12 +206,12 @@ class ParameterForm(Form):
 
         Parameters
         ----------
-        scenario (str):
+        scenario : str
             If given, only parameters used in scenario are returned
 
         Returns
         -------
-        dict:
+        dict
             Nested dictionary of all related components and their parameter values
         """
 
@@ -221,7 +221,7 @@ class ParameterForm(Form):
 
             Returns
             -------
-            bool:
+            bool
                 True, if field belongs to scenario; False otherwise.
             """
             if (
@@ -250,15 +250,6 @@ class ParameterForm(Form):
     def get_changed_parameters(parameters, data):
         """
         Compare original parameters with user entries and return diffs
-
-        Parameters
-        ----------
-        parameters
-        data
-
-        Returns
-        -------
-
         """
         original = defaultdict(dict)
         for (_, scenario_params) in parameters:

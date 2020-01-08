@@ -44,7 +44,7 @@ class WarmwaterConsumption(Enum):
 
         Returns
         -------
-        int:
+        int
             Warmwater consumption in liters
         """
         return {
@@ -60,12 +60,12 @@ class WarmwaterConsumption(Enum):
 
         Parameters
         ----------
-        liters (int):
+        liters : int
             warmwater consumption in liters
 
         Returns
         -------
-        WarmwaterConsumption:
+        WarmwaterConsumption
             Warmwater consumption level
         """
         return {
@@ -107,7 +107,7 @@ class DemandType(IntEnum):
 
         Returns
         -------
-        str:
+        str
             Label of current demand type
         """
         return {
@@ -124,7 +124,7 @@ class DemandType(IntEnum):
 
         Returns
         -------
-        str:
+        str
             Demand type suffix
         """
         return {DemandType.Single: "single", DemandType.District: "district"}.get(self)
@@ -146,14 +146,14 @@ def get_roof_square_meters(household_square_meters, house_type):
 
     Parameters
     ----------
-    household_square_meters (int):
+    household_square_meters : int
         Square meters of current household
-    house_type (HouseType):
+    house_type : HouseType
         Single household or district
 
     Returns
     -------
-    float:
+    float
         Roof square meters available for PV
     """
     sm = household_square_meters
