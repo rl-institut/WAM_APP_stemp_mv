@@ -25,14 +25,15 @@ class OEPScenario(Base):
     """
     Contains all parameters related to scenarios
 
-    scenario: Related scenario name (gas/oil/...)
-    component: Component which parameter belongs to (gas/bus/demand/...)
-    unit: unit of given param
-    parameter_type: costs/technologies - is used to distinguish parameters
-        (different colors are used in parameters page)
-    parameter: Name of the parameter
-    value_type: int/str/float
-    value: Value of given parameter
+    Args:
+        scenario: Related scenario name (gas/oil/...)
+        component: Component which parameter belongs to (gas/bus/demand/...)
+        unit: unit of given param
+        parameter_type: costs/technologies - is used to distinguish parameters
+            (different colors are used in parameters page)
+        parameter: Name of the parameter
+        value_type: int/str/float
+        value: Value of given parameter
     """
     __tablename__ = "kopernikus_simulation_parameter"
     __table_args__ = {"schema": SCHEMA}
