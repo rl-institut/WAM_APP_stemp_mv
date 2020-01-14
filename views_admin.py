@@ -1,9 +1,12 @@
+"""Additional view for admin panel"""
+
 from django.views.generic import TemplateView
 
 from stemp.db_population import queries
 
 
 class ManageView(TemplateView):
+    """Admin-View for database population"""
     template_name = "stemp/manage.html"
 
     def get_context_data(self, info=""):
