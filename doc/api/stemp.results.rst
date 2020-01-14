@@ -27,12 +27,3 @@ stemp.results.results module
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: stemp.results
-    :members:
-    :undoc-members:
-    :show-inheritance:
