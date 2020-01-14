@@ -1,3 +1,5 @@
+"""Holds URLs for Stemp-MV app"""
+
 import cursive_re
 
 from django.urls import path, register_converter
@@ -13,6 +15,7 @@ from stemp import views_admin
 
 
 def get_list_regex():
+    """Regex function to read lists of numbers"""
     number = cursive_re.one_or_more(cursive_re.any_of(cursive_re.in_range("0", "9")))
     regex = cursive_re.alternative(
         number + cursive_re.zero_or_more(cursive_re.text(",") + number)
@@ -21,6 +24,7 @@ def get_list_regex():
 
 
 class ListConverter:
+    """Enables lists in URL parameters"""
     regex = get_list_regex()
 
     @staticmethod
