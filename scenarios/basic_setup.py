@@ -1,3 +1,5 @@
+"""Holds (abstract) basic scenarios to init default demand, busses etc."""
+
 import sqlahelper
 import transaction
 import pandas
@@ -20,6 +22,7 @@ pe = namedtuple("PrimaryEnergy", ("energy", "factor"))
 
 
 def upload_scenario_parameters():
+    """Scenario parameters for all scenarios are be uploaded to database"""
     session = sqlahelper.get_session()
     for sc_parameters in app_settings.SCENARIO_PARAMETERS.values():
         for sc_setup in sc_parameters["SETUPS"]:
@@ -40,6 +43,12 @@ def upload_scenario_parameters():
 
 
 class BaseScenario(ABC):
+    """
+    Basic scenario which sets up energysystem, demand and default grid
+
+    Holds abstract functions for technology setup, primary factor calculation and
+    labelling of components, which have to be overwritten by child classes.
+    """
     needed_parameters = {"General": ["wacc"], "demand": ["index", "type"]}
 
     def __init__(self, **parameters):
@@ -49,6 +58,7 @@ class BaseScenario(ABC):
         self.create_energysystem(**parameters)
 
     def create_energysystem(self, **parameters):
+        """Sets up default energysystem"""
         # initialize energy system
         self.energysystem = EnergySystem(
             timeindex=pandas.date_range(
@@ -57,6 +67,7 @@ class BaseScenario(ABC):
         )
 
     def add_subgrid_and_demands(self, customer):
+        """Demand sink, excess sink and demand bus are set up"""
         # Add subgrid busses
         self.sub_b_th = Bus(label=AdvancedLabel(f"b_demand_th", type="Bus",))
         self.energysystem.add(self.sub_b_th)
@@ -82,7 +93,7 @@ class BaseScenario(ABC):
 
     def add_households(self, parameters, timeseries=None):
         """
-        Whole district as one, separate or single households are added to es
+        Whole district as one, separate or single households are added to energysystem
         """
         demand = self.get_demand(
             parameters["demand"]["type"], parameters["demand"]["index"]
@@ -92,14 +103,17 @@ class BaseScenario(ABC):
 
     @classmethod
     def add_dynamic_parameters(cls, scenario, parameters):
+        """Optional function to add dynamic parameters to the energysystem"""
         return parameters
 
     @abstractmethod
     def add_technology(self, demand, timeseries, parameters):
+        """Sets up technology for current scenario"""
         pass
 
     @staticmethod
     def average_cost_per_year(start, years, rate):
+        """Calculates average costs over time period for evolving costs at given rate"""
         cost = 0.0
         for year in range(years):
             cost += start * (1 + rate / 100.0) ** (year - 1)
@@ -107,6 +121,7 @@ class BaseScenario(ABC):
 
     @staticmethod
     def get_demand(demand_type, demand_id):
+        """Returns household or district model depending on given demand ID and type"""
         if demand_type == constants.DemandType.Single:
             return Household.objects.get(id=demand_id)
         elif demand_type == constants.DemandType.District:
@@ -117,11 +132,13 @@ class BaseScenario(ABC):
     @classmethod
     @abstractmethod
     def get_data_label(cls, nodes):
+        """Returns label for given nodes"""
         return "-".join(map(str, nodes))
 
     @classmethod
     @abstractmethod
     def calculate_primary_factor_and_energy(cls, param_results, results):
+        """Returns primary factor and energy for given results"""
         return pe(None, None)
 
 
@@ -132,10 +149,12 @@ class PrimaryInputScenario(BaseScenario):
 
     @abstractmethod
     def add_technology(self, demand, timeseries, parameters):
+        """Sets up technology for current scenario"""
         pass
 
     @classmethod
     def calculate_primary_factor_and_energy(cls, param_results, node_results):
+        """Returns primary factor and energy for given results"""
         # Find primary source & demand:
         primary_source_node = next(
             filter(
