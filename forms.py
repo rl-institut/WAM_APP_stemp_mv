@@ -454,10 +454,6 @@ class DistrictSelectForm(Form):
     )
 
 
-class SaveSimulationForm(Form):
-    simulation_name = CharField(label="Simulation speichern unter", max_length=255)
-
-
 class DistrictListForm(Form):
     def __init__(self, hh_dict):
         super(DistrictListForm, self).__init__()
@@ -489,9 +485,3 @@ class DistrictListForm(Form):
             for field_name, field in self.fields.items()
             if field.group == "MFH"
         ]
-
-
-class DistrictForm(ModelForm):
-    class Meta:
-        model = District
-        fields = ["name"]
