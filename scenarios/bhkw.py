@@ -1,3 +1,5 @@
+"""Scenario module for BHKWs"""
+
 from oemof.solph import Flow, Bus, Investment, Transformer
 from oemof.tools.economics import annuity
 
@@ -121,6 +123,11 @@ class Scenario(basic_setup.BaseScenario):
 
     @staticmethod
     def get_optimum_bhkw_size(demand):
+        """
+        Returns (estimated) optimal BHKW size depending on demand
+
+        Depending of preferred full load hours, BHKW size is determined.
+        """
         demand.sort_values(ascending=False, inplace=True)
         partial_load_right = demand.iloc[BHKW_FULL_LOAD_HOURS - 1 : 8760].sum()
 
@@ -137,6 +144,7 @@ class Scenario(basic_setup.BaseScenario):
 
     @staticmethod
     def get_bhkw_capex(bhkw_size):
+        """Returns capex for given BHKW size"""
         if bhkw_size < 1:
             capex = 9.585 * 1e3
         elif 1 <= bhkw_size < 10:
@@ -153,7 +161,7 @@ class Scenario(basic_setup.BaseScenario):
 
     @staticmethod
     def get_bhkw_efficiency(bhkw_size):
-        # Get eff:
+        """Returns efficiency for given BHKW size"""
         if bhkw_size < 1:
             raise IndexError(f"No BHKW-efficiency found for size {bhkw_size}kW")
         elif 1 <= bhkw_size < 10:
@@ -170,6 +178,7 @@ class Scenario(basic_setup.BaseScenario):
 
     @classmethod
     def add_dynamic_parameters(cls, scenario, parameters):
+        """Adds BHKW efficiency and capex to parameter dictionary"""
         demand = cls.get_demand(
             scenario.session.demand_type, scenario.session.demand_id
         ).annual_total_demand()
@@ -193,6 +202,7 @@ class Scenario(basic_setup.BaseScenario):
 
     @classmethod
     def is_available(cls, demand):
+        """Checks if BHKW for given size is available"""
         bhkw_size = cls.get_optimum_bhkw_size(demand.annual_total_demand())
         try:
             cls.get_bhkw_capex(bhkw_size)
