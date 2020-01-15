@@ -474,18 +474,6 @@ class SaveSimulationForm(Form):
     simulation_name = CharField(label="Simulation speichern unter", max_length=255)
 
 
-class ComparisonForm(Form):
-    def __init__(self, initial=0):
-        super(ComparisonForm, self).__init__()
-        choices = [(sim.id, sim.name) for sim in Simulation.objects.all()]
-        self.fields["comparison"] = MultipleChoiceField(
-            label="Vergleiche Szenarios",
-            choices=choices,
-            initial=initial,
-            widget=CheckboxSelectMultiple,
-        )
-
-
 class DistrictListForm(Form):
     def __init__(self, hh_dict):
         super(DistrictListForm, self).__init__()
