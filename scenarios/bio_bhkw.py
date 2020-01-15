@@ -1,3 +1,5 @@
+"""Scenario module for Biogas-BHKWs"""
+
 from stemp.scenarios import bhkw
 
 
@@ -18,6 +20,7 @@ class Scenario(bhkw.Scenario):
 
     @staticmethod
     def get_bhkw_capex(bhkw_size):
+        """Returns capex for given Biogas-BHKW size"""
         if bhkw_size < 10:
             raise IndexError(f"No BIO-BHKW-capex found for size {bhkw_size}kW")
         elif 10 <= bhkw_size < 100:
@@ -32,6 +35,7 @@ class Scenario(bhkw.Scenario):
 
     @staticmethod
     def get_bhkw_efficiency(bhkw_size):
+        """Returns efficiency for given Biogas-BHKW size"""
         if bhkw_size < 10:
             raise IndexError(f"No BIO-BHKW-efficiency found for size {bhkw_size}kW")
         elif 10 <= bhkw_size < 100:
