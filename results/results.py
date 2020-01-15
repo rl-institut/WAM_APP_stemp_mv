@@ -38,12 +38,12 @@ class ResultAggregations(object):
     Scenarios are loaded, analyzed and aggregated within this class
 
     Following steps are made:
-    * List of all results is set up.
-      Within the list, Results class is used to store results ID.
-    * All results are loaded from database.
-    * For each component in each result, a minimum size is adapted if given.
-    * For each result related analysis is done.
-    * Afterwards aggregated results can be accessed via "aggregate" method.
+    - List of all results is set up.
+    - Within the list, Results class is used to store results ID.
+    - All results are loaded from database.
+    - For each component in each result, a minimum size is adapted if given.
+    - For each result related analysis is done.
+    - Afterwards aggregated results can be accessed via "aggregate" method.
     """
     def __init__(self, result_ids: List[int], aggregations: Dict[str, Aggregation]):
         self.results = [Result(result_id) for result_id in result_ids]
