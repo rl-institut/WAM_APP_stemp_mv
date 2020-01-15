@@ -1,3 +1,5 @@
+"""Module to present data from dataframe on website"""
+
 import numpy
 import pandas
 from collections import OrderedDict
@@ -9,6 +11,8 @@ from stemp.app_settings import LABELS
 
 
 class Dataframe(VisualizationTemplate):
+    """Class to render a dataframe to html"""
+
     template_name = "visualizations/dataframe.html"
 
     def __init__(self, title, data=None):
@@ -17,9 +21,11 @@ class Dataframe(VisualizationTemplate):
         super(Dataframe, self).__init__(data)
 
     def set_data(self, data: pandas.DataFrame):
+        """Sets up data"""
         self.data = data
 
     def render_data(self):
+        """Uses dataframe style rendering to render data"""
         return self.data.style.render()
 
     def get_context(self, **kwargs):
@@ -30,6 +36,7 @@ class Dataframe(VisualizationTemplate):
 
     @staticmethod
     def format_row_wise(styler, formatter):
+        """Function to set up rowwise formatter in dataframe"""
         for row, row_formatter in formatter.items():
             row_num = styler.index.get_loc(row)
 
@@ -39,6 +46,8 @@ class Dataframe(VisualizationTemplate):
 
 
 class ComparisonDataframe(Dataframe):
+    """Renders dataframe which holds comparison of different (technology) scenarios"""
+
     formatters = {
         "Wärmekosten": lambda x: (
             f'<pre>{"{:.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", ".")}'
@@ -88,6 +97,12 @@ class ComparisonDataframe(Dataframe):
         self.data = data
 
     def __style_color(self, row):
+        """
+        Sets color for cell in a row, depending on value compared to other cells
+
+        Depending on number of colors, value ranges are binned.
+        Colors are set for each cell depending on result bin.
+        """
         row_style = []
         row_range = row.max() - row.min()
         if abs(row_range) < 1e-14:
@@ -101,6 +116,7 @@ class ComparisonDataframe(Dataframe):
         return row_style
 
     def __create_column_name_with_info(self, column):
+        """Adds information mark (?) with tooltip to each category in column"""
         info = self.information.get(column)
 
         if info is not None:
@@ -114,6 +130,7 @@ class ComparisonDataframe(Dataframe):
             return column
 
     def render_data(self):
+        """Adapted rendering function, to apply all styles to the dataframe"""
         # Exchange columns with columns plus information:
         columns_dict = OrderedDict(
             [(i, self.__create_column_name_with_info(i)) for i in self.data.index]

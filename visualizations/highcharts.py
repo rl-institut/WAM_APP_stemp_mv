@@ -1,8 +1,12 @@
+"""Module to present data from dataframe in Highcharts chart"""
+
 from copy import deepcopy
 from utils.highcharts import Highchart
 
 
 class LCOEHighchart(Highchart):
+    """Layout for LCOE visualization using highcharts"""
+
     setup = {
         "chart": {"type": "column"},
         "yAxis": {
