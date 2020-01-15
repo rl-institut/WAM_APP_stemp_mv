@@ -1,6 +1,5 @@
 import os
 import logging
-from configobj import ConfigObj
 
 from oemof.solph import Model
 from oemof import outputlib
@@ -19,17 +18,6 @@ EXCLUDED_PATHS = ("__init__.py",)
 CREATE_ENERGYSYSTEM_FCT = "create_energysystem"
 NEEDED_PARAMETERS = "NEEDED_PARAMETERS"
 SIMULATE_FCT = "simulate"
-
-
-class SimulationError(Exception):
-    pass
-
-
-def get_scenario_config(scenario):
-    if scenario is None:
-        return None
-    config_path = os.path.join(BASE_DIR, scenario + ".cfg")
-    return ConfigObj(config_path)
 
 
 def create_energysystem(scenario_module, **parameters):
@@ -58,13 +46,6 @@ def create_energysystem(scenario_module, **parameters):
     # Create energysystem:
     scenario = scenario_module.Scenario(**parameters)
     return scenario.energysystem
-
-
-def get_param_results(energysystem):
-    om = Model(energysystem)
-    return outputlib.processing.convert_keys_to_strings(
-        outputlib.processing.param_results(om)
-    )
 
 
 def get_simulation_function(scenario_module):
