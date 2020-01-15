@@ -1,3 +1,5 @@
+"""Module for PV and heatpump scenario"""
+
 import pandas
 import sqlahelper
 
@@ -10,6 +12,7 @@ from stemp.scenarios.basic_setup import AdvancedLabel, pe
 
 
 def get_timeseries():
+    """Returns timeseries for temperature and PV"""
     session = sqlahelper.get_session()
     temp = session.query(OEPTimeseries).filter_by(name="Temperature").first().data
     pv = session.query(OEPTimeseries).filter_by(name="PV").first().data

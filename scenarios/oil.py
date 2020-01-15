@@ -1,3 +1,5 @@
+"""Module for oil scenario"""
+
 from oemof.solph import Flow, Transformer, Bus, Investment
 from oemof.tools.economics import annuity
 
