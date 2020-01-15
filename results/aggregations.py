@@ -1,3 +1,5 @@
+"""Aggregation module is used to compare multiple oemof analysis"""
+
 from abc import ABC
 import pandas
 from collections import OrderedDict, defaultdict
@@ -9,6 +11,8 @@ from stemp.app_settings import SCENARIO_PARAMETERS
 
 
 class Aggregation(ABC):
+    """Baseclass to group and label multiple oemof analyses into one dataframe"""
+
     name = "Aggregation"
     analyzer = None
 
@@ -45,6 +49,12 @@ class Aggregation(ABC):
 
 
 class LCOEAggregation(Aggregation):
+    """
+    Advanced aggregation to aggregate LCOE results
+
+    Results are distinguished between investment and variable costs.
+    Additionally, variable costs are named depending on current scenario.
+    """
     name = "LCOE"
     analyzer = stemp_an.LCOEAutomatedDemandAnalyzer
 
@@ -132,6 +142,12 @@ class CO2Ranking(Ranking):
 
 
 class TechnologieComparison(Aggregation):
+    """
+    Aggregates and compares different scenarios
+
+    Comparison is done for analyzers in "analyzer" attribute.
+    Additionally, pros and cons are shown for each scenario.
+    """
     name = "Technologievergleich"
     analyzer = OrderedDict(
         [
