@@ -27,7 +27,6 @@ from utils.highcharts import Highchart
 from stemp import constants
 from stemp.fields import HouseholdField, SubmitField
 from stemp.widgets import (
-    DynamicRadioWidget,
     SliderInput,
     DistrictSubmitWidget,
     TechnologyWidget,
@@ -453,19 +452,6 @@ class DistrictSelectForm(Form):
         initial=0,
         widget=Select(),
     )
-
-
-class DynamicChoiceForm(Form):
-    def __init__(self, name, label, choices, dynamic_url, initial=0, **kwargs):
-        super(DynamicChoiceForm, self).__init__()
-        self.fields[name] = ChoiceField(
-            label=label,
-            choices=choices,
-            initial=initial,
-            widget=DynamicRadioWidget(
-                dynamic_url=dynamic_url, initial=initial, **kwargs
-            ),
-        )
 
 
 class DistrictHouseholdsForm(Form):
