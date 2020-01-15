@@ -15,6 +15,7 @@ class SimulationResultNotFound(Exception):
 
 
 class Result(object):
+    """Dataclass to hold oemof result and analysis which shall be done"""
     def __init__(self, result_id):
         self.result_id = result_id
         self.scenario = self.__init_scenario(result_id)
@@ -33,8 +34,15 @@ class Result(object):
 class ResultAggregations(object):
     """
     Scenarios are loaded, analyzed and aggregated within this class
-    """
 
+    Following steps are made:
+    * List of all results is set up.
+      Within the list, Results class is used to store results ID.
+    * All results are loaded from database.
+    * For each component in each result, a minimum size is adapted if given.
+    * For each result related analysis is done.
+    * Afterwards aggregated results can be accessed via "aggregate" method.
+    """
     def __init__(self, result_ids: List[int], aggregations: Dict[str, Aggregation]):
         self.results = [Result(result_id) for result_id in result_ids]
         self.aggregations = aggregations
@@ -43,6 +51,7 @@ class ResultAggregations(object):
         self.analyze()
 
     def init_scenarios(self):
+        """Gets results from database for each result ID"""
         sa_session = sqlahelper.get_session()
         for result in self.results:
             result.data = restore_results(
@@ -54,6 +63,7 @@ class ResultAggregations(object):
         sa_session.close()
 
     def apply_minimum_size(self):
+        """Sets minimum sizes for each component in each result if given"""
         for result in self.results:
             for nodes, values in result.data[1].items():
                 try:
@@ -67,6 +77,12 @@ class ResultAggregations(object):
                         )
 
     def analyze(self):
+        """
+        Runs all analysis in each result
+
+        First, all needed analyzers to perform each aggregation are added to analysis.
+        Afterwards analysis is run.
+        """
         for result in self.results:
             result.analysis = an.Analysis(result.data[1], result.data[0])
             for aggregation in self.aggregations.values():
@@ -78,4 +94,5 @@ class ResultAggregations(object):
             result.analysis.analyze()
 
     def aggregate(self, name):
+        """Returns aggregation results for given aggregation name"""
         return self.aggregations[name].aggregate(self.results)
