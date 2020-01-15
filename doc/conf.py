@@ -43,7 +43,7 @@ if "READTHEDOCS" in os.environ:
     print("Running RTD build commands for stemp docs...")
     try:
         os.remove(os.path.join(STEMP_ROOT, "stemp"))
-    except FileExistsError:
+    except FileNotFoundError:
         pass
     os.symlink(os.path.join(STEMP_ROOT, "doc"), os.path.join(STEMP_ROOT, "stemp"))
 
