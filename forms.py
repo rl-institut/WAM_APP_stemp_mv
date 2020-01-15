@@ -283,6 +283,7 @@ class ParameterForm(Form):
 
 
 class HouseholdForm(ModelForm):
+    """Form to add/update a household"""
     number_of_persons = IntegerField(
         widget=NumberInput(
             attrs={
@@ -428,6 +429,11 @@ class HouseholdForm(ModelForm):
 
 
 class HouseholdSelectForm(Form):
+    """
+    Form to select a household from list
+
+    A summary is shown for current selected  household (logic in .js file).
+    """
     profile = ModelChoiceField(
         queryset=Household.objects.all(), label="Haushalt auswählen", initial=0,
     )
@@ -446,6 +452,7 @@ class HouseholdSelectForm(Form):
 
 
 class DistrictSelectForm(Form):
+    """Form to select a district"""
     district = ModelChoiceField(
         queryset=District.objects.all(),
         label="Gespeicherte Viertel",
@@ -455,6 +462,7 @@ class DistrictSelectForm(Form):
 
 
 class DistrictListForm(Form):
+    """Form to add multiple households of different type to current district"""
     def __init__(self, hh_dict):
         super(DistrictListForm, self).__init__()
         if hh_dict is not None:
@@ -473,6 +481,11 @@ class DistrictListForm(Form):
         self.fields["add_mfh"].group = "MFH"
 
     def efh(self):
+        """
+        Returns all EFH of current district
+
+        Used to differentiate between EFH/MFH in template.
+        """
         return [
             self[field_name]
             for field_name, field in self.fields.items()
@@ -480,6 +493,11 @@ class DistrictListForm(Form):
         ]
 
     def mfh(self):
+        """
+        Returns all MFH of current district
+
+        Used to differentiate between EFH/MFH in template.
+        """
         return [
             self[field_name]
             for field_name, field in self.fields.items()
