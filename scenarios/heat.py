@@ -1,3 +1,6 @@
+"""Module to calculate heatpump efficiency"""
+
+
 def calc_hp_heating_supply_temp(temp, heating_system, **kwargs):
     """
     Generates an hourly supply temperature profile depending on the ambient

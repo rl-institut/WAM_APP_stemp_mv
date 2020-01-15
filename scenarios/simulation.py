@@ -1,3 +1,5 @@
+"""Module to simulate oemof model"""
+
 import os
 import logging
 
@@ -21,6 +23,11 @@ SIMULATE_FCT = "simulate"
 
 
 def create_energysystem(scenario_module, **parameters):
+    """
+    Returns energysystem for given scenario
+
+    Checks if all needed parameters are given, before setting up energysystem.
+    """
     # Check if all needed parameters are given:
     needed = scenario_module.Scenario.needed_parameters
     missing_components = [key for key in needed if key not in parameters]
@@ -49,11 +56,22 @@ def create_energysystem(scenario_module, **parameters):
 
 
 def get_simulation_function(scenario_module):
+    """
+    Returns simulation function for current scenario
+
+    If no custom scenario function is given, default simulation function is used.
+    """
     simulate_fct = getattr(scenario_module, SIMULATE_FCT, default_simulate_fct)
     return simulate_fct
 
 
 def default_simulate_fct(energysystem, solver="cbc", tee_switch=True, keep=True):
+    """
+    Default simulation function to simulate oemof Model
+
+    Builds simple simulation model from energysystem and solves it with given solver.
+    Resulting results and input parameters are returned as dictionaries with str-keys.
+    """
     # create Optimization model based on energy_system
     logging.info("Create optimization problem")
     om = Model(energysystem=energysystem)
