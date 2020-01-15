@@ -1,7 +1,13 @@
+"""Additional analyzers to calculate results from oemof"""
 from oemof.solph import analyzer as an
 
 
 class TotalInvestmentAnalyzer(an.Analyzer):
+    """
+    Calculates total investment costs for whole system
+
+    total_invest = capex * size
+    """
     requires = ("results", "param_results")
     depends_on = (an.SizeAnalyzer,)
 
@@ -20,6 +26,11 @@ class TotalInvestmentAnalyzer(an.Analyzer):
 
 
 class CO2Analyzer(an.Analyzer):
+    """
+    Calculates proportional CO2 emission for each component
+
+    co2_emission_prop = CO2_emission * (flow_component / total_demand)
+    """
     requires = ("results", "param_results")
     depends_on_former = (an.NodeBalanceAnalyzer,)
 
@@ -52,6 +63,12 @@ class CO2Analyzer(an.Analyzer):
 
 
 class LCOEAutomatedDemandAnalyzer(an.LCOEAnalyzer):
+    """
+    Calculates LCOE for each component
+
+    In advance to LCOEAnalyzer, demand is automatically calculated by adding up
+    components tagged as "demand".
+    """
     def __init__(self):
         super(LCOEAutomatedDemandAnalyzer, self).__init__([])
 
@@ -67,6 +84,11 @@ class LCOEAutomatedDemandAnalyzer(an.LCOEAnalyzer):
 
 
 class FossilCostsAnalyzer(an.Analyzer):
+    """
+    Calculates "Brennstoffkosten" for each component/system
+
+    All variable costs of components marked as "fossil" are summed up.
+    """
     depends_on = (an.VariableCostAnalyzer,)
 
     def analyze(self, *args):
