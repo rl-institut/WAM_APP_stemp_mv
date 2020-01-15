@@ -1,3 +1,5 @@
+"""Module to start analyzing oemof results"""
+
 import sqlahelper
 from typing import Dict, List
 
