@@ -1,3 +1,5 @@
+"""Additional widgets used by forms or individually"""
+
 from collections import defaultdict
 from django.forms import Select, Widget, NumberInput
 from django.forms.widgets import CheckboxSelectMultiple
@@ -40,8 +42,8 @@ class DistrictSubmitWidget(Widget):
 
 class TechnologyWidget(CheckboxSelectMultiple):
     """
-    From: https://www.abidibo.net/blog/2017/10/16/add-data-attributes-option-
-    tags-django-admin-select-field/
+    Widget to add key-value-pairs to select component
+    From: https://www.abidibo.net/blog/2017/10/16/add-data-attributes-option-tags-django-admin-select-field/
     """
 
     template_name = "widgets/technology.html"
@@ -64,8 +66,11 @@ class TechnologyWidget(CheckboxSelectMultiple):
 
 
 class SubmitWidget(Widget):
-    """From https://djangosnippets.org/snippets/2312/"""
+    """
+    Widget for submit button
 
+    From https://djangosnippets.org/snippets/2312/
+    """
     def render(self, name, value, attrs=None, renderer=None):
         return '<input type="submit" name="%s" value="%s">' % (
             html.escape(name),
@@ -74,6 +79,11 @@ class SubmitWidget(Widget):
 
 
 class HouseholdSummary(CustomWidget):
+    """
+    Widget to show summary of a household
+
+    If "use_header" is True, an accordion is used to hide summary at first.
+    """
     def __init__(self, household, use_header=True, count=None):
         self.template_name = (
             "widgets/summary_household_accordion.html"
@@ -88,6 +98,7 @@ class HouseholdSummary(CustomWidget):
 
 
 class TechnologySummary(CustomWidget):
+    """Widget to show chosen technology as icon plus name"""
     template_name = "widgets/summary_technology.html"
 
     def __init__(self, scenario_config):
@@ -102,6 +113,11 @@ class TechnologySummary(CustomWidget):
 
 
 class ParameterSummary(CustomWidget):
+    """
+    Widget to show non-default parameters, changed by user
+
+    For each changed parameter, related icon and label is shown
+    """
     template_name = "widgets/summary_parameter.html"
 
     def __init__(self, changed_parameters):
@@ -123,6 +139,12 @@ class ParameterSummary(CustomWidget):
 
 
 class SliderInput(NumberInput):
+    """
+    Widget to add slider to number input field
+
+    Step size can be chosen, defaults to 1.
+    Precision of number is adapted automatically from step size.
+    """
     input_type = "number"
     template_name = "widgets/slider.html"
 
