@@ -243,6 +243,7 @@ def execute(commands):
             delete_households()
             delete_oep_tables()
             delete_stored_simulations()
+            assumptions.delete_assumptions()
             create_all()
         elif command == "heat":
             insert_heat_demand()
