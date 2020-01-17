@@ -7,6 +7,7 @@ from stemp.db_population.population_utils import get_meta_from_json
 
 
 def delete_assumptions():
+    Assumption.objects.filter(app_name="stemp").delete()
     Source.objects.filter(app_name="stemp").delete()
 
 
