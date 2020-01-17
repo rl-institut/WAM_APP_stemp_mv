@@ -1,4 +1,5 @@
 import os
+import sys
 import click
 import logging
 import pandas
@@ -10,6 +11,9 @@ import datetime as dt
 
 from demandlib import bdew
 import oedialect
+
+wam_path = os.path.abspath(os.path.join(__file__, os.pardir, os.pardir, os.pardir))
+sys.path.append(wam_path)
 
 from django.core.wsgi import get_wsgi_application
 
