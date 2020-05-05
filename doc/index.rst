@@ -1,13 +1,11 @@
 Willkommen!
 ===========
 
-.. warning:: Die Dokumentation befindet sich derzeit noch in Bearbeitung!
-
 StEmp-MV ist ein Stakeholder-Empowerment-Tool für die Gemeinde Groß-Trebbow.
 Es wurde vom `Reiner Lemoine Institut (RLI)
 <https://reiner-lemoine-institut.de/>`_ im Rahmen des Kopernikus-Projekts
 „ENavi“ entwickelt. Sie finden das Tool auf den `WAM-Seiten des RLI
-<https://wam.rl-institut.de/stemp_mv/>`_.
+<https://wam.rl-institut.de/stemp/>`_.
 
 In dieser Dokumentation finden Sie methodische und technische
 Hintergrundinformationen und Anleitungen.
