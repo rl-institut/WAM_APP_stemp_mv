@@ -45,7 +45,17 @@ if "READTHEDOCS" in os.environ:
         os.remove(os.path.join(STEMP_ROOT, "stemp"))
     except FileNotFoundError:
         pass
-    os.symlink(os.path.join(STEMP_ROOT, "doc"), os.path.join(STEMP_ROOT, "stemp"))
+    except IsADirectoryError:
+        pass
+
+    BRANCH_DIR = os.path.dirname(os.path.dirname(__file__))
+    try:
+        os.symlink(
+            BRANCH_DIR,
+            os.path.join(STEMP_ROOT, 'stemp')
+        )
+    except FileExistsError:
+        pass
 
     # Set WAM config manually:
     os.environ["WAM_CONFIG_PATH"] = os.path.join(
