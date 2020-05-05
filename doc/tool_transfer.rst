@@ -7,8 +7,7 @@ Das Tool kann durch seinen offenen Charakter und seine geringen Abhängigkeiten 
 Vorraussetzung für eine Adaption auf eine andere Region sind standortabhängige Einspeisezeitreihen für Photovoltaik und Temperaturdaten.
 
 
-Notwendige Schritte (grob)
---------------------------
+Notwendige Schritte (grob):
 
 * Neue Zeitreihen für lokale Temperaturdaten und Stromerzeugung durch Photovoltaik einarbeiten
 * Eventuell Standard-Parameter an lokale Gegebenheiten anpassen

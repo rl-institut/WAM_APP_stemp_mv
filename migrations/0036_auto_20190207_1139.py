@@ -6,18 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0035_auto_20181109_1052'),
+        ("stemp", "0035_auto_20181109_1052"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='district',
-            name='name',
-            field=models.CharField(max_length=22),
+            model_name="district", name="name", field=models.CharField(max_length=22),
         ),
         migrations.AlterField(
-            model_name='household',
-            name='name',
+            model_name="household",
+            name="name",
             field=models.CharField(max_length=22, unique=True),
         ),
     ]

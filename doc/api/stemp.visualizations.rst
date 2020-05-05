@@ -19,12 +19,3 @@ stemp.visualizations.highcharts module
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: stemp.visualizations
-    :members:
-    :undoc-members:
-    :show-inheritance:

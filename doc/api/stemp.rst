@@ -6,23 +6,10 @@ Subpackages
 
 .. toctree::
 
-    stemp.doc
-    stemp.migrations
+    stemp.db_population
     stemp.results
     stemp.scenarios
-    stemp.tests
     stemp.visualizations
-
-Submodules
-----------
-
-stemp.admin module
-------------------
-
-.. automodule:: stemp.admin
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 stemp.app\_settings module
 --------------------------
@@ -76,14 +63,6 @@ stemp.oep\_models module
 ------------------------
 
 .. automodule:: stemp.oep_models
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-stemp.queries module
---------------------
-
-.. automodule:: stemp.queries
     :members:
     :undoc-members:
     :show-inheritance:
@@ -148,15 +127,6 @@ stemp.widgets module
 --------------------
 
 .. automodule:: stemp.widgets
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: stemp
     :members:
     :undoc-members:
     :show-inheritance:

@@ -6,16 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0016_question_questionhouseholds'),
+        ("stemp", "0016_question_questionhouseholds"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='QuestionHouseholds',
-            new_name='QuestionHousehold',
+            old_name="QuestionHouseholds", new_name="QuestionHousehold",
         ),
-        migrations.RemoveField(
-            model_name='question',
-            name='question_household',
-        ),
+        migrations.RemoveField(model_name="question", name="question_household",),
     ]

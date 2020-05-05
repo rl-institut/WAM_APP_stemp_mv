@@ -75,12 +75,3 @@ stemp.scenarios.woodchip module
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: stemp.scenarios
-    :members:
-    :undoc-members:
-    :show-inheritance:

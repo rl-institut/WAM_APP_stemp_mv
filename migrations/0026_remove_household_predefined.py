@@ -6,12 +6,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0025_auto_20180514_1707'),
+        ("stemp", "0025_auto_20180514_1707"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='household',
-            name='predefined',
-        ),
+        migrations.RemoveField(model_name="household", name="predefined",),
     ]

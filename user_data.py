@@ -1,15 +1,21 @@
-
-import sqlahelper
+"""
+Module holds classes to store user informations via sessions
+"""
 import logging
 
 from stemp.app_settings import SCENARIO_MODULES
 from stemp.constants import DemandType, DistrictStatus
 from .tasks import simulate_energysystem
-from stemp.models import Scenario, Parameter, Simulation, Household, District
-from db_apps.oemof_results import store_results
+from stemp.models import Simulation, Household, District
 
 
 class SessionSimulation(object):
+    """
+    Holds simulation data for one scenario
+
+    Can start simulation of scenario and check if simulation is done and can return
+    results if so.
+    """
     def __init__(self, name, session):
         self.session = session
         self.name = name
@@ -31,10 +37,10 @@ class SessionSimulation(object):
 
         Returns
         -------
-        int: Simulation ID if results were found, else None
+        int:
+            Simulation ID if results were found, else None
         """
-        for simulation in Simulation.objects.filter(
-                scenario__name=self.name):
+        for simulation in Simulation.objects.filter(scenario__name=self.name):
 
             # Check if result is outdated:
             if simulation.date < simulation.scenario.last_change:
@@ -50,59 +56,59 @@ class SessionSimulation(object):
         return None
 
     def load_or_simulate(self):
+        """
+        Checks if current scenario is simulated already and sets result ID if so.
+        Otherwise it starts simulation of given scenario.
+        """
         self.include_demand()
-        
+
         # Check if results already exist:
         result_id = self.check_for_result()
         if result_id is not None:
             self.result_id = result_id
         else:
-            self.pending = (
-                simulate_energysystem.delay(self.name, self.parameter)
-            )
+            self.pending = simulate_energysystem.delay(self.name, self.parameter)
 
     def is_pending(self):
+        """
+        Checks if simulation of scenario is still running
+
+        Returns
+        -------
+        bool
+            True, if simulation results are ready
+        """
         if self.pending is None:
             return False
         if self.pending.ready():
             try:
                 self.result_id = self.pending.get()
             except Exception:
-                logging.exception('Simulation task failed')
+                logging.exception("Simulation task failed")
                 self.result_id = None
             return False
         return True
 
-    def store_results(self, results, param_results):
-        # Store scenario, parameter and setup via Django ORM
-        scenario = Scenario.objects.get_or_create(name=self.name)[0]
-        parameter = Parameter.objects.get_or_create(data=self.parameter)[0]
-
-        # Store oemeof results via SQLAlchemy:
-        sa_session = sqlahelper.get_session()
-        result_id = store_results(
-            sa_session,
-            param_results,
-            results
-        )
-        sa_session.close()
-
-        # Store simulation in Django ORM:
-        Simulation.objects.get_or_create(
-            scenario=scenario,
-            parameter=parameter,
-            result_id=result_id
-        )
-        return result_id
-
     def include_demand(self):
-        self.parameter['demand'] = {
-            'type': self.session.demand_type,
-            'index': self.session.demand_id
+        """
+        Adds demand type and index to parameters
+
+        As demand type is not included in parameters at parameter page, this has to be
+        done in an extra step.
+        """
+        self.parameter["demand"] = {
+            "type": self.session.demand_type,
+            "index": self.session.demand_id,
         }
 
 
 class UserSession(object):
+    """
+    Session data for one user
+
+    Holds all current scenarios of a user together with selected demand
+    (household/district).
+    """
     def __init__(self):
         self.scenarios = []
         self.demand_type = None
@@ -110,24 +116,40 @@ class UserSession(object):
         self.current_district = {}
 
     def init_scenarios(self, scenario_names):
+        """
+        Initialize scenario sessions for each scenario
+
+        Parameters
+        ----------
+        scenario_names : List[str]
+            List of scenario names, which shall be added to user session
+        """
         for scenario in scenario_names:
             self.scenarios.append(SessionSimulation(scenario, self))
 
     def reset_demand(self):
+        """Resets current demand options"""
         self.demand_type = None
         self.demand_id = None
         self.current_district = {}
 
     def reset_scenarios(self):
+        """Removes scenarios from session"""
         self.scenarios = []
 
     def get_demand(self):
+        """Loads demand from model using demand type and index"""
         if self.demand_type == DemandType.Single:
             return Household.objects.get(pk=self.demand_id)
         elif self.demand_type == DemandType.District:
             return District.objects.get(pk=self.demand_id)
 
     def get_district_status(self):
+        """
+        Checks current status of demand options (new/changed/unchanged)
+
+        This needed on district page in order to adapt labels.
+        """
         if self.demand_id is None:
             return DistrictStatus.New
         district = District.objects.get(pk=self.demand_id)
@@ -142,7 +164,7 @@ class UserSession(object):
     def __str__(self):
         return (
             f'Scenarios: {",".join([scenario.name for scenario in self.scenarios])}, '
-            f'Demand-Type: {self.demand_type}, '
-            f'Demand-ID: {self.demand_id}, '
-            f'District: {self.current_district}'
+            f"Demand-Type: {self.demand_type}, "
+            f"Demand-ID: {self.demand_id}, "
+            f"District: {self.current_district}"
         )

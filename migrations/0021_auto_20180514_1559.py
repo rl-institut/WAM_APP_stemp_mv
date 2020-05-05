@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0020_auto_20180514_1559'),
+        ("stemp", "0020_auto_20180514_1559"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='questionhousehold',
-            name='household',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='question_household', to='stemp.Household'),
+            model_name="questionhousehold",
+            name="household",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="question_household",
+                to="stemp.Household",
+            ),
         ),
     ]

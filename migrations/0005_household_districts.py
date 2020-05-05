@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stemp', '0004_remove_household_district'),
+        ("stemp", "0004_remove_household_district"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='household',
-            name='districts',
-            field=models.ManyToManyField(null=True, to='stemp.District'),
+            model_name="household",
+            name="districts",
+            field=models.ManyToManyField(null=True, to="stemp.District"),
         ),
     ]

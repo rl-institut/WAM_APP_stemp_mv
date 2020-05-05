@@ -1,2 +1,1 @@
-
-default_app_config = 'stemp.apps.StempConfig'
+default_app_config = "stemp.apps.StempConfig"

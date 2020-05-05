@@ -1,3 +1,5 @@
+"""Aggregation module is used to compare multiple oemof analysis"""
+
 from abc import ABC
 import pandas
 from collections import OrderedDict, defaultdict
@@ -9,7 +11,9 @@ from stemp.app_settings import SCENARIO_PARAMETERS
 
 
 class Aggregation(ABC):
-    name = 'Aggregation'
+    """Baseclass to group and label multiple oemof analyses into one dataframe"""
+
+    name = "Aggregation"
     analyzer = None
 
     def _get_data(self, result):
@@ -27,9 +31,7 @@ class Aggregation(ABC):
 
     @staticmethod
     def _get_result_label(result):
-        scenario_name = SCENARIO_PARAMETERS[
-            result.scenario.Scenario.name.lower()
-        ]
+        scenario_name = SCENARIO_PARAMETERS[result.scenario.Scenario.name.lower()]
         return f"{scenario_name['LABELS']['name']}<br><small>Szenario #{result.result_id}</small>"
 
     def aggregate(self, results):
@@ -47,7 +49,13 @@ class Aggregation(ABC):
 
 
 class LCOEAggregation(Aggregation):
-    name = 'LCOE'
+    """
+    Advanced aggregation to aggregate LCOE results
+
+    Results are distinguished between investment and variable costs.
+    Additionally, variable costs are named depending on current scenario.
+    """
+    name = "LCOE"
     analyzer = stemp_an.LCOEAutomatedDemandAnalyzer
 
     def _get_data(self, result):
@@ -55,7 +63,7 @@ class LCOEAggregation(Aggregation):
         filtered_data = defaultdict(float)
         for k, v in data.items():
             if abs(v.investment) > 0.001:
-                filtered_data['Investitionskosten'] += v.investment
+                filtered_data["Investitionskosten"] += v.investment
             if abs(v.variable_costs) > 0.001:
                 filtered_data[
                     result.scenario.Scenario.get_data_label(k)
@@ -63,86 +71,20 @@ class LCOEAggregation(Aggregation):
         return filtered_data
 
 
-class TotalDemandAggregation(Aggregation):
-    name = 'Wärmeverbrauch'
-    analyzer = an.SequenceFlowSumAnalyzer
-
-    def _get_data(self, result):
-        return dict(filter(
-            lambda dct: (
-                dct[0][1].tags is not None and
-                'demand' in dct[0][1].tags
-            ),
-            result.analysis.get_analyzer(
-                an.SequenceFlowSumAnalyzer).result.items()
-        ))
-
-
-class SizeAggregation(Aggregation):
-    name = 'Sizes'
-    analyzer = an.SizeAnalyzer
-
-
-class ProfileAggregation(Aggregation):
-    name = 'Profile'
-
-    def _get_data(self, result):
-        demand = [
-            v['sequences']['flow'][:100]
-            for k, v in result.analysis.results.items()
-            if k[1].tags is not None and 'demand' in k[1].tags
-        ][0].tolist()
-        gas = None
-        try:
-            gas = [
-                v['sequences']['flow'][:100]
-                for k, v in result.analysis.results.items()
-                if k[0].name == 'b_gas' or k[0].name == 'b_oil'
-            ][0].tolist()
-        except IndexError:
-            pass
-        excess = [
-            v['sequences']['flow'][:100]
-            for k, v in result.analysis.results.items()
-            if k[1].name.startswith('excess')
-        ][0].tolist()
-        return {
-            'Verbrauch': demand,
-            'Einspeisung (Gas/Öl)': gas,
-            'Wärme-Überschuss': excess
-        }
-
-
-class Ranking(Aggregation):
-    def __init__(self, ascending=True, precision=0):
-        self.ascending = ascending
-        self.precision = precision
-
-    def _finalize_data(self, data):
-        data = data.sum(axis=1)
-        data.sort_values(ascending=self.ascending, inplace=True)
-        data = data.round(decimals=self.precision)
-        return data.to_frame(self.name)
-
-
-class InvestmentRanking(Ranking):
-    name = 'Investment'
-    analyzer = stemp_an.TotalInvestmentAnalyzer
-
-
-class CO2Ranking(Ranking):
-    name = 'CO2'
-    analyzer = stemp_an.CO2Analyzer
-
-
 class TechnologieComparison(Aggregation):
-    name = 'Technologievergleich'
+    """
+    Aggregates and compares different scenarios
+
+    Comparison is done for analyzers in "analyzer" attribute.
+    Additionally, pros and cons are shown for each scenario.
+    """
+    name = "Technologievergleich"
     analyzer = OrderedDict(
         [
-            ('Wärmekosten', stemp_an.LCOEAutomatedDemandAnalyzer),
-            ('Investitionskosten', stemp_an.TotalInvestmentAnalyzer),
-            ('CO2 Emissionen', stemp_an.CO2Analyzer),
-            ('Brennstoffkosten', stemp_an.FossilCostsAnalyzer)
+            ("Wärmekosten", stemp_an.LCOEAutomatedDemandAnalyzer),
+            ("Investitionskosten", stemp_an.TotalInvestmentAnalyzer),
+            ("CO2 Emissionen", stemp_an.CO2Analyzer),
+            ("Brennstoffkosten", stemp_an.FossilCostsAnalyzer),
         ]
     )
 
@@ -158,38 +100,43 @@ class TechnologieComparison(Aggregation):
             # Add primary energy:
             pe = result.scenario.Scenario.calculate_primary_factor_and_energy(
                 result.analysis.param_results,
-                result.analysis.get_analyzer(an.NodeBalanceAnalyzer)
+                result.analysis.get_analyzer(an.NodeBalanceAnalyzer),
             )
-            series['Primärenergiefaktor'] = pe.factor
-            series['Primärenergie'] = pe.energy
+            series["Primärenergiefaktor"] = pe.factor
+            series["Primärenergie"] = pe.energy
 
             # Add pros and cons:
-            labels = SCENARIO_PARAMETERS[
-                result.scenario.Scenario.name.lower()]['LABELS']
-            pros = labels.get('pros', [])
-            cons = labels.get('cons', [])
-            series['Vorteile'] = '<br>'.join(map(
-                lambda x: f'<i class ="icon ion-thumbsup icon--small"> {x} </i>',
-                pros
-            ))
-            series['Nachteile'] = '<br>'.join(map(
-                lambda x: f'<i class ="icon ion-thumbsdown icon--small"> {x} </i>',
-                cons
-            ))
+            labels = SCENARIO_PARAMETERS[result.scenario.Scenario.name.lower()][
+                "LABELS"
+            ]
+            pros = labels.get("pros", [])
+            cons = labels.get("cons", [])
+            series["Vorteile"] = "<br>".join(
+                map(
+                    lambda x: f'<i class ="icon ion-thumbsup icon--small"> {x} </i>',
+                    pros,
+                )
+            )
+            series["Nachteile"] = "<br>".join(
+                map(
+                    lambda x: f'<i class ="icon ion-thumbsdown icon--small"> {x} </i>',
+                    cons,
+                )
+            )
 
             df = df.append(series)
 
         # Order columns:
         df = df[
             [
-                'Wärmekosten',
-                'Investitionskosten',
-                'Brennstoffkosten',
-                'CO2 Emissionen',
-                'Primärenergiefaktor',
-                'Primärenergie',
-                'Vorteile',
-                'Nachteile',
+                "Wärmekosten",
+                "Investitionskosten",
+                "Brennstoffkosten",
+                "CO2 Emissionen",
+                "Primärenergiefaktor",
+                "Primärenergie",
+                "Vorteile",
+                "Nachteile",
             ]
         ]
 
