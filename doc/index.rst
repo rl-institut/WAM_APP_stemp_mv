@@ -7,6 +7,13 @@ Es wurde vom `Reiner Lemoine Institut (RLI)
 „ENavi“ entwickelt. Sie finden das Tool auf den `WAM-Seiten des RLI
 <https://wam.rl-institut.de/stemp/>`_.
 
+.. figure:: _static/Stemp_gemaltesBild.png
+  :width: 90%
+  :align: center
+  :alt: Stakeholder Empowerment Tool
+
+  © Juliane Pieper | Reiner Lemoine Institut
+
 In dieser Dokumentation finden Sie methodische und technische
 Hintergrundinformationen und Anleitungen.
 
