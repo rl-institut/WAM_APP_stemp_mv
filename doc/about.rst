@@ -3,34 +3,59 @@
 Über dieses Tool
 ================
 
-Die Energiewende kann nur gemeinsam erreicht werden. Wie aber können alle
-Interessensgruppen ihre Sichtweisen und Bedürfnisse in die Energiewendeplanung
-einbringen? Das `Reiner Lemoine Institut (RLI)
-<https://reiner-lemoine-institut.de/>`_ hat dieses Stakeholder-Empowerment-Tool
-mit Unterstützung der `Energieavantgarde Anhalt e.V. (EAA)
-<https://www.energieavantgarde.de/>`_ entwickelt, das es Akteurinnen und
-Akteuren der Energiewende ermöglicht, sich an Planungsprozessen zu beteiligen.
+Die Energiewende kann nur gemeinsam erreicht werden.
+Wie aber können alle Interessensgruppen ihre Sichtweisen und Bedürfnisse in die Energiewendeplanung einbringen?
+Das `Reiner Lemoine Institut (RLI)
+<https://reiner-lemoine-institut.de/>`_ hat dieses Stakeholder-Empowerment-Tool entwickelt,
+das es Hausbesitzerinnen und Hausbesitzern ermöglicht, in ihrem Wirkungsraum einen Betrag zur Energiewende zu leisten,
+indem sie bei Neuinvestitionen in Heizungsanlagen Technologieabwägungen auf wissenschaftlicher Grundlage treffen können.
 
+.. image:: _static/Waerme_HP_device.png
+  :width: 24%
+  :alt: Startseite
+.. image:: _static/Waerme_Szenario_device.png
+  :width: 24%
+  :alt: Szenariowahl
+.. image:: _static/Waerme_Heizungsoptionen_device.png
+  :width: 24%
+  :alt: Heizungsoptionen
+.. image:: _static/Waerme_Ergebnisse_device.png
+  :width: 24%
+  :alt: Ergebnisse
 
 Über das Menü links gelangen Sie auf die entsprechenden Seiten.
 
 Motivation
 ----------
 
-Die Energiedialoge der Energieavantgarde Anhalt haben insbesondere im direkten Gespräch mit den Bürgerinnen und Bürgern und in der Mitglieder- und Stakeholderberatung gezeigt, dass die Möglichkeiten zur Partizipation in der Entwicklung eines zukunftsweisenden regionalen Energiesystems zwar formal gegeben sind, in der Praxis aber aufwändig und häufig unbefriedigend sind. Der ganzheitliche Blick auf die Anforderungen und Chancen eines regionalen und regenerativen Energiesystems fehlt meist. Stattdessen werden landschaftliche Veränderungen (bspw. durch Windenergieanlagen oder Freiland-PV-Anlagen), lokale Auswirkungen auf Nachbarschaften, Naturschutz- und Denkmalschutzbelange sowie Auswirkungen der „Energiewende“ auf Energiepreise etc. meist unverbunden und teils konfrontativ debattiert. Die Rechtsunsicherheit im Umgang mit den Inhalten der Regionalplanung und Raumordnung ist nur ein Ausdruck dieser komplexen Problemlage.
+Mecklenburg nimmt als Modellregion im Projekt ENavi teil.
+Im Landkreis Mecklenburg gibt es bereits verschiedene Aktivitäten im Bereich Energiewende und Daseinsvorsorge.
+Im  Frühjahr 2018 mit der Erstellung eines Klimaschutzkonzeptes begonnen,
+durch den Komob e.V. wird ländliche Mobilität neu gedacht und es gibt einen Amtsentwicklungsausschuss AG Daseinsvorsorge die sich mit der Zukunft der Region beschäftigt.
+In diesen Kontext reiht sich das Stemp Tool ein.
+In Zusammenarbeit mit dem LK Mecklenburg und KOMOB e.V. wurden Quartiere in Nordwest-Mecklenburg identifiziert,
+die sich für die gemeinsame Entwicklung des Tools eignen.
 
-Verbesserungspotenzial sehen die Befragten in diesem Themenfeld vor allem in der Darstellung der unmittelbaren Betroffenheit einzelner Regionen unter Berücksichtigung anderer Vorgaben in der Flächennutzung, wie beispielsweise der Mindestabstand von Windenergieanlagen zu Siedlungen. Außerdem ist eine Betrachtung variabler Szenarien des regionalen Energiebalancekreises bezogen auf Energiedargebot, Anlagen der Energieumwandlung, Energiemix durch gemeinsame Beeinflussung der Ziel- und Eingangsdaten, gemeinsames Nachvollziehen und Festlegen von Restriktionen und Potenzialen gewünscht.
+Hintergrund
+-----------
+
+Die ländliche, strukturschwache Region mit abnehmender Bevölkerungszahl, hat die Energiewende in der Region bisher so erlebt:
+viele Windparks, wenig regionale Wertschöpfung, wenig Partizipationsmöglichkeiten.
+Im Bereich Wärmeversorgung wurde Anfang der 1990er Jahre in vielen Gebäuden in der Region die Wärmeversorgung erneuert,
+meist durch dezentrale Öl- oder Gasthermen. Nach fast 30 Jahren Nutzung steht in den kommenden Jahren eine Erneuerung an.
+An dieser Stelle soll das Stemp-Tool eingesetzt werden und den Entscheidungsprozess zu einer neuen Wärmeversorgung unterstützen.
+Hier ist jetzt der günstige Moment, eine Investitionsentscheidung die ansteht zu Nutzen um die Wärmewende ein Stück weiter voranzubringen.
+
 
 Ziele
 -----
-Mit dem Stemp - Tool für die Region Anhalt verfolgen das Reiner Lemoine Institut und die Energieavantgarde Anhalt folgende Ziele:
+Mit dem Stemp - Tool für die Region Nordwest-Mecklenburg verfolgen das Reiner Lemoine Institut und der Landkreis folgende Ziele:
 
-- Identifikation der Werte und Interessen der regionalen Anspruchsgruppen.
-- Aktivierung der regionalen Anspruchsgruppen bzgl. der Mitgestaltung der Energiewende in der Region Anhalt.
-- Verbesserung des Verständnisses von Zusammenhängen zwischen energiewirtschaftlichen, ökologischen und kulturlandschaftlichen Systemen.
-- Seriöse und reale Partizipation der regionalen Anspruchsgruppen, insb. der Bürgerinnen und Bürger, sowohl am Planungsprozess sowie an der Nutzung erneuerbarer Energieanlagen.
-- Befähigung, bessere Entscheidungen bzgl. der regionalen Energiewende verhandeln und treffen zu können.
-- Ermöglichung einer holistischen Planung und Genehmigung von erneuerbaren Energieanlagen.
+- Identifikation der Werte und Interessen der regionalen Akteure
+- Verbesserung des Verständnisses von Zusammenhängen zwischen technischen, energiewirtschaftlichen und ökologischen Eigenschaften von Heizungssystemen
+- Transparente und interessensneutrale Bereitstellung von Informationen zu verschiedenen Heizungstechnologien auf wissenschaftlicher Grundlage aber in der Darstellung an die Zivilgesellschaft angepasst.
+- Befähigung, bessere Entscheidungen treffen zu können
+- Beitrag zu ‚Daseinsvorsorge‘ damit die Region durch die Energiewende nachhaltig profitieren kann anstatt abgehängt zu werden
 - Bereitstellung von Daten und Quellcode, um die Umsetzung ähnlicher Tools zu erleichtern.
 
 ENavi
