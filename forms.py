@@ -435,7 +435,11 @@ class HouseholdSelectForm(Form):
     A summary is shown for current selected  household (logic in .js file).
     """
     profile = ModelChoiceField(
-        queryset=Household.objects.all(), label="Haushalt auswählen", initial=0,
+        queryset=Household.objects.filter(
+            id__lte=233
+        ).all(),
+        label="Haushalt auswählen",
+        initial=0,
     )
 
     class Media:
@@ -445,7 +449,8 @@ class HouseholdSelectForm(Form):
         super(HouseholdSelectForm, self).__init__(*args, **kwargs)
         if only_house_type is not None:
             self.fields["profile"].queryset = Household.objects.filter(
-                house_type=only_house_type.name
+                house_type=only_house_type.name,
+                id__lte=233
             ).all()
         self.helper = FormHelper(self)
         self.helper.template = "forms/household_list_form.html"
@@ -454,7 +459,7 @@ class HouseholdSelectForm(Form):
 class DistrictSelectForm(Form):
     """Form to select a district"""
     district = ModelChoiceField(
-        queryset=District.objects.all(),
+        queryset=District.objects.filter(id=48).all(),
         label="Gespeicherte Viertel",
         initial=0,
         widget=Select(),
